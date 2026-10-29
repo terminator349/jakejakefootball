@@ -1,0 +1,7 @@
+agno>=3.1
+anthropic>=2.3
+openai>=3.40
+mcp>=2.3
+python-dotenv>=1.0
+pydantic>=2.0
+pytest>=8.0

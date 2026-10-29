@@ -1,0 +1,1447 @@
+{
+  "our_team": "HAR",
+  "rules": {
+    "salary_cap": 140.0,
+    "luxury_tax_line": 170.0,
+    "roster_min": 13,
+    "roster_max": 15
+  },
+  "teams": [
+    {
+      "id": "HAR",
+      "city": "Harbor City",
+      "name": "Herons"
+    },
+    {
+      "id": "MES",
+      "city": "Mesa Verde",
+      "name": "Coyotes"
+    },
+    {
+      "id": "IRN",
+      "city": "Iron Falls",
+      "name": "Foundry"
+    },
+    {
+      "id": "LAK",
+      "city": "Lakeshore",
+      "name": "Loons"
+    },
+    {
+      "id": "SUM",
+      "city": "Summit",
+      "name": "Sherpas"
+    },
+    {
+      "id": "DEL",
+      "city": "Delta Bay",
+      "name": "Gators"
+    }
+  ],
+  "players": [
+    {
+      "id": "HAR-01",
+      "name": "Dante Okafor",
+      "team_id": "HAR",
+      "position": "PG",
+      "age": 33,
+      "salary": 17.0,
+      "contract_years": 1,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "offense": 74,
+        "three_pt": 77,
+        "rebounding": 63,
+        "perimeter_defense": 56,
+        "interior_defense": 54,
+        "athleticism": 73
+      }
+    },
+    {
+      "id": "HAR-02",
+      "name": "Kofi Ferreira",
+      "team_id": "HAR",
+      "position": "PG",
+      "age": 20,
+      "salary": 3.5,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 65,
+        "three_pt": 69,
+        "rebounding": 55,
+        "perimeter_defense": 43,
+        "interior_defense": 50,
+        "athleticism": 53
+      }
+    },
+    {
+      "id": "HAR-03",
+      "name": "Jonah Hargrove",
+      "team_id": "HAR",
+      "position": "SG",
+      "age": 34,
+      "salary": 27.3,
+      "contract_years": 4,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 87,
+        "three_pt": 86,
+        "rebounding": 69,
+        "perimeter_defense": 58,
+        "interior_defense": 70,
+        "athleticism": 74
+      }
+    },
+    {
+      "id": "HAR-04",
+      "name": "Mateo Hargrove",
+      "team_id": "HAR",
+      "position": "SG",
+      "age": 22,
+      "salary": 4.4,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 72,
+        "three_pt": 71,
+        "rebounding": 49,
+        "perimeter_defense": 47,
+        "interior_defense": 54,
+        "athleticism": 55
+      }
+    },
+    {
+      "id": "HAR-05",
+      "name": "Jonah Achebe",
+      "team_id": "HAR",
+      "position": "SF",
+      "age": 25,
+      "salary": 14.9,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 67,
+        "three_pt": 68,
+        "rebounding": 69,
+        "perimeter_defense": 53,
+        "interior_defense": 78,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "HAR-06",
+      "name": "Nikola Novak",
+      "team_id": "HAR",
+      "position": "SF",
+      "age": 30,
+      "salary": 14.2,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 74,
+        "three_pt": 61,
+        "rebounding": 55,
+        "perimeter_defense": 42,
+        "interior_defense": 66,
+        "athleticism": 69
+      }
+    },
+    {
+      "id": "HAR-07",
+      "name": "Ruben Vance",
+      "team_id": "HAR",
+      "position": "PF",
+      "age": 27,
+      "salary": 37.3,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "offense": 80,
+        "three_pt": 77,
+        "rebounding": 96,
+        "perimeter_defense": 71,
+        "interior_defense": 96,
+        "athleticism": 80
+      }
+    },
+    {
+      "id": "HAR-08",
+      "name": "Andre Castillo",
+      "team_id": "HAR",
+      "position": "PF",
+      "age": 23,
+      "salary": 2.5,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 46,
+        "three_pt": 44,
+        "rebounding": 59,
+        "perimeter_defense": 53,
+        "interior_defense": 57,
+        "athleticism": 52
+      }
+    },
+    {
+      "id": "HAR-09",
+      "name": "Dmitri Tanaka",
+      "team_id": "HAR",
+      "position": "C",
+      "age": 28,
+      "salary": 13.1,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 50,
+        "rebounding": 79,
+        "perimeter_defense": 45,
+        "interior_defense": 72,
+        "athleticism": 65
+      }
+    },
+    {
+      "id": "HAR-10",
+      "name": "Dmitri Mensah",
+      "team_id": "HAR",
+      "position": "C",
+      "age": 29,
+      "salary": 12.4,
+      "contract_years": 5,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 61,
+        "three_pt": 49,
+        "rebounding": 66,
+        "perimeter_defense": 61,
+        "interior_defense": 71,
+        "athleticism": 60
+      }
+    },
+    {
+      "id": "HAR-11",
+      "name": "Rafael Achebe",
+      "team_id": "HAR",
+      "position": "SG",
+      "age": 31,
+      "salary": 9.3,
+      "contract_years": 1,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 67,
+        "three_pt": 78,
+        "rebounding": 48,
+        "perimeter_defense": 52,
+        "interior_defense": 48,
+        "athleticism": 57
+      }
+    },
+    {
+      "id": "HAR-12",
+      "name": "Isaiah Mensah",
+      "team_id": "HAR",
+      "position": "SF",
+      "age": 25,
+      "salary": 11.4,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "offense": 61,
+        "three_pt": 61,
+        "rebounding": 49,
+        "perimeter_defense": 52,
+        "interior_defense": 57,
+        "athleticism": 65
+      }
+    },
+    {
+      "id": "HAR-13",
+      "name": "Jalen Achebe",
+      "team_id": "HAR",
+      "position": "PF",
+      "age": 34,
+      "salary": 14.8,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 70,
+        "three_pt": 59,
+        "rebounding": 66,
+        "perimeter_defense": 54,
+        "interior_defense": 85,
+        "athleticism": 61
+      }
+    },
+    {
+      "id": "MES-01",
+      "name": "Theo Mensah",
+      "team_id": "MES",
+      "position": "PG",
+      "age": 30,
+      "salary": 31.1,
+      "contract_years": 2,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "offense": 84,
+        "three_pt": 85,
+        "rebounding": 67,
+        "perimeter_defense": 83,
+        "interior_defense": 68,
+        "athleticism": 81
+      }
+    },
+    {
+      "id": "MES-02",
+      "name": "Jalen Ferreira",
+      "team_id": "MES",
+      "position": "PG",
+      "age": 23,
+      "salary": 1.5,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 59,
+        "three_pt": 59,
+        "rebounding": 32,
+        "perimeter_defense": 55,
+        "interior_defense": 43,
+        "athleticism": 50
+      }
+    },
+    {
+      "id": "MES-03",
+      "name": "Luca Brennan",
+      "team_id": "MES",
+      "position": "SG",
+      "age": 27,
+      "salary": 16.2,
+      "contract_years": 5,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "offense": 69,
+        "three_pt": 64,
+        "rebounding": 42,
+        "perimeter_defense": 72,
+        "interior_defense": 57,
+        "athleticism": 57
+      }
+    },
+    {
+      "id": "MES-04",
+      "name": "Theo Achebe",
+      "team_id": "MES",
+      "position": "SG",
+      "age": 20,
+      "salary": 8.0,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 65,
+        "three_pt": 66,
+        "rebounding": 61,
+        "perimeter_defense": 53,
+        "interior_defense": 53,
+        "athleticism": 56
+      }
+    },
+    {
+      "id": "MES-05",
+      "name": "Tariq Vance",
+      "team_id": "MES",
+      "position": "SF",
+      "age": 29,
+      "salary": 12.1,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "offense": 63,
+        "three_pt": 65,
+        "rebounding": 56,
+        "perimeter_defense": 69,
+        "interior_defense": 58,
+        "athleticism": 68
+      }
+    },
+    {
+      "id": "MES-06",
+      "name": "Dante Mensah",
+      "team_id": "MES",
+      "position": "SF",
+      "age": 25,
+      "salary": 6.5,
+      "contract_years": 1,
+      "games_missed_last_season": 13,
+      "ratings": {
+        "offense": 72,
+        "three_pt": 54,
+        "rebounding": 52,
+        "perimeter_defense": 61,
+        "interior_defense": 54,
+        "athleticism": 52
+      }
+    },
+    {
+      "id": "MES-07",
+      "name": "Tariq Ibarra",
+      "team_id": "MES",
+      "position": "PF",
+      "age": 22,
+      "salary": 8.0,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "offense": 75,
+        "three_pt": 73,
+        "rebounding": 76,
+        "perimeter_defense": 76,
+        "interior_defense": 78,
+        "athleticism": 73
+      }
+    },
+    {
+      "id": "MES-08",
+      "name": "Marcus Abernathy",
+      "team_id": "MES",
+      "position": "PF",
+      "age": 22,
+      "salary": 8.0,
+      "contract_years": 5,
+      "games_missed_last_season": 47,
+      "ratings": {
+        "offense": 64,
+        "three_pt": 61,
+        "rebounding": 68,
+        "perimeter_defense": 56,
+        "interior_defense": 76,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "MES-09",
+      "name": "Elias Vance",
+      "team_id": "MES",
+      "position": "C",
+      "age": 25,
+      "salary": 26.8,
+      "contract_years": 3,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 72,
+        "three_pt": 63,
+        "rebounding": 90,
+        "perimeter_defense": 74,
+        "interior_defense": 80,
+        "athleticism": 78
+      }
+    },
+    {
+      "id": "MES-10",
+      "name": "Jalen Vance",
+      "team_id": "MES",
+      "position": "C",
+      "age": 23,
+      "salary": 24.7,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 68,
+        "rebounding": 83,
+        "perimeter_defense": 58,
+        "interior_defense": 88,
+        "athleticism": 73
+      }
+    },
+    {
+      "id": "MES-11",
+      "name": "Dmitri Ferreira",
+      "team_id": "MES",
+      "position": "SG",
+      "age": 22,
+      "salary": 5.0,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 55,
+        "three_pt": 64,
+        "rebounding": 53,
+        "perimeter_defense": 59,
+        "interior_defense": 52,
+        "athleticism": 62
+      }
+    },
+    {
+      "id": "MES-12",
+      "name": "Jonah Reyes",
+      "team_id": "MES",
+      "position": "SF",
+      "age": 24,
+      "salary": 11.2,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "offense": 65,
+        "three_pt": 65,
+        "rebounding": 58,
+        "perimeter_defense": 57,
+        "interior_defense": 61,
+        "athleticism": 58
+      }
+    },
+    {
+      "id": "MES-13",
+      "name": "Xavier Hargrove",
+      "team_id": "MES",
+      "position": "PF",
+      "age": 27,
+      "salary": 15.6,
+      "contract_years": 3,
+      "games_missed_last_season": 11,
+      "ratings": {
+        "offense": 66,
+        "three_pt": 56,
+        "rebounding": 80,
+        "perimeter_defense": 63,
+        "interior_defense": 60,
+        "athleticism": 67
+      }
+    },
+    {
+      "id": "IRN-01",
+      "name": "Marcus Castillo",
+      "team_id": "IRN",
+      "position": "PG",
+      "age": 33,
+      "salary": 28.2,
+      "contract_years": 3,
+      "games_missed_last_season": 16,
+      "ratings": {
+        "offense": 77,
+        "three_pt": 80,
+        "rebounding": 63,
+        "perimeter_defense": 90,
+        "interior_defense": 62,
+        "athleticism": 86
+      }
+    },
+    {
+      "id": "IRN-02",
+      "name": "Mateo Brennan",
+      "team_id": "IRN",
+      "position": "PG",
+      "age": 35,
+      "salary": 5.7,
+      "contract_years": 4,
+      "games_missed_last_season": 9,
+      "ratings": {
+        "offense": 62,
+        "three_pt": 60,
+        "rebounding": 39,
+        "perimeter_defense": 63,
+        "interior_defense": 51,
+        "athleticism": 53
+      }
+    },
+    {
+      "id": "IRN-03",
+      "name": "Dmitri Mensah",
+      "team_id": "IRN",
+      "position": "SG",
+      "age": 31,
+      "salary": 33.5,
+      "contract_years": 4,
+      "games_missed_last_season": 12,
+      "ratings": {
+        "offense": 73,
+        "three_pt": 86,
+        "rebounding": 76,
+        "perimeter_defense": 79,
+        "interior_defense": 72,
+        "athleticism": 85
+      }
+    },
+    {
+      "id": "IRN-04",
+      "name": "Omar Tanaka",
+      "team_id": "IRN",
+      "position": "SG",
+      "age": 33,
+      "salary": 19.7,
+      "contract_years": 4,
+      "games_missed_last_season": 11,
+      "ratings": {
+        "offense": 66,
+        "three_pt": 83,
+        "rebounding": 59,
+        "perimeter_defense": 70,
+        "interior_defense": 64,
+        "athleticism": 66
+      }
+    },
+    {
+      "id": "IRN-05",
+      "name": "Omar Ferreira",
+      "team_id": "IRN",
+      "position": "SF",
+      "age": 26,
+      "salary": 16.8,
+      "contract_years": 1,
+      "games_missed_last_season": 22,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 65,
+        "rebounding": 62,
+        "perimeter_defense": 70,
+        "interior_defense": 64,
+        "athleticism": 72
+      }
+    },
+    {
+      "id": "IRN-06",
+      "name": "Jonah Mbeki",
+      "team_id": "IRN",
+      "position": "SF",
+      "age": 29,
+      "salary": 18.2,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 70,
+        "rebounding": 65,
+        "perimeter_defense": 78,
+        "interior_defense": 64,
+        "athleticism": 67
+      }
+    },
+    {
+      "id": "IRN-07",
+      "name": "Kenji Holloway",
+      "team_id": "IRN",
+      "position": "PF",
+      "age": 33,
+      "salary": 35.4,
+      "contract_years": 3,
+      "games_missed_last_season": 9,
+      "ratings": {
+        "offense": 78,
+        "three_pt": 82,
+        "rebounding": 82,
+        "perimeter_defense": 74,
+        "interior_defense": 92,
+        "athleticism": 85
+      }
+    },
+    {
+      "id": "IRN-08",
+      "name": "Theo Achebe",
+      "team_id": "IRN",
+      "position": "PF",
+      "age": 30,
+      "salary": 10.6,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "offense": 59,
+        "three_pt": 44,
+        "rebounding": 66,
+        "perimeter_defense": 55,
+        "interior_defense": 61,
+        "athleticism": 63
+      }
+    },
+    {
+      "id": "IRN-09",
+      "name": "Quentin Kowalski",
+      "team_id": "IRN",
+      "position": "C",
+      "age": 26,
+      "salary": 26.5,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "offense": 71,
+        "three_pt": 61,
+        "rebounding": 90,
+        "perimeter_defense": 64,
+        "interior_defense": 81,
+        "athleticism": 66
+      }
+    },
+    {
+      "id": "IRN-10",
+      "name": "Dante Vance",
+      "team_id": "IRN",
+      "position": "C",
+      "age": 34,
+      "salary": 26.0,
+      "contract_years": 2,
+      "games_missed_last_season": 25,
+      "ratings": {
+        "offense": 72,
+        "three_pt": 63,
+        "rebounding": 73,
+        "perimeter_defense": 64,
+        "interior_defense": 72,
+        "athleticism": 69
+      }
+    },
+    {
+      "id": "IRN-11",
+      "name": "Jonah Abernathy",
+      "team_id": "IRN",
+      "position": "SG",
+      "age": 33,
+      "salary": 11.2,
+      "contract_years": 2,
+      "games_missed_last_season": 15,
+      "ratings": {
+        "offense": 71,
+        "three_pt": 66,
+        "rebounding": 58,
+        "perimeter_defense": 65,
+        "interior_defense": 55,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "IRN-12",
+      "name": "Quentin Whitfield",
+      "team_id": "IRN",
+      "position": "SF",
+      "age": 22,
+      "salary": 7.3,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 60,
+        "three_pt": 60,
+        "rebounding": 63,
+        "perimeter_defense": 62,
+        "interior_defense": 49,
+        "athleticism": 55
+      }
+    },
+    {
+      "id": "IRN-13",
+      "name": "Tariq Reyes",
+      "team_id": "IRN",
+      "position": "PF",
+      "age": 34,
+      "salary": 12.6,
+      "contract_years": 2,
+      "games_missed_last_season": 19,
+      "ratings": {
+        "offense": 64,
+        "three_pt": 57,
+        "rebounding": 68,
+        "perimeter_defense": 52,
+        "interior_defense": 57,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "LAK-01",
+      "name": "Nikola Ferreira",
+      "team_id": "LAK",
+      "position": "PG",
+      "age": 29,
+      "salary": 14.2,
+      "contract_years": 5,
+      "games_missed_last_season": 12,
+      "ratings": {
+        "offense": 74,
+        "three_pt": 71,
+        "rebounding": 52,
+        "perimeter_defense": 73,
+        "interior_defense": 50,
+        "athleticism": 52
+      }
+    },
+    {
+      "id": "LAK-02",
+      "name": "Ruben Castillo",
+      "team_id": "LAK",
+      "position": "PG",
+      "age": 32,
+      "salary": 6.6,
+      "contract_years": 4,
+      "games_missed_last_season": 23,
+      "ratings": {
+        "offense": 56,
+        "three_pt": 61,
+        "rebounding": 46,
+        "perimeter_defense": 57,
+        "interior_defense": 45,
+        "athleticism": 50
+      }
+    },
+    {
+      "id": "LAK-03",
+      "name": "Dante Novak",
+      "team_id": "LAK",
+      "position": "SG",
+      "age": 25,
+      "salary": 33.4,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "offense": 84,
+        "three_pt": 93,
+        "rebounding": 68,
+        "perimeter_defense": 83,
+        "interior_defense": 70,
+        "athleticism": 70
+      }
+    },
+    {
+      "id": "LAK-04",
+      "name": "Omar Achebe",
+      "team_id": "LAK",
+      "position": "SG",
+      "age": 21,
+      "salary": 6.4,
+      "contract_years": 1,
+      "games_missed_last_season": 7,
+      "ratings": {
+        "offense": 63,
+        "three_pt": 68,
+        "rebounding": 46,
+        "perimeter_defense": 67,
+        "interior_defense": 47,
+        "athleticism": 60
+      }
+    },
+    {
+      "id": "LAK-05",
+      "name": "Elias Novak",
+      "team_id": "LAK",
+      "position": "SF",
+      "age": 26,
+      "salary": 22.2,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 61,
+        "three_pt": 71,
+        "rebounding": 63,
+        "perimeter_defense": 73,
+        "interior_defense": 65,
+        "athleticism": 71
+      }
+    },
+    {
+      "id": "LAK-06",
+      "name": "Nikola Brennan",
+      "team_id": "LAK",
+      "position": "SF",
+      "age": 32,
+      "salary": 8.3,
+      "contract_years": 1,
+      "games_missed_last_season": 10,
+      "ratings": {
+        "offense": 51,
+        "three_pt": 63,
+        "rebounding": 58,
+        "perimeter_defense": 61,
+        "interior_defense": 52,
+        "athleticism": 58
+      }
+    },
+    {
+      "id": "LAK-07",
+      "name": "Omar Vance",
+      "team_id": "LAK",
+      "position": "PF",
+      "age": 21,
+      "salary": 8.0,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 71,
+        "three_pt": 69,
+        "rebounding": 76,
+        "perimeter_defense": 67,
+        "interior_defense": 72,
+        "athleticism": 76
+      }
+    },
+    {
+      "id": "LAK-08",
+      "name": "Quentin Mbeki",
+      "team_id": "LAK",
+      "position": "PF",
+      "age": 34,
+      "salary": 26.8,
+      "contract_years": 4,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "offense": 73,
+        "three_pt": 71,
+        "rebounding": 76,
+        "perimeter_defense": 61,
+        "interior_defense": 76,
+        "athleticism": 63
+      }
+    },
+    {
+      "id": "LAK-09",
+      "name": "Mateo Lindqvist",
+      "team_id": "LAK",
+      "position": "C",
+      "age": 30,
+      "salary": 7.2,
+      "contract_years": 3,
+      "games_missed_last_season": 19,
+      "ratings": {
+        "offense": 60,
+        "three_pt": 43,
+        "rebounding": 68,
+        "perimeter_defense": 54,
+        "interior_defense": 68,
+        "athleticism": 66
+      }
+    },
+    {
+      "id": "LAK-10",
+      "name": "Devin Novak",
+      "team_id": "LAK",
+      "position": "C",
+      "age": 28,
+      "salary": 17.3,
+      "contract_years": 5,
+      "games_missed_last_season": 10,
+      "ratings": {
+        "offense": 66,
+        "three_pt": 47,
+        "rebounding": 71,
+        "perimeter_defense": 62,
+        "interior_defense": 74,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "LAK-11",
+      "name": "Elias Okafor",
+      "team_id": "LAK",
+      "position": "SG",
+      "age": 35,
+      "salary": 8.1,
+      "contract_years": 1,
+      "games_missed_last_season": 8,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 72,
+        "rebounding": 53,
+        "perimeter_defense": 66,
+        "interior_defense": 48,
+        "athleticism": 62
+      }
+    },
+    {
+      "id": "LAK-12",
+      "name": "Quentin Abernathy",
+      "team_id": "LAK",
+      "position": "SF",
+      "age": 31,
+      "salary": 9.1,
+      "contract_years": 3,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 62,
+        "three_pt": 58,
+        "rebounding": 52,
+        "perimeter_defense": 58,
+        "interior_defense": 55,
+        "athleticism": 65
+      }
+    },
+    {
+      "id": "LAK-13",
+      "name": "Ruben Ibarra",
+      "team_id": "LAK",
+      "position": "PF",
+      "age": 28,
+      "salary": 23.5,
+      "contract_years": 5,
+      "games_missed_last_season": 7,
+      "ratings": {
+        "offense": 71,
+        "three_pt": 56,
+        "rebounding": 77,
+        "perimeter_defense": 66,
+        "interior_defense": 67,
+        "athleticism": 66
+      }
+    },
+    {
+      "id": "SUM-01",
+      "name": "Jonah Whitfield",
+      "team_id": "SUM",
+      "position": "PG",
+      "age": 21,
+      "salary": 8.0,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "offense": 86,
+        "three_pt": 88,
+        "rebounding": 76,
+        "perimeter_defense": 85,
+        "interior_defense": 81,
+        "athleticism": 84
+      }
+    },
+    {
+      "id": "SUM-02",
+      "name": "Jalen Lindqvist",
+      "team_id": "SUM",
+      "position": "PG",
+      "age": 35,
+      "salary": 11.8,
+      "contract_years": 4,
+      "games_missed_last_season": 11,
+      "ratings": {
+        "offense": 64,
+        "three_pt": 72,
+        "rebounding": 50,
+        "perimeter_defense": 62,
+        "interior_defense": 53,
+        "athleticism": 66
+      }
+    },
+    {
+      "id": "SUM-03",
+      "name": "Malik Holloway",
+      "team_id": "SUM",
+      "position": "SG",
+      "age": 33,
+      "salary": 21.3,
+      "contract_years": 5,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "offense": 65,
+        "three_pt": 77,
+        "rebounding": 63,
+        "perimeter_defense": 71,
+        "interior_defense": 55,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "SUM-04",
+      "name": "Luca Brennan",
+      "team_id": "SUM",
+      "position": "SG",
+      "age": 23,
+      "salary": 2.3,
+      "contract_years": 3,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 60,
+        "three_pt": 54,
+        "rebounding": 51,
+        "perimeter_defense": 65,
+        "interior_defense": 47,
+        "athleticism": 51
+      }
+    },
+    {
+      "id": "SUM-05",
+      "name": "Quentin Abernathy",
+      "team_id": "SUM",
+      "position": "SF",
+      "age": 29,
+      "salary": 28.9,
+      "contract_years": 1,
+      "games_missed_last_season": 10,
+      "ratings": {
+        "offense": 79,
+        "three_pt": 76,
+        "rebounding": 72,
+        "perimeter_defense": 72,
+        "interior_defense": 74,
+        "athleticism": 73
+      }
+    },
+    {
+      "id": "SUM-06",
+      "name": "Andre Lindqvist",
+      "team_id": "SUM",
+      "position": "SF",
+      "age": 28,
+      "salary": 19.3,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "offense": 69,
+        "three_pt": 68,
+        "rebounding": 64,
+        "perimeter_defense": 80,
+        "interior_defense": 67,
+        "athleticism": 64
+      }
+    },
+    {
+      "id": "SUM-07",
+      "name": "Elias Lindqvist",
+      "team_id": "SUM",
+      "position": "PF",
+      "age": 35,
+      "salary": 16.1,
+      "contract_years": 5,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "offense": 76,
+        "three_pt": 61,
+        "rebounding": 73,
+        "perimeter_defense": 70,
+        "interior_defense": 80,
+        "athleticism": 65
+      }
+    },
+    {
+      "id": "SUM-08",
+      "name": "Kenji Reyes",
+      "team_id": "SUM",
+      "position": "PF",
+      "age": 28,
+      "salary": 5.1,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 59,
+        "three_pt": 53,
+        "rebounding": 65,
+        "perimeter_defense": 62,
+        "interior_defense": 61,
+        "athleticism": 46
+      }
+    },
+    {
+      "id": "SUM-09",
+      "name": "Devin Hargrove",
+      "team_id": "SUM",
+      "position": "C",
+      "age": 30,
+      "salary": 15.8,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 53,
+        "three_pt": 55,
+        "rebounding": 82,
+        "perimeter_defense": 50,
+        "interior_defense": 70,
+        "athleticism": 68
+      }
+    },
+    {
+      "id": "SUM-10",
+      "name": "Caleb Okafor",
+      "team_id": "SUM",
+      "position": "C",
+      "age": 32,
+      "salary": 12.2,
+      "contract_years": 5,
+      "games_missed_last_season": 8,
+      "ratings": {
+        "offense": 54,
+        "three_pt": 57,
+        "rebounding": 69,
+        "perimeter_defense": 45,
+        "interior_defense": 69,
+        "athleticism": 59
+      }
+    },
+    {
+      "id": "SUM-11",
+      "name": "Elias Sato",
+      "team_id": "SUM",
+      "position": "SG",
+      "age": 29,
+      "salary": 21.4,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "offense": 76,
+        "three_pt": 73,
+        "rebounding": 57,
+        "perimeter_defense": 72,
+        "interior_defense": 61,
+        "athleticism": 69
+      }
+    },
+    {
+      "id": "SUM-12",
+      "name": "Elias Hargrove",
+      "team_id": "SUM",
+      "position": "SF",
+      "age": 23,
+      "salary": 10.6,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "offense": 50,
+        "three_pt": 56,
+        "rebounding": 48,
+        "perimeter_defense": 64,
+        "interior_defense": 53,
+        "athleticism": 56
+      }
+    },
+    {
+      "id": "SUM-13",
+      "name": "Theo Novak",
+      "team_id": "SUM",
+      "position": "PF",
+      "age": 24,
+      "salary": 11.5,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 55,
+        "three_pt": 55,
+        "rebounding": 76,
+        "perimeter_defense": 60,
+        "interior_defense": 66,
+        "athleticism": 56
+      }
+    },
+    {
+      "id": "DEL-01",
+      "name": "Jonah Sato",
+      "team_id": "DEL",
+      "position": "PG",
+      "age": 34,
+      "salary": 18.2,
+      "contract_years": 3,
+      "games_missed_last_season": 8,
+      "ratings": {
+        "offense": 73,
+        "three_pt": 87,
+        "rebounding": 61,
+        "perimeter_defense": 81,
+        "interior_defense": 57,
+        "athleticism": 68
+      }
+    },
+    {
+      "id": "DEL-02",
+      "name": "Dante Tanaka",
+      "team_id": "DEL",
+      "position": "PG",
+      "age": 33,
+      "salary": 15.5,
+      "contract_years": 4,
+      "games_missed_last_season": 14,
+      "ratings": {
+        "offense": 62,
+        "three_pt": 78,
+        "rebounding": 46,
+        "perimeter_defense": 70,
+        "interior_defense": 52,
+        "athleticism": 55
+      }
+    },
+    {
+      "id": "DEL-03",
+      "name": "Jalen Abernathy",
+      "team_id": "DEL",
+      "position": "SG",
+      "age": 30,
+      "salary": 26.7,
+      "contract_years": 1,
+      "games_missed_last_season": 8,
+      "ratings": {
+        "offense": 75,
+        "three_pt": 77,
+        "rebounding": 58,
+        "perimeter_defense": 85,
+        "interior_defense": 66,
+        "athleticism": 80
+      }
+    },
+    {
+      "id": "DEL-04",
+      "name": "Dmitri Lindqvist",
+      "team_id": "DEL",
+      "position": "SG",
+      "age": 32,
+      "salary": 5.2,
+      "contract_years": 3,
+      "games_missed_last_season": 19,
+      "ratings": {
+        "offense": 60,
+        "three_pt": 55,
+        "rebounding": 49,
+        "perimeter_defense": 61,
+        "interior_defense": 49,
+        "athleticism": 57
+      }
+    },
+    {
+      "id": "DEL-05",
+      "name": "Mateo Lindqvist",
+      "team_id": "DEL",
+      "position": "SF",
+      "age": 29,
+      "salary": 27.9,
+      "contract_years": 4,
+      "games_missed_last_season": 31,
+      "ratings": {
+        "offense": 74,
+        "three_pt": 74,
+        "rebounding": 81,
+        "perimeter_defense": 80,
+        "interior_defense": 64,
+        "athleticism": 78
+      }
+    },
+    {
+      "id": "DEL-06",
+      "name": "Omar Ferreira",
+      "team_id": "DEL",
+      "position": "SF",
+      "age": 31,
+      "salary": 14.8,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "offense": 57,
+        "three_pt": 67,
+        "rebounding": 62,
+        "perimeter_defense": 66,
+        "interior_defense": 62,
+        "athleticism": 62
+      }
+    },
+    {
+      "id": "DEL-07",
+      "name": "Mateo Abernathy",
+      "team_id": "DEL",
+      "position": "PF",
+      "age": 24,
+      "salary": 12.9,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 62,
+        "rebounding": 73,
+        "perimeter_defense": 56,
+        "interior_defense": 67,
+        "athleticism": 62
+      }
+    },
+    {
+      "id": "DEL-08",
+      "name": "Dmitri Ferreira",
+      "team_id": "DEL",
+      "position": "PF",
+      "age": 29,
+      "salary": 3.8,
+      "contract_years": 3,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "offense": 46,
+        "three_pt": 48,
+        "rebounding": 62,
+        "perimeter_defense": 50,
+        "interior_defense": 61,
+        "athleticism": 70
+      }
+    },
+    {
+      "id": "DEL-09",
+      "name": "Xavier Kowalski",
+      "team_id": "DEL",
+      "position": "C",
+      "age": 20,
+      "salary": 8.0,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "offense": 81,
+        "three_pt": 54,
+        "rebounding": 75,
+        "perimeter_defense": 51,
+        "interior_defense": 78,
+        "athleticism": 62
+      }
+    },
+    {
+      "id": "DEL-10",
+      "name": "Malik Dubois",
+      "team_id": "DEL",
+      "position": "C",
+      "age": 27,
+      "salary": 17.4,
+      "contract_years": 2,
+      "games_missed_last_season": 7,
+      "ratings": {
+        "offense": 60,
+        "three_pt": 68,
+        "rebounding": 79,
+        "perimeter_defense": 59,
+        "interior_defense": 69,
+        "athleticism": 76
+      }
+    },
+    {
+      "id": "DEL-11",
+      "name": "Elias Reyes",
+      "team_id": "DEL",
+      "position": "SG",
+      "age": 29,
+      "salary": 1.7,
+      "contract_years": 5,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "offense": 55,
+        "three_pt": 62,
+        "rebounding": 40,
+        "perimeter_defense": 64,
+        "interior_defense": 41,
+        "athleticism": 61
+      }
+    },
+    {
+      "id": "DEL-12",
+      "name": "Kofi Novak",
+      "team_id": "DEL",
+      "position": "SF",
+      "age": 28,
+      "salary": 26.4,
+      "contract_years": 4,
+      "games_missed_last_season": 27,
+      "ratings": {
+        "offense": 81,
+        "three_pt": 71,
+        "rebounding": 74,
+        "perimeter_defense": 78,
+        "interior_defense": 77,
+        "athleticism": 74
+      }
+    },
+    {
+      "id": "DEL-13",
+      "name": "Jonah Dubois",
+      "team_id": "DEL",
+      "position": "PF",
+      "age": 32,
+      "salary": 17.8,
+      "contract_years": 1,
+      "games_missed_last_season": 16,
+      "ratings": {
+        "offense": 68,
+        "three_pt": 56,
+        "rebounding": 59,
+        "perimeter_defense": 62,
+        "interior_defense": 68,
+        "athleticism": 60
+      }
+    }
+  ]
+}
