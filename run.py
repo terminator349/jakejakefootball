@@ -1,7 +1,7 @@
 """Ask the Analytics agent a question about our roster.
 
     python run.py
-    python run.py "Who is our best defender?"
+    python run.py "How does our offensive line compare to the league?"
     python run.py --debug      # print every tool call and model message
 """
 
@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 from agents.analytics import RosterReport, build_analytics_agent
 
-DEFAULT_QUESTION = "We're 2 games out of a playoff spot. Where is our roster weakest, and what should we look for?"
+DEFAULT_QUESTION = "We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?"
 
 
 def print_report(report: RosterReport) -> None:
@@ -24,11 +24,11 @@ def print_report(report: RosterReport) -> None:
     for line in report.evidence:
         print(f"  - {line}")
     print(f"Target profile: {report.target_profile}")
-    if report.room_under_tax >= 0:
-        tax_status = f"${report.room_under_tax:.1f}M under the tax line"
+    if report.cap_space >= 0:
+        cap_status = f"${report.cap_space:.1f}M of cap space"
     else:
-        tax_status = f"${-report.room_under_tax:.1f}M OVER the tax line"
-    print(f"Payroll:        ${report.payroll:.1f}M  ({tax_status})")
+        cap_status = f"${-report.cap_space:.1f}M OVER the cap"
+    print(f"Payroll:        ${report.payroll:.1f}M  ({cap_status})")
 
 
 def main() -> None:

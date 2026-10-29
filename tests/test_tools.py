@@ -14,56 +14,77 @@ def test_every_team_has_a_legal_roster():
         assert rules["roster_min"] <= len(roster) <= rules["roster_max"]
 
 
-def test_list_teams_includes_our_team_and_payrolls():
+def test_every_team_can_field_its_starters():
+    league = load_league()
+    for team in league["teams"]:
+        for position, starters in league["rules"]["starters_per_position"].items():
+            players = json.loads(get_roster(team["id"], position))["players"]
+            assert sum(p["starter"] for p in players) == starters
+
+
+def test_every_team_is_under_the_hard_cap():
     data = json.loads(list_teams())
-    ids = [t["id"] for t in data["teams"]]
-    assert data["our_team"] in ids
-    assert all(t["payroll"] > 0 for t in data["teams"])
+    assert data["our_team"] in [t["id"] for t in data["teams"]]
+    assert all(t["payroll"] > 0 and t["cap_space"] >= 0 for t in data["teams"])
 
 
-def test_get_roster_rejects_unknown_team():
+def test_get_roster_rejects_unknown_team_and_position():
     assert "error" in json.loads(get_roster("XYZ"))
+    assert "error" in json.loads(get_roster("HAR", "PG"))
 
 
 def test_get_roster_is_case_insensitive():
-    assert json.loads(get_roster("har"))["team_id"] == "HAR"
+    data = json.loads(get_roster("har", "cb"))
+    assert data["team_id"] == "HAR"
+    assert {p["position"] for p in data["players"]} == {"CB"}
 
 
-def test_rules_have_tax_line_above_cap():
+def test_get_roster_lists_best_players_first():
+    players = json.loads(get_roster("HAR", "WR"))["players"]
+    overalls = [p["overall"] for p in players]
+    assert overalls == sorted(overalls, reverse=True)
+
+
+def test_rules_are_american_football():
     rules = json.loads(get_league_rules())
-    assert rules["luxury_tax_line"] > rules["salary_cap"]
+    assert rules["cap_type"] == "hard"
+    assert rules["season_games"] == 17
+    assert sum(rules["starters_per_position"].values()) == 24  # 11 offense, 11 defense, K, P
 
 
-def test_our_team_is_worst_at_perimeter_defense():
+def test_our_secondary_has_the_worst_pass_coverage():
     """The generator plants this weakness; the agent should be able to find it."""
     league = load_league()
-    wings = ("PG", "SG", "SF")
 
-    def avg_perimeter_d(team_id):
-        ratings = [p["ratings"]["perimeter_defense"] for p in league["players"]
-                   if p["team_id"] == team_id and p["position"] in wings]
+    def secondary_coverage(team_id):
+        ratings = [p["ratings"]["coverage"] for p in league["players"]
+                   if p["team_id"] == team_id and p["position"] in ("CB", "S")]
         return sum(ratings) / len(ratings)
 
-    ours = avg_perimeter_d(league["our_team"])
-    others = [avg_perimeter_d(t["id"]) for t in league["teams"] if t["id"] != league["our_team"]]
+    ours = secondary_coverage(league["our_team"])
+    others = [secondary_coverage(t["id"]) for t in league["teams"] if t["id"] != league["our_team"]]
     assert ours < min(others)
 
 
 def test_compare_to_league_puts_our_biggest_weakness_first():
     data = json.loads(compare_to_league("HAR"))
     worst = data["comparisons"][0]
-    assert worst["rating"] == "perimeter_defense"
-    assert worst["group"] == "perimeter"
+    assert worst["rating"] == "coverage"
+    assert worst["position"] in ("CB", "S")
     assert worst["rank"] == data["teams_in_league"]
     assert worst["gap"] < 0
 
 
 def test_compare_to_league_rows_are_consistent():
-    data = json.loads(compare_to_league("mes"))
-    rows = data["comparisons"]
-    assert len(rows) == 3 * 6  # three position groups x six ratings
+    league = load_league()
+    rows = json.loads(compare_to_league("mes"))["comparisons"]
+    expected = 0
+    for position in league["rules"]["starters_per_position"]:
+        sample = next(p for p in league["players"] if p["position"] == position)
+        expected += len(sample["ratings"]) + 1  # each rating plus overall
+    assert len(rows) == expected
     assert [r["gap"] for r in rows] == sorted(r["gap"] for r in rows)
-    assert all(1 <= r["rank"] <= data["teams_in_league"] for r in rows)
+    assert all(1 <= r["rank"] <= len(league["teams"]) for r in rows)
 
 
 def test_compare_to_league_rejects_unknown_team():
