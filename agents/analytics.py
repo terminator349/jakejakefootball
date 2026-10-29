@@ -50,7 +50,9 @@ def build_analytics_agent(debug: bool = False) -> Agent:
             "Then call get_roster for our team with a position filter for the weak positions, "
             "to name the specific players behind the numbers.",
             "Cite exact player names and ratings, plus the team's rank and gap from compare_to_league, in your evidence.",
-            "The salary cap is hard: any player we add must fit in our cap space, or we must send salary back.",
+            "The salary cap is hard: going over it is illegal, not just taxed. Any player we add must fit in "
+            "our cap space, or we must send salary back, so treat a team at or near the cap as a real "
+            "roster-building constraint, not a minor detail.",
             "Tool results do not change during a run: call each tool at most once per team and position, "
             "then write your answer.",
         ],

@@ -48,6 +48,7 @@ def test_get_roster_lists_best_players_first():
 def test_rules_are_american_football():
     rules = json.loads(get_league_rules())
     assert rules["cap_type"] == "hard"
+    assert "luxury_tax_line" not in rules  # football has no tax overage, unlike basketball
     assert rules["season_games"] == 17
     assert sum(rules["starters_per_position"].values()) == 24  # 11 offense, 11 defense, K, P
 
