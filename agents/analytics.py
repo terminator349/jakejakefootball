@@ -28,11 +28,11 @@ class RosterReport(BaseModel):
 
     team_id: str
     answer: str = Field(description="Direct answer to the owner's question, two or three sentences.")
-    weakest_area: str = Field(description="The single biggest weakness, e.g. 'perimeter defense'.")
+    weakest_area: str = Field(description="The single biggest weakness, e.g. 'secondary coverage'.")
     evidence: list[str] = Field(description="Specific numbers from the roster that support the answer.")
     target_profile: str = Field(description="The kind of player we should acquire to fix the weakness.")
     payroll: float = Field(description="Our total payroll in $M.")
-    room_under_tax: float = Field(description="Luxury tax line minus payroll, in $M.")
+    room_under_cap: float = Field(description="Salary cap minus payroll, in $M. Negative means illegally over the hard cap.")
 
 
 def build_analytics_agent(debug: bool = False) -> Agent:
@@ -43,12 +43,14 @@ def build_analytics_agent(debug: bool = False) -> Agent:
         tools=[list_teams, compare_to_league, get_roster, get_league_rules],
         tool_call_limit=TOOL_CALL_LIMIT,
         instructions=[
-            "You are the analytics director of a basketball front office.",
+            "You are the analytics director of a football front office.",
             "Always look at the real data with your tools before answering; never invent players or numbers.",
             "To find strengths or weaknesses, call compare_to_league first. A weakness is weak relative "
             "to other teams, not just low; do not fetch every team's roster to work this out yourself.",
             "Then call get_roster for our team to name the specific players behind the numbers.",
             "Cite exact player names and ratings, plus the team's rank and gap from compare_to_league, in your evidence.",
+            "Remember our salary cap is a hard cap: going over it is illegal, not just taxed, so call out "
+            "any team at or near the cap as a real roster-building constraint, not a minor detail.",
             "Tool results do not change during a run: call each tool at most once per team, then write your answer.",
         ],
         output_schema=RosterReport,

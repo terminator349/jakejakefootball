@@ -29,31 +29,42 @@ def test_get_roster_is_case_insensitive():
     assert json.loads(get_roster("har"))["team_id"] == "HAR"
 
 
-def test_rules_have_tax_line_above_cap():
+def test_rules_have_a_hard_cap_and_no_tax_line():
+    """Football uses a hard cap, not basketball's cap + luxury tax."""
     rules = json.loads(get_league_rules())
-    assert rules["luxury_tax_line"] > rules["salary_cap"]
+    assert "salary_cap" in rules
+    assert "luxury_tax_line" not in rules
+    assert rules["roster_min"] <= rules["roster_max"]
 
 
-def test_our_team_is_worst_at_perimeter_defense():
+def test_every_team_is_legal_under_the_hard_cap():
+    league = load_league()
+    cap = league["rules"]["salary_cap"]
+    for team in league["teams"]:
+        payroll = sum(p["salary"] for p in league["players"] if p["team_id"] == team["id"])
+        assert payroll <= cap, f"{team['id']} is over the hard cap: ${payroll:.1f}M > ${cap:.1f}M"
+
+
+def test_our_team_is_worst_at_secondary_coverage():
     """The generator plants this weakness; the agent should be able to find it."""
     league = load_league()
-    wings = ("PG", "SG", "SF")
+    secondary = ("CB", "S")
 
-    def avg_perimeter_d(team_id):
-        ratings = [p["ratings"]["perimeter_defense"] for p in league["players"]
-                   if p["team_id"] == team_id and p["position"] in wings]
+    def avg_coverage(team_id):
+        ratings = [p["ratings"]["coverage"] for p in league["players"]
+                   if p["team_id"] == team_id and p["position"] in secondary]
         return sum(ratings) / len(ratings)
 
-    ours = avg_perimeter_d(league["our_team"])
-    others = [avg_perimeter_d(t["id"]) for t in league["teams"] if t["id"] != league["our_team"]]
+    ours = avg_coverage(league["our_team"])
+    others = [avg_coverage(t["id"]) for t in league["teams"] if t["id"] != league["our_team"]]
     assert ours < min(others)
 
 
 def test_compare_to_league_puts_our_biggest_weakness_first():
     data = json.loads(compare_to_league("HAR"))
     worst = data["comparisons"][0]
-    assert worst["rating"] == "perimeter_defense"
-    assert worst["group"] == "perimeter"
+    assert worst["rating"] == "coverage"
+    assert worst["group"] == "secondary"
     assert worst["rank"] == data["teams_in_league"]
     assert worst["gap"] < 0
 
@@ -61,7 +72,7 @@ def test_compare_to_league_puts_our_biggest_weakness_first():
 def test_compare_to_league_rows_are_consistent():
     data = json.loads(compare_to_league("mes"))
     rows = data["comparisons"]
-    assert len(rows) == 3 * 6  # three position groups x six ratings
+    assert len(rows) == 4 * 9  # four position groups x nine ratings
     assert [r["gap"] for r in rows] == sorted(r["gap"] for r in rows)
     assert all(1 <= r["rank"] <= data["teams_in_league"] for r in rows)
 

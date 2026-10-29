@@ -33,8 +33,8 @@ def list_teams() -> str:
 
 def get_roster(team_id: str) -> str:
     """Get every player on one team: position, age, salary ($M), contract years left,
-    games missed last season, and ratings from 25-99 (offense, three_pt, rebounding,
-    perimeter_defense, interior_defense, athleticism).
+    games missed last season, and ratings from 25-99 (passing, rushing, receiving,
+    blocking, pass_rush, run_defense, coverage, kicking, athleticism).
 
     Args:
         team_id: three-letter team id, e.g. "HAR". Use list_teams to find ids.
@@ -48,10 +48,15 @@ def get_roster(team_id: str) -> str:
 
 
 POSITION_GROUPS = {
-    "all": ("PG", "SG", "SF", "PF", "C"),
-    "perimeter": ("PG", "SG", "SF"),
-    "frontcourt": ("PF", "C"),
+    "all": ("QB", "RB", "WR", "TE", "OT", "OG", "C", "EDGE", "DT", "LB", "CB", "S", "K"),
+    "offense": ("QB", "RB", "WR", "TE", "OT", "OG", "C"),
+    "defense": ("EDGE", "DT", "LB", "CB", "S"),
+    "secondary": ("CB", "S"),
 }
+# Note: K is deliberately left out of its own group here. With only one K per
+# team, a group average over it is really just one player's rating - too
+# noisy across 8 mostly-irrelevant categories to mean anything. K still
+# counts toward the "all" average.
 
 
 def _group_average(players: list[dict], team_id: str, positions: tuple, rating: str) -> float:
@@ -61,7 +66,9 @@ def _group_average(players: list[dict], team_id: str, positions: tuple, rating: 
 
 def compare_to_league(team_id: str) -> str:
     """Compare one team's average ratings with the rest of the league, for each rating and
-    position group (all players, perimeter = PG/SG/SF, frontcourt = PF/C).
+    position group (all players, offense = QB/RB/WR/TE/OT/OG/C, defense = EDGE/DT/LB/CB/S,
+    secondary = CB/S). The kicker is excluded from these groups (one player per team is too
+    noisy to compare meaningfully) but still counts in the "all" average.
 
     Each row gives the team's average, the league average, the gap (negative = below the
     league) and the team's rank (1 = best). Rows are sorted worst gap first, so the top
@@ -100,6 +107,7 @@ def compare_to_league(team_id: str) -> str:
 
 
 def get_league_rules() -> str:
-    """Get the league's money and roster rules: salary cap, luxury tax line (both $M),
-    and minimum/maximum roster size."""
+    """Get the league's money and roster rules: the salary cap in $M (a hard cap - no team
+    may legally exceed it, there is no luxury-tax overage like in basketball), and the
+    minimum/maximum roster size."""
     return json.dumps(load_league()["rules"])
