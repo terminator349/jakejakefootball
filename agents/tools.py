@@ -4,7 +4,7 @@ Agno reads each function's name, type hints and docstring and shows them to
 the model as a tool. The docstring is the model's only description of what a
 tool does, so write it for the model.
 
-In Step 2 these move into the League Office MCP server; the agent code barely
+In task 1.1 these moved into the League Office MCP server; the agent code barely
 changes, because it still just sees tools.
 """
 

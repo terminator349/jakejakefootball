@@ -1,7 +1,7 @@
 """The Analytics director: finds roster weaknesses and values players.
 
 It reads the league through the League Office MCP server, which Agno starts
-as a subprocess. In Step 3 this same agent becomes a member of the GM's Team.
+as a subprocess. In task 1.4 this same agent becomes a member of the GM's Team.
 Its `role` is what the GM will read when deciding whether to delegate to it.
 """
 

@@ -1,7 +1,7 @@
 """The League Office MCP server: read-only access to league data.
 
 It serves the same four functions the Analytics agent called directly in
-Step 1, so any MCP client (an Agno agent, Claude Desktop, the MCP Inspector)
+task 0.2, so any MCP client (an Agno agent, Claude Desktop, the MCP Inspector)
 can read the league. The functions stay in agents/tools.py, and their
 docstrings become the tool descriptions the model sees.
 
@@ -28,7 +28,7 @@ league_office = MCPServer(
 
 for tool in LEAGUE_TOOLS:
     # structured_output=False sends the JSON string as plain text content, as the
-    # agent saw it in Step 1, instead of wrapping it in {"result": ...}.
+    # agent saw it in task 0.2, instead of wrapping it in {"result": ...}.
     league_office.add_tool(tool, annotations=READ_ONLY, structured_output=False)
 
 

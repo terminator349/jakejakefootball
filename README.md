@@ -11,14 +11,15 @@ space and a weak secondary.
 
 ```
 agents/     agent + team definitions, and the plain-Python tools they call
-servers/    MCP servers (League Office, Trade Desk, Simulator) - from Step 2
-skills/     markdown know-how + helper scripts - from Step 4
+servers/    MCP servers (League Office, Trade Desk, Simulator) - from 1.1
+skills/     markdown know-how + helper scripts - from 1.5
 data/       generated league data (and later the SQLite db)
 tests/      checks that run without an API key
+ROADMAP.md  the build plan, task by task
 run.py      entry point
 ```
 
-## Setup (Step 0)
+## Setup (0.1)
 
 ```powershell
 python -m venv .venv
@@ -28,7 +29,7 @@ copy .env.example .env    # then put your OPENROUTER_API_KEY in .env
 python data/generate_league.py
 ```
 
-## Step 1: one agent, plain Python tools
+## 0.2: one agent, plain Python tools
 
 The Analytics agent reads the league through four plain Python functions in
 `agents/tools.py` (no MCP yet) and returns a structured `RosterReport`. It runs
@@ -46,7 +47,7 @@ pytest                                         # tool checks, no API key needed
 
 Done when: the agent reliably calls `get_roster` and its answer matches the data.
 
-## Step 2.1: the League Office MCP server
+## 1.1: the League Office MCP server
 
 `servers/league_office.py` serves the four league tools over MCP (stdio), using
 the `MCPServer` class from mcp 2.x. The functions still live in
