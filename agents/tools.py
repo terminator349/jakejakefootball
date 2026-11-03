@@ -5,19 +5,13 @@ the model as a tool. The docstring is the model's only description of what a
 tool does, so write it for the model.
 
 In task 1.1 these moved into the League Office MCP server; the agent code barely
-changes, because it still just sees tools.
+changes, because it still just sees tools. They read the league from SQLite
+(agents/league_db.py).
 """
 
 import json
-from pathlib import Path
 
-LEAGUE_FILE = Path(__file__).parent.parent / "data" / "league.json"
-
-
-def load_league() -> dict:
-    if not LEAGUE_FILE.exists():
-        raise FileNotFoundError(f"{LEAGUE_FILE} not found. Run: python data/generate_league.py")
-    return json.loads(LEAGUE_FILE.read_text())
+from agents.league_db import load_league
 
 
 def _team_ids(league: dict) -> list[str]:

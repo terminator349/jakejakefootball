@@ -121,3 +121,15 @@ def test_parser_has_its_own_prompt():
     """With Agno's generic parser prompt, `answer` once came back as a reply to the parser's own task."""
     agent = build_analytics_agent(league_office_tools())
     assert "owner's question" in agent.parser_model_prompt
+
+
+def test_ground_report_takes_facts_from_the_league():
+    """Live runs gave team_id 'Harbor City Herons' and payroll 249500000; the league's numbers win."""
+    from agents.analytics import RosterReport, ground_report
+
+    report = RosterReport(team_id="Harbor City Herons", answer="a", weakest_area="w", evidence=["e"],
+                          target_profile="t", payroll=249500000.0, cap_space=-1.0)
+    grounded = ground_report(report)
+    assert (grounded.team_id, grounded.payroll, grounded.cap_space) == ("HAR", 249.5, 5.5)
+    assert grounded.answer == "a"
+    assert ground_report(report.model_copy(update={"team_id": "nobody"})).team_id == "nobody"

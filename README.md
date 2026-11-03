@@ -13,7 +13,7 @@ space and a weak secondary.
 agents/     agent + team definitions, and the plain-Python tools they call
 servers/    MCP servers (League Office, Trade Desk, Simulator) - from 1.1
 skills/     markdown know-how + helper scripts - from 1.5
-data/       generated league data (and later the SQLite db)
+data/       league.json (generated season start) and league.db (SQLite, the live league)
 tests/      checks that run without an API key
 ROADMAP.md  the build plan, task by task
 run.py      entry point
@@ -63,6 +63,16 @@ The Analytics agent now reads the league only through this server: `run.py`
 starts it as a subprocess with Agno's `MCPTools` (which needs `fastmcp`) and
 runs the agent async. `python run.py` works the same as before.
 
+The league lives in SQLite (`agents/league_db.py`): tables for teams,
+players, ratings and contracts, plus positions and rules. `data/league.json`
+is only the seed for the start of the season; `data/league.db` is built from
+it the first time a tool runs, and is not committed.
+
+```powershell
+python -m agents.league_db         # rebuild league.db from league.json
+pytest tests/test_league_db.py     # uses scratch databases, never data/league.db
+```
+
 Done when: an MCP client lists the four tools and gets the same JSON as the
-plain Python functions, both in-process and over stdio, and the agent's
-answer still matches the data.
+plain Python functions, both in-process and over stdio; the tools read
+rosters and contracts from SQLite; and the agent's answer still matches the data.

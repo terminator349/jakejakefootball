@@ -39,11 +39,11 @@ converted from basketball to American football in this step.
 
 ## Phase 1: Foundation
 
-### 1.1 League Office MCP server: SQLite rosters, contracts (W2) - In progress
-- Done: `servers/league_office.py` serves the four tools over MCP (stdio) as
-  read-only tools, and the Analytics agent reads the league only through it.
-- To do: store rosters and contracts in SQLite instead of `data/league.json`,
-  with the tools giving the same results.
+### 1.1 League Office MCP server: SQLite rosters, contracts (W2) - Done
+`servers/league_office.py` serves the four tools over MCP (stdio) as read-only
+tools, and the Analytics agent reads the league only through it. Rosters and
+contracts live in SQLite (`data/league.db`, built from the `data/league.json`
+seed by `agents/league_db.py`), and the tools give the same results as before.
 
 ### 1.2 Rule checks: roster size, hard cap, trade deadline (W3)
 The League Office rejects illegal moves: rosters outside the min/max size, any

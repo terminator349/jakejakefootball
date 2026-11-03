@@ -12,7 +12,7 @@ import sys
 
 from dotenv import load_dotenv
 
-from agents.analytics import RosterReport, build_analytics_agent, league_office_tools
+from agents.analytics import RosterReport, build_analytics_agent, ground_report, league_office_tools
 
 DEFAULT_QUESTION = "We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?"
 
@@ -52,7 +52,7 @@ def main() -> None:
     response = asyncio.run(ask(args.question, args.debug))
 
     if isinstance(response.content, RosterReport):
-        print_report(response.content)
+        print_report(ground_report(response.content))
     else:
         # The model didn't return the schema; show what it did say.
         print(response.content)

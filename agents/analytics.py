@@ -5,6 +5,7 @@ as a subprocess. In task 1.4 this same agent becomes a member of the GM's Team.
 Its `role` is what the GM will read when deciding whether to delegate to it.
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -13,6 +14,8 @@ from agno.models.openrouter import OpenRouter
 from agno.tools.mcp import MCPTools
 from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
+
+from agents.tools import list_teams
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -46,13 +49,28 @@ def league_office_tools() -> MCPTools:
 class RosterReport(BaseModel):
     """Structured output, so later code (and the GM) can rely on its shape."""
 
-    team_id: str
+    team_id: str = Field(description="Three-letter id of the team the report is about, e.g. 'HAR'.")
     answer: str = Field(description="Direct answer to the owner's question, two or three sentences.")
     weakest_area: str = Field(description="The single biggest weakness, e.g. 'pass coverage at safety'.")
     evidence: list[str] = Field(description="Specific numbers from the roster that support the answer.")
     target_profile: str = Field(description="The kind of player we should acquire to fix the weakness.")
     payroll: float = Field(description="Our total payroll in $M.")
     cap_space: float = Field(description="Salary cap minus payroll, in $M. Negative means over the cap.")
+
+
+def ground_report(report: RosterReport) -> RosterReport:
+    """Replace the facts the database knows with the database's values.
+
+    The parser model sometimes writes the team's name instead of its id, or the payroll in
+    dollars instead of $M. Payroll and cap space come from the league, not the model.
+    """
+    guess = report.team_id.strip().lower()
+    for team in json.loads(list_teams())["teams"]:
+        if guess in {team["id"].lower(), team["city"].lower(), team["name"].lower(),
+                     f"{team['city']} {team['name']}".lower()}:
+            return report.model_copy(update={"team_id": team["id"], "payroll": team["payroll"],
+                                             "cap_space": team["cap_space"]})
+    return report
 
 
 def build_analytics_agent(league_office: MCPTools, debug: bool = False) -> Agent:
@@ -73,6 +91,7 @@ def build_analytics_agent(league_office: MCPTools, debug: bool = False) -> Agent
             "The salary cap is hard: going over it is illegal, not just taxed. Any player we add must fit in "
             "our cap space, or we must send salary back, so treat a team at or near the cap as a real "
             "roster-building constraint, not a minor detail.",
+            "End your answer with our exact payroll and cap space in $M, as list_teams gives them.",
             "Tool results do not change during a run: call each tool at most once per team and position, "
             "then write your answer.",
         ],
