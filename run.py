@@ -6,12 +6,13 @@
 """
 
 import argparse
+import asyncio
 import os
 import sys
 
 from dotenv import load_dotenv
 
-from agents.analytics import RosterReport, build_analytics_agent
+from agents.analytics import RosterReport, build_analytics_agent, league_office_tools
 
 DEFAULT_QUESTION = "We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?"
 
@@ -31,6 +32,13 @@ def print_report(report: RosterReport) -> None:
     print(f"Payroll:        ${report.payroll:.1f}M  ({cap_status})")
 
 
+async def ask(question: str, debug: bool):
+    # Start the League Office server for this run; it stops when the block ends.
+    async with league_office_tools() as league_office:
+        agent = build_analytics_agent(league_office, debug=debug)
+        return await agent.arun(question)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("question", nargs="?", default=DEFAULT_QUESTION)
@@ -41,8 +49,7 @@ def main() -> None:
     if not os.getenv("OPENROUTER_API_KEY"):
         sys.exit("OPENROUTER_API_KEY is not set. Add your OpenRouter key to .env (see .env.example).")
 
-    agent = build_analytics_agent(debug=args.debug)
-    response = agent.run(args.question)
+    response = asyncio.run(ask(args.question, args.debug))
 
     if isinstance(response.content, RosterReport):
         print_report(response.content)

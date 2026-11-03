@@ -1,14 +1,20 @@
 """The Analytics director: finds roster weaknesses and values players.
 
-In Step 3 this same agent becomes a member of the GM's Team. Its `role` is
-what the GM will read when deciding whether to delegate to it.
+It reads the league through the League Office MCP server, which Agno starts
+as a subprocess. In Step 3 this same agent becomes a member of the GM's Team.
+Its `role` is what the GM will read when deciding whether to delegate to it.
 """
+
+import sys
+from pathlib import Path
 
 from agno.agent import Agent
 from agno.models.openrouter import OpenRouter
+from agno.tools.mcp import MCPTools
+from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
 
-from agents.tools import compare_to_league, get_league_rules, get_roster, list_teams
+PROJECT_ROOT = Path(__file__).parent.parent
 
 # DeepSeek V4.1 Flash through OpenRouter ($0.15 / $0.60 per million tokens).
 # OpenRouter reads OPENROUTER_API_KEY from the environment.
@@ -23,6 +29,13 @@ def specialist_model() -> OpenRouter:
     return OpenRouter(id=SPECIALIST_MODEL, max_tokens=8192)
 
 
+def league_office_tools() -> MCPTools:
+    """The League Office server's tools. Connect with `async with` before running the agent."""
+    server = StdioServerParameters(command=sys.executable, args=["-m", "servers.league_office"],
+                                   cwd=str(PROJECT_ROOT))
+    return MCPTools(server_params=server, transport="stdio")
+
+
 class RosterReport(BaseModel):
     """Structured output, so later code (and the GM) can rely on its shape."""
 
@@ -35,12 +48,12 @@ class RosterReport(BaseModel):
     cap_space: float = Field(description="Salary cap minus payroll, in $M. Negative means over the cap.")
 
 
-def build_analytics_agent(debug: bool = False) -> Agent:
+def build_analytics_agent(league_office: MCPTools, debug: bool = False) -> Agent:
     return Agent(
         name="Analytics",
         role="Finds roster weaknesses, compares players and values them using ratings and contracts.",
         model=specialist_model(),
-        tools=[list_teams, compare_to_league, get_roster, get_league_rules],
+        tools=[league_office],
         tool_call_limit=TOOL_CALL_LIMIT,
         instructions=[
             "You are the analytics director of an American football front office.",

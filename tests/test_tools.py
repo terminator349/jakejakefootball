@@ -1,8 +1,11 @@
 """Checks for the data and tools. These need no API key: run `pytest`."""
 
+import asyncio
 import json
 
-from agents.analytics import build_analytics_agent
+from agno.tools.mcp import MCPTools
+
+from agents.analytics import build_analytics_agent, league_office_tools
 from agents.tools import compare_to_league, get_league_rules, get_roster, list_teams, load_league
 
 
@@ -93,14 +96,22 @@ def test_compare_to_league_rejects_unknown_team():
 
 
 def test_agent_builds_with_its_tools():
-    agent = build_analytics_agent()
+    agent = build_analytics_agent(league_office_tools())
     assert agent.name == "Analytics"
     assert agent.model.id == "deepseek/deepseek-v4.1-flash-1017"
-    assert len(agent.tools) == 4
+    assert len(agent.tools) == 1 and isinstance(agent.tools[0], MCPTools)
+
+
+def test_agent_sees_the_league_office_tools():
+    """Starts the League Office server the way run.py does and lists what the agent gets."""
+    async def go():
+        async with league_office_tools() as league_office:
+            return set(league_office.functions)
+    assert asyncio.run(go()) == {"list_teams", "get_roster", "compare_to_league", "get_league_rules"}
 
 
 def test_agent_has_loop_guards():
     """A run once looped on get_roster 65 times; these settings prevent that."""
-    agent = build_analytics_agent()
+    agent = build_analytics_agent(league_office_tools())
     assert agent.tool_call_limit is not None and agent.tool_call_limit <= 10
     assert agent.parser_model is not None

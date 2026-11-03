@@ -45,3 +45,23 @@ pytest                                         # tool checks, no API key needed
 ```
 
 Done when: the agent reliably calls `get_roster` and its answer matches the data.
+
+## Step 2.1: the League Office MCP server
+
+`servers/league_office.py` serves the four league tools over MCP (stdio), using
+the `MCPServer` class from mcp 2.x. The functions still live in
+`agents/tools.py`; the server registers them as read-only tools, and their
+docstrings become the tool descriptions.
+
+```powershell
+python -m servers.league_office   # run from the project root; speaks MCP on stdin/stdout
+pytest tests/test_league_office.py
+```
+
+The Analytics agent now reads the league only through this server: `run.py`
+starts it as a subprocess with Agno's `MCPTools` (which needs `fastmcp`) and
+runs the agent async. `python run.py` works the same as before.
+
+Done when: an MCP client lists the four tools and gets the same JSON as the
+plain Python functions, both in-process and over stdio, and the agent's
+answer still matches the data.
