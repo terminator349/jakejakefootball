@@ -23,6 +23,13 @@ SPECIALIST_MODEL = "deepseek/deepseek-v4.1-flash-1017"
 # Hard stop for runaway loops. A good answer needs about 3-5 tool calls.
 TOOL_CALL_LIMIT = 10
 
+PARSER_PROMPT = (
+    "The user message is a roster report written by the analytics director of an American football "
+    "front office, answering a question from the team's owner. Fill the output fields from that report "
+    "only: copy its facts and numbers, invent nothing, and do not reply to these instructions. "
+    "`answer` is the report's own direct answer to the owner's question, in two or three sentences."
+)
+
 
 def specialist_model() -> OpenRouter:
     # Agno's OpenRouter default of 1024 output tokens is too tight for a full report.
@@ -74,5 +81,9 @@ def build_analytics_agent(league_office: MCPTools, debug: bool = False) -> Agent
         # With a parser model, the agent answers in plain text and a second call turns
         # that text into a RosterReport.
         parser_model=specialist_model(),
+        # Agno's default parser prompt ("create a structured output from the provided user
+        # message") led the parser to fill `answer` with a reply to that request instead of
+        # the report's answer, so say what the message is and that it is only to be copied.
+        parser_model_prompt=PARSER_PROMPT,
         debug_mode=debug,
     )

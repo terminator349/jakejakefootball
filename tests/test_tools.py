@@ -115,3 +115,9 @@ def test_agent_has_loop_guards():
     agent = build_analytics_agent(league_office_tools())
     assert agent.tool_call_limit is not None and agent.tool_call_limit <= 10
     assert agent.parser_model is not None
+
+
+def test_parser_has_its_own_prompt():
+    """With Agno's generic parser prompt, `answer` once came back as a reply to the parser's own task."""
+    agent = build_analytics_agent(league_office_tools())
+    assert "owner's question" in agent.parser_model_prompt
