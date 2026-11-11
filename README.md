@@ -18,6 +18,7 @@ servers/    MCP servers (League Office, Trade Desk, Simulator) - from 1.1
 skills/     markdown know-how + helper scripts - from 1.5
 data/       league.json (generated season start) and league.db (SQLite, the live league)
 tests/      checks that run without an API key
+private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
 run.py      entry point
 ```
