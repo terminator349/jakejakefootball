@@ -1,7 +1,10 @@
 # Front Office
 
-An AI-run American football front office. You are the owner; a hierarchy of
-agents scouts, trades and manages the roster against rival AI general managers.
+An AI-run American football front office, played as an interactive terminal
+game. You are the owner; each week your General Manager briefs you, you give
+orders, and a hierarchy of agents scouts, trades and manages the roster against
+rival AI general managers. See `ROADMAP.md` for the game design and the build
+plan; a "How to play" section arrives with the game loop (task G2).
 
 The league is fictional: six teams of 48 players, a 17-game season, and a hard
 $255M salary cap. Our team, the Harbor City Herons (`HAR`), has $5.5M of cap
