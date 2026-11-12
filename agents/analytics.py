@@ -43,10 +43,11 @@ def specialist_model() -> OpenRouter:
     return OpenRouter(id=SPECIALIST_MODEL, max_tokens=8192)
 
 
-def league_office_tools() -> MCPTools:
-    """The League Office server's tools. Connect with `async with` before running the agent."""
-    server = StdioServerParameters(command=sys.executable, args=["-m", "servers.league_office"],
-                                   cwd=str(PROJECT_ROOT))
+def league_office_tools(db_file: Path | None = None) -> MCPTools:
+    """The League Office server's tools. Connect with `async with` before running the agent.
+    Pass a save file to serve that game instead of the default league."""
+    args = ["-m", "servers.league_office"] + (["--db", str(Path(db_file).resolve())] if db_file else [])
+    server = StdioServerParameters(command=sys.executable, args=args, cwd=str(PROJECT_ROOT))
     return MCPTools(server_params=server, transport="stdio", include_tools=ANALYTICS_TOOLS)
 
 

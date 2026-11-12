@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Front Office Test Bench</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #1b1f24; --muted: #5f6b7a; --line: #e2e6eb;
+  --accent: #1f6feb; --accent-ink: #ffffff; --good: #1a7f37; --good-bg: #e6f4ea;
+  --bad: #c62828; --bad-bg: #fdecea; --warn: #9a6700; --warn-bg: #fff4d6; --ours: #eef4ff;
+  --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216; --panel: #171b21; --ink: #e6e9ee; --muted: #9aa5b4; --line: #2a313b;
+    --accent: #4c8dff; --accent-ink: #0b0e12; --good: #4ac26b; --good-bg: #13291b;
+    --bad: #ff7b72; --bad-bg: #3a1714; --warn: #e3b341; --warn-bg: #33270b; --ours: #172338;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px 0; position: sticky; top: 0; z-index: 5; }
+.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+h1 { font-size: 18px; margin: 0; }
+h1 small { color: var(--muted); font-weight: 400; margin-left: 6px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.ok { color: var(--good); border-color: var(--good); } .chip.no { color: var(--bad); border-color: var(--bad); }
+nav { display: flex; gap: 2px; margin-top: 10px; overflow-x: auto; }
+nav button { border: 0; background: none; padding: 9px 14px; font: inherit; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+nav button.on { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+main { padding: 18px 20px 60px; max-width: 1280px; margin: 0 auto; }
+.tab { display: none; } .tab.on { display: block; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); align-items: start; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.card h2 { font-size: 15px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+.card h2 .sub { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: auto; }
+.note { color: var(--muted); font-size: 12px; margin: 6px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.ours td { background: var(--ours); }
+tr.click { cursor: pointer; } tr.click:hover td { background: var(--ours); }
+.scroll { max-height: 440px; overflow: auto; }
+button.btn { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px; padding: 6px 12px; cursor: pointer; }
+button.btn:hover:not(:disabled) { border-color: var(--accent); }
+button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.btn.danger { color: var(--bad); }
+button.btn:disabled { opacity: .5; cursor: default; }
+button.sm { padding: 2px 8px; font-size: 12px; }
+input, select, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; }
+input[type=number].score { width: 56px; padding: 3px 6px; }
+textarea { width: 100%; resize: vertical; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.badge { display: inline-block; border-radius: 5px; padding: 1px 7px; font-size: 12px; font-weight: 600; }
+.badge.good { background: var(--good-bg); color: var(--good); } .badge.bad { background: var(--bad-bg); color: var(--bad); }
+.badge.warn { background: var(--warn-bg); color: var(--warn); } .badge.plain { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+pre { font: 12px/1.45 var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 10px; overflow: auto; max-height: 420px; margin: 6px 0; white-space: pre-wrap; word-break: break-word; }
+.violation { border-left: 3px solid var(--bad); background: var(--bad-bg); padding: 6px 10px; border-radius: 0 6px 6px 0; margin: 6px 0; }
+.violation code { font: 11px var(--mono); color: var(--bad); margin-right: 6px; }
+.players { max-height: 360px; overflow: auto; border: 1px solid var(--line); border-radius: 7px; }
+.players label { display: grid; grid-template-columns: 20px 34px 1fr 40px 64px; gap: 6px; align-items: center; padding: 4px 8px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; }
+.players label:hover { background: var(--ours); }
+.players label.picked { background: var(--ours); font-weight: 600; }
+.pos { font: 11px var(--mono); color: var(--muted); }
+.trade-cols { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 760px) { .trade-cols { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } main, header { padding-left: 16px; padding-right: 16px; } }
+.gapbar { display: inline-block; height: 8px; border-radius: 4px; vertical-align: middle; }
+.week-grid { display: grid; grid-template-columns: 70px 1fr 1fr 1fr; font-size: 12px; }
+.week-grid div { padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.week-grid .now { background: var(--ours); font-weight: 600; }
+.game { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.game .teams { min-width: 150px; }
+.final { font-variant-numeric: tabular-nums; font-weight: 600; }
+.toolcard { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; cursor: pointer; }
+.toolcard:hover { border-color: var(--accent); }
+.toolcard .desc { color: var(--muted); font-size: 12px; white-space: pre-wrap; max-height: 3.2em; overflow: hidden; }
+details.call { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
+details.call summary { cursor: pointer; font: 13px var(--mono); }
+.examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+.examples button { font-size: 12px; }
+.report dt { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.report dd { margin: 2px 0 0; }
+.stats { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
+.spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); padding: 9px 14px; border-radius: 8px; font-size: 13px; display: none; max-width: min(640px, 90vw); z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,.15); }
+#toast.good { display: block; background: var(--good-bg); color: var(--good); border: 1px solid var(--good); }
+#toast.bad { display: block; background: var(--bad-bg); color: var(--bad); border: 1px solid var(--bad); }
+.empty { color: var(--muted); font-style: italic; padding: 8px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>Front Office <small>test bench</small></h1>
+    <div class="chips" id="chips"></div>
+  </div>
+  <nav id="tabs">
+    <button data-tab="game" class="on">Game &amp; saves</button>
+    <button data-tab="league">League</button>
+    <button data-tab="trades">Trades</button>
+    <button data-tab="mcp">League Office (MCP)</button>
+    <button data-tab="agent">Analytics agent</button>
+  </nav>
+</header>
+
+<main>
+  <!-- Game & saves -->
+  <section class="tab on" id="tab-game">
+    <div class="grid">
+      <div class="card">
+        <h2>Saves <span class="sub">G1</span></h2>
+        <div id="saves"></div>
+        <div class="row">
+          <input id="new-name" placeholder="save name" style="width:140px">
+          <input id="new-seed" placeholder="season seed (optional)" style="width:170px">
+          <label class="note"><input type="checkbox" id="new-overwrite"> overwrite</label>
+          <button class="btn primary" id="new-game">New game</button>
+        </div>
+        <div class="row">
+          <button class="btn" id="use-default">Use default league</button>
+          <button class="btn danger" id="rebuild-default">Rebuild default league</button>
+        </div>
+        <p class="note">The default league is <code>data/league.db</code>. A new game builds <code>saves/&lt;name&gt;.db</code> from the seed and loads it. Everything on this page reads and changes the loaded league.</p>
+      </div>
+      <div class="card">
+        <h2 id="week-title">This week</h2>
+        <div id="week-games"></div>
+        <div class="row">
+          <button class="btn" id="random-scores">Random scores</button>
+          <button class="btn primary" id="advance">Advance week</button>
+        </div>
+        <p class="note">Random scores stand in for the season simulator (task 3.1). The week only moves on once every game has a result.</p>
+      </div>
+      <div class="card">
+        <h2>Standings <span class="sub">from the results</span></h2>
+        <div id="standings"></div>
+      </div>
+      <div class="card">
+        <h2>Schedule <span class="sub">seeded, 17 weeks</span></h2>
+        <div class="scroll" id="schedule"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- League -->
+  <section class="tab" id="tab-league">
+    <div class="grid">
+      <div class="card">
+        <h2>Teams <span class="sub">list_teams · click a team</span></h2>
+        <div id="teams"></div>
+      </div>
+      <div class="card">
+        <h2>Biggest gaps <span class="sub">compare_to_league</span></h2>
+        <div class="row"><select id="cmp-team"></select></div>
+        <div id="compare"></div>
+      </div>
+      <div class="card" style="grid-column: 1 / -1">
+        <h2>Roster <span class="sub">get_roster</span></h2>
+        <div class="row"><select id="roster-team"></select><select id="roster-pos"><option value="">All positions</option></select></div>
+        <div class="scroll" id="roster"></div>
+      </div>
+      <div class="card">
+        <h2>Rules <span class="sub">get_league_rules</span></h2>
+        <div id="rules"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trades -->
+  <section class="tab" id="tab-trades">
+    <div class="card">
+      <h2>Build a trade <span class="sub">1.2 rule checks</span></h2>
+      <div class="trade-cols">
+        <div data-side="a">
+          <div class="row"><select class="side-team"></select><select class="side-pos"><option value="">All</option></select><span class="note side-sum"></span></div>
+          <div class="players"></div>
+        </div>
+        <div data-side="b">
+          <div class="row"><select class="side-team"></select><select class="side-pos"><option value="">All</option></select><span class="note side-sum"></span></div>
+          <div class="players"></div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="check-trade">Check trade</button>
+        <button class="btn primary" id="make-trade">Make trade</button>
+        <button class="btn" id="clear-trade">Clear</button>
+        <span class="note">Check changes nothing. Make moves the players only if every rule passes, and logs the move.</span>
+      </div>
+      <div id="trade-result"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Move log <span class="sub">G1</span></h2>
+      <div id="moves"></div>
+    </div>
+  </section>
+
+  <!-- MCP -->
+  <section class="tab" id="tab-mcp">
+    <div class="grid">
+      <div class="card">
+        <h2>Tools <span class="sub" id="mcp-time"></span></h2>
+        <p class="note">Starts <code>python -m servers.league_office</code> over stdio, as the agents do, pointed at the loaded league. Click a tool to try it.</p>
+        <button class="btn" id="mcp-list">Connect and list tools</button>
+        <div id="mcp-tools"></div>
+      </div>
+      <div class="card">
+        <h2>Call a tool</h2>
+        <div class="row"><select id="mcp-tool"></select><button class="btn primary" id="mcp-call">Call</button><span class="note" id="mcp-call-time"></span></div>
+        <textarea id="mcp-args" rows="7" spellcheck="false" style="font: 12px var(--mono)">{}</textarea>
+        <div id="mcp-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Analytics agent -->
+  <section class="tab" id="tab-agent">
+    <div class="grid">
+      <div class="card">
+        <h2>Ask the Analytics agent <span class="sub">0.2 · 1.1</span></h2>
+        <p class="note">Runs the real agent (DeepSeek V4.1 Flash through OpenRouter) against the loaded league, through the League Office MCP server. A run takes 20-60 seconds and uses a little of your OpenRouter credit.</p>
+        <div class="examples" id="examples"></div>
+        <textarea id="question" rows="3">We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?</textarea>
+        <div class="row"><button class="btn primary" id="ask">Run agent</button><span class="note" id="ask-status"></span></div>
+        <div id="agent-stats" class="stats"></div>
+      </div>
+      <div class="card">
+        <h2>Report <span class="sub">RosterReport, grounded in the data</span></h2>
+        <div id="report"><p class="empty">No run yet.</p></div>
+      </div>
+      <div class="card" style="grid-column: 1 / -1">
+        <h2>Tool calls <span class="sub">what the agent asked the League Office</span></h2>
+        <div id="calls"><p class="empty">No run yet.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast"></div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const money = n => n == null ? "" : `$${Number(n).toFixed(2)}M`;
+const POSITIONS = ["QB", "RB", "WR", "TE", "OL", "DL", "LB", "CB", "S", "K", "P"];
+let state = { status: null, teams: [], trade: { a: { team: "HAR", picked: new Set(), players: [] }, b: { team: "MES", picked: new Set(), players: [] } } };
+
+async function call(url, body) {
+  const opts = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  const res = await fetch(url, opts);
+  const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+  if (!res.ok) throw data;
+  return data;
+}
+function toast(msg, kind = "good") {
+  const t = $("#toast"); t.textContent = msg; t.className = kind;
+  clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 4200);
+}
+const fail = e => toast(e?.error || e?.message || String(e), "bad");
+
+// ---- header -----------------------------------------------------------
+async function loadStatus() {
+  const s = state.status = await call("/api/status");
+  const week = s.season_over ? `<b>Season over</b>` : `Week <b>${s.week}</b> of ${s.season_games}`;
+  const deadline = s.week > s.trade_deadline_week ? `<span class="chip no">Trade deadline passed</span>` : `<span class="chip">Deadline: week <b>${s.trade_deadline_week}</b></span>`;
+  $("#chips").innerHTML = `
+    <span class="chip">League: <b>${esc(s.save ?? "default")}</b> · ${esc(s.db_file)}</span>
+    <span class="chip">${week}</span>${deadline}
+    <span class="chip ${s.api_key_set ? "ok" : "no"}">OpenRouter key ${s.api_key_set ? "set" : "missing"}</span>`;
+  $("#ask").disabled = !s.api_key_set;
+  if (!s.api_key_set) $("#ask-status").textContent = "Add OPENROUTER_API_KEY to .env and restart the UI to run the agent.";
+}
+async function refreshAll() {
+  try {
+    await loadStatus();
+    await Promise.all([loadSaves(), loadSeason(), loadSchedule(), loadTeams(), loadMoves(), loadRules()]);
+    await Promise.all([loadRoster(), loadCompare(), loadSide("a"), loadSide("b")]);
+  } catch (e) { fail(e); }
+}
+
+// ---- game & saves -----------------------------------------------------
+async function loadSaves() {
+  const { saves, active } = await call("/api/saves");
+  $("#saves").innerHTML = saves.length ? `<table><tr><th>Save</th><th class="num">Week</th><th>Our record</th><th></th></tr>${saves.map(s => s.outdated
+    ? `<tr><td>${esc(s.name)}</td><td colspan="3"><span class="badge warn">older version, can't load</span></td></tr>`
+    : `<tr class="${s.name === active ? "ours" : ""}"><td>${esc(s.name)}</td><td class="num">${s.week}</td><td>${s.team_id} ${s.wins}-${s.losses}${s.ties ? "-" + s.ties : ""}</td>
+       <td class="num">${s.name === active ? `<span class="badge good">loaded</span>` : `<button class="btn sm" data-load="${esc(s.name)}">Load</button>`}</td></tr>`).join("")}</table>`
+    : `<p class="empty">No saves yet. Start a new game below.</p>`;
+}
+async function loadSeason() {
+  const s = await call("/api/season");
+  const st = state.status;
+  $("#week-title").innerHTML = s.season_over ? "Regular season over" : `Week ${s.week} <span class="sub">${s.week === st.trade_deadline_week ? "trade deadline week" : ""}</span>`;
+  $("#week-games").innerHTML = s.season_over ? `<p class="empty">All 17 weeks are played. Playoffs arrive with task G6.</p>` : s.games.map(g => `
+    <div class="game"><span class="teams">${g.away_team_id} at ${g.home_team_id}</span>
+    ${g.home_score === null ? `<input type="number" min="0" class="score" id="as-${g.id}" placeholder="${g.away_team_id}">
+       <input type="number" min="0" class="score" id="hs-${g.id}" placeholder="${g.home_team_id}">
+       <button class="btn sm" data-result="${g.id}">Save</button>`
+      : `<span class="final">${g.away_team_id} ${g.away_score} - ${g.home_score} ${g.home_team_id}</span>`}</div>`).join("");
+  $("#random-scores").disabled = $("#advance").disabled = s.season_over;
+  const our = st.our_team;
+  $("#standings").innerHTML = `<table><tr><th>#</th><th>Team</th><th class="num">W</th><th class="num">L</th><th class="num">T</th><th class="num">Pct</th><th class="num">PF</th><th class="num">PA</th><th class="num">Diff</th></tr>
+    ${s.standings.map(r => `<tr class="${r.team_id === our ? "ours" : ""}"><td>${r.rank}</td><td>${esc(r.city)} ${esc(r.name)}</td>
+      <td class="num">${r.wins}</td><td class="num">${r.losses}</td><td class="num">${r.ties}</td><td class="num">${r.win_pct.toFixed(3)}</td>
+      <td class="num">${r.points_for}</td><td class="num">${r.points_against}</td><td class="num">${r.point_diff > 0 ? "+" : ""}${r.point_diff}</td></tr>`).join("")}</table>`;
+}
+async function loadSchedule() {
+  const { games } = await call("/api/schedule");
+  const now = state.status.week, our = state.status.our_team;
+  const byWeek = {};
+  games.forEach(g => (byWeek[g.week] ??= []).push(g));
+  const cell = g => {
+    const label = `${g.away_team_id} @ ${g.home_team_id}`;
+    const txt = g.home_score === null ? label : `${g.away_team_id} ${g.away_score}-${g.home_score} ${g.home_team_id}`;
+    return (g.home_team_id === our || g.away_team_id === our) ? `<b>${txt}</b>` : txt;
+  };
+  $("#schedule").innerHTML = `<div class="week-grid">${Object.keys(byWeek).map(w => {
+    const cls = Number(w) === now ? "now" : "";
+    return `<div class="${cls}">Week ${w}</div>${byWeek[w].map(g => `<div class="${cls}">${cell(g)}</div>`).join("")}`;
+  }).join("")}</div>`;
+}
+
+// ---- league -----------------------------------------------------------
+async function loadTeams() {
+  const data = await call("/api/teams");
+  state.teams = data.teams;
+  const maxSpace = Math.max(...data.teams.map(t => t.cap_space), 1);
+  $("#teams").innerHTML = `<table><tr><th>Team</th><th class="num">Payroll</th><th class="num">Cap space</th><th></th></tr>
+    ${data.teams.map(t => `<tr class="click ${t.id === data.our_team ? "ours" : ""}" data-team="${t.id}"><td><b>${t.id}</b> ${esc(t.city)} ${esc(t.name)}</td>
+      <td class="num">$${t.payroll.toFixed(1)}M</td><td class="num">$${t.cap_space.toFixed(1)}M</td>
+      <td style="width:90px"><span class="gapbar" style="width:${Math.max(2, 80 * t.cap_space / maxSpace)}px;background:var(--accent)"></span></td></tr>`).join("")}</table>`;
+  for (const sel of ["#roster-team", "#cmp-team", ...$$(".side-team")]) {
+    const el = typeof sel === "string" ? $(sel) : sel;
+    const keep = el.value || (el.closest("[data-side]") ? state.trade[el.closest("[data-side]").dataset.side].team : data.our_team);
+    el.innerHTML = data.teams.map(t => `<option value="${t.id}">${t.id} · ${esc(t.city)}</option>`).join("");
+    el.value = keep;
+  }
+}
+async function loadRoster() {
+  const team = $("#roster-team").value, pos = $("#roster-pos").value;
+  const { players } = await call(`/api/roster?team=${team}&position=${pos}`);
+  $("#roster").innerHTML = `<table><tr><th>Pos</th><th>Player</th><th class="num">Age</th><th class="num">Ovr</th><th>Ratings</th><th class="num">Salary</th><th class="num">Yrs</th><th class="num">Missed</th><th></th></tr>
+    ${players.map(p => `<tr><td class="pos">${p.position}</td><td>${esc(p.name)} <span class="pos">${p.id}</span></td><td class="num">${p.age}</td><td class="num"><b>${p.overall}</b></td>
+      <td class="pos">${Object.entries(p.ratings).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join(" · ")}</td>
+      <td class="num">${money(p.salary)}</td><td class="num">${p.contract_years}</td><td class="num">${p.games_missed_last_season}</td>
+      <td>${p.starter ? `<span class="badge good">starter</span>` : ""}</td></tr>`).join("")}</table>`;
+}
+async function loadCompare() {
+  const data = await call(`/api/compare?team=${$("#cmp-team").value}`);
+  const rows = data.comparisons, worst = rows.slice(0, 8), best = rows.slice(-4).reverse();
+  const bar = g => `<span class="gapbar" style="width:${Math.min(80, Math.abs(g) * 3)}px;background:${g < 0 ? "var(--bad)" : "var(--good)"}"></span>`;
+  const tr = r => `<tr><td class="pos">${r.position}</td><td>${r.rating.replace(/_/g, " ")}</td><td class="num">${r.team_avg}</td><td class="num">${r.league_avg}</td>
+    <td class="num">${r.gap > 0 ? "+" : ""}${r.gap}</td><td>${bar(r.gap)}</td><td class="num">${r.rank} of ${data.teams_in_league}</td></tr>`;
+  $("#compare").innerHTML = `<table><tr><th>Pos</th><th>Rating</th><th class="num">Team</th><th class="num">League</th><th class="num">Gap</th><th></th><th class="num">Rank</th></tr>
+    ${worst.map(tr).join("")}<tr><td colspan="7" class="note">Strongest</td></tr>${best.map(tr).join("")}</table>`;
+}
+async function loadRules() {
+  const r = await call("/api/rules");
+  $("#rules").innerHTML = `<table>
+    <tr><td>Salary cap</td><td class="num">$${r.salary_cap.toFixed(1)}M (${r.cap_type})</td></tr>
+    <tr><td>Roster size</td><td class="num">${r.roster_min} - ${r.roster_max}</td></tr>
+    <tr><td>Season</td><td class="num">${r.season_games} games</td></tr>
+    <tr><td>Trade deadline</td><td class="num">after week ${r.trade_deadline_week}</td></tr>
+    <tr><td>Starters</td><td class="num pos">${Object.entries(r.starters_per_position).map(([k, v]) => `${k} ${v}`).join(" · ")}</td></tr></table>`;
+}
+
+// ---- trades -----------------------------------------------------------
+async function loadSide(side) {
+  const box = $(`[data-side="${side}"]`), s = state.trade[side];
+  s.team = $(".side-team", box).value || s.team;
+  s.players = (await call(`/api/roster?team=${s.team}`)).players;
+  const ids = new Set(s.players.map(p => p.id));
+  s.picked = new Set([...s.picked].filter(id => ids.has(id)));
+  renderSide(side);
+}
+function renderSide(side) {
+  const box = $(`[data-side="${side}"]`), s = state.trade[side], pos = $(".side-pos", box).value;
+  const shown = s.players.filter(p => !pos || p.position === pos || s.picked.has(p.id));
+  $(".players", box).innerHTML = shown.map(p => `<label class="${s.picked.has(p.id) ? "picked" : ""}">
+    <input type="checkbox" data-pick="${side}:${p.id}" ${s.picked.has(p.id) ? "checked" : ""}>
+    <span class="pos">${p.position}</span><span>${esc(p.name)} <span class="pos">${p.id}</span></span>
+    <span class="num">${p.overall}</span><span class="num">${money(p.salary)}</span></label>`).join("");
+  const picked = s.players.filter(p => s.picked.has(p.id));
+  $(".side-sum", box).textContent = `${s.team} sends ${picked.length} player${picked.length === 1 ? "" : "s"} · ${money(picked.reduce((a, p) => a + p.salary, 0))}`;
+}
+function tradeBody() {
+  const a = state.trade.a, b = state.trade.b;
+  return { team_a: a.team, a_sends: [...a.picked], team_b: b.team, b_sends: [...b.picked] };
+}
+function showTrade(r, made) {
+  const teams = r.teams_after || {};
+  $("#trade-result").innerHTML = `
+    <div class="row">${r.legal ? `<span class="badge good">${made ? "Trade made" : "Legal"}</span>` : `<span class="badge bad">Illegal</span>`}
+      <span class="note">week ${r.week ?? state.status.week}${r.move_id ? ` · move #${r.move_id} in the log` : ""}</span></div>
+    ${(r.violations || []).map(v => `<div class="violation"><code>${esc(v.rule)}</code>${esc(v.message)}</div>`).join("")}
+    ${Object.keys(teams).length ? `<table><tr><th>After the trade</th><th class="num">Roster</th><th class="num">Payroll</th><th class="num">Cap space</th></tr>
+      ${Object.entries(teams).map(([id, t]) => `<tr><td>${id}</td><td class="num">${t.roster_size}</td><td class="num">${money(t.payroll)}</td>
+      <td class="num" style="color:${t.cap_space < 0 ? "var(--bad)" : "inherit"}">${money(t.cap_space)}</td></tr>`).join("")}</table>` : ""}`;
+}
+async function loadMoves() {
+  const { moves } = await call("/api/moves");
+  $("#moves").innerHTML = moves.length ? `<table><tr><th>#</th><th>Week</th><th>Kind</th><th>Players moved</th></tr>
+    ${moves.map(m => `<tr><td>${m.id}</td><td>${m.week}</td><td>${m.kind}</td><td>${m.players.map(p => `${esc(p.name)} (${p.from_team_id} → ${p.to_team_id})`).join(", ")}</td></tr>`).join("")}</table>`
+    : `<p class="empty">No moves yet in this league.</p>`;
+}
+
+// ---- MCP --------------------------------------------------------------
+let mcpTools = [];
+const SAMPLE = { team_id: "HAR", position: "S", team_a: "HAR", a_sends: ["HAR-46"], team_b: "SUM", b_sends: ["SUM-45"] };
+function sampleArgs(tool) {
+  const props = tool.input_schema?.properties || {}, args = {};
+  for (const k of Object.keys(props)) if (k in SAMPLE) args[k] = SAMPLE[k];
+  return JSON.stringify(args, null, 2);
+}
+async function listMcp() {
+  $("#mcp-tools").innerHTML = `<p class="note"><span class="spin"></span> starting the server…</p>`;
+  try {
+    const data = await call("/api/mcp/tools");
+    mcpTools = data.tools;
+    $("#mcp-time").textContent = `${data.tools.length} tools · ${data.elapsed_ms} ms`;
+    $("#mcp-tools").innerHTML = data.tools.map(t => `<div class="toolcard" data-tool="${t.name}">
+      <b>${t.name}</b> ${t.read_only ? `<span class="badge plain">read-only</span>` : ""}
+      <div class="desc">${esc(t.description)}</div></div>`).join("");
+    $("#mcp-tool").innerHTML = data.tools.map(t => `<option>${t.name}</option>`).join("");
+    pickMcp(data.tools[0]?.name);
+  } catch (e) { $("#mcp-tools").innerHTML = ""; fail(e); }
+}
+function pickMcp(name) {
+  const tool = mcpTools.find(t => t.name === name); if (!tool) return;
+  $("#mcp-tool").value = name; $("#mcp-args").value = sampleArgs(tool);
+}
+async function callMcp() {
+  let args;
+  try { args = JSON.parse($("#mcp-args").value || "{}"); } catch { return toast("The arguments are not valid JSON.", "bad"); }
+  $("#mcp-call-time").innerHTML = `<span class="spin"></span>`;
+  try {
+    const r = await call("/api/mcp/call", { tool: $("#mcp-tool").value, arguments: args });
+    $("#mcp-call-time").textContent = `${r.elapsed_ms} ms${r.is_error ? " · error" : ""}`;
+    $("#mcp-out").innerHTML = `<pre>${esc(r.json ? JSON.stringify(r.json, null, 2) : r.text)}</pre>`;
+  } catch (e) { $("#mcp-call-time").textContent = ""; fail(e); }
+}
+
+// ---- agent ------------------------------------------------------------
+const EXAMPLES = [
+  "We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?",
+  "How does our offensive line compare to the league?",
+  "Which team has the best secondary, and how much cap space do they have?",
+  "Is our quarterback worth his contract?",
+];
+async function runAgent() {
+  const q = $("#question").value.trim(); if (!q) return;
+  const started = Date.now();
+  $("#ask").disabled = true;
+  const timer = setInterval(() => $("#ask-status").innerHTML = `<span class="spin"></span> running… ${Math.round((Date.now() - started) / 1000)}s`, 500);
+  try {
+    const r = await call("/api/agent/analytics", { question: q });
+    const rep = r.report;
+    $("#report").innerHTML = rep ? `<dl class="report">
+      <dt>Answer</dt><dd>${esc(rep.answer)}</dd>
+      <dt>Weakest area</dt><dd><b>${esc(rep.weakest_area)}</b> <span class="pos">${esc(rep.team_id)}</span></dd>
+      <dt>Evidence</dt><dd><ul>${rep.evidence.map(e => `<li>${esc(e)}</li>`).join("")}</ul></dd>
+      <dt>Target profile</dt><dd>${esc(rep.target_profile)}</dd>
+      <dt>Payroll · cap space (from the league)</dt><dd>${money(rep.payroll)} · ${money(rep.cap_space)}</dd></dl>`
+      : `<p class="note">The agent didn't return a RosterReport. Its text:</p><pre>${esc(r.text)}</pre>`;
+    $("#calls").innerHTML = r.tool_calls.length ? r.tool_calls.map((c, i) => {
+      let body = c.result; try { body = JSON.stringify(JSON.parse(c.result), null, 2); } catch {}
+      return `<details class="call"><summary>${i + 1}. ${c.tool}(${esc(JSON.stringify(c.args))}) ${c.error ? `<span class="badge bad">error</span>` : ""}</summary><pre>${esc(body)}</pre></details>`;
+    }).join("") : `<p class="empty">The agent made no tool calls.</p>`;
+    $("#agent-stats").innerHTML = `<span>${r.seconds}s</span><span>${r.tool_calls.length} tool calls</span>
+      ${r.input_tokens != null ? `<span>${r.input_tokens} in / ${r.output_tokens} out tokens</span>` : ""}
+      ${r.cost != null ? `<span>$${Number(r.cost).toFixed(5)}</span>` : ""}<span>${esc(r.model || "")}</span>`;
+    $("#ask-status").textContent = "Done.";
+  } catch (e) { $("#ask-status").textContent = ""; fail(e); }
+  finally { clearInterval(timer); $("#ask").disabled = !state.status.api_key_set; }
+}
+
+// ---- events -----------------------------------------------------------
+$("#tabs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-tab]"); if (!b) return;
+  $$("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+  $$(".tab").forEach(t => t.classList.toggle("on", t.id === `tab-${b.dataset.tab}`));
+  try { localStorage.setItem("fo-tab", b.dataset.tab); } catch {}
+  if (b.dataset.tab === "mcp" && !mcpTools.length) listMcp();
+});
+document.addEventListener("click", async e => {
+  const t = e.target;
+  try {
+    if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); toast(`Loaded ${t.dataset.load}.`); await refreshAll(); }
+    else if (t.dataset.result) {
+      const id = t.dataset.result, hs = $(`#hs-${id}`).value, as = $(`#as-${id}`).value;
+      if (hs === "" || as === "") return toast("Enter both scores.", "bad");
+      await call("/api/season/result", { game_id: id, home_score: hs, away_score: as }); await loadSeason(); await loadSchedule(); await loadSaves();
+    }
+    else if (t.closest("tr[data-team]")) {
+      const id = t.closest("tr[data-team]").dataset.team; $("#roster-team").value = $("#cmp-team").value = id; await Promise.all([loadRoster(), loadCompare()]);
+    }
+    else if (t.closest(".toolcard")) pickMcp(t.closest(".toolcard").dataset.tool);
+  } catch (err) { fail(err); }
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.pick) {
+    const [side, id] = t.dataset.pick.split(":"), s = state.trade[side];
+    t.checked ? s.picked.add(id) : s.picked.delete(id); renderSide(side);
+  } else if (t.classList.contains("side-team")) { const side = t.closest("[data-side]").dataset.side; state.trade[side].picked.clear(); loadSide(side).catch(fail); }
+  else if (t.classList.contains("side-pos")) renderSide(t.closest("[data-side]").dataset.side);
+});
+$("#roster-team").onchange = $("#roster-pos").onchange = () => loadRoster().catch(fail);
+$("#cmp-team").onchange = () => loadCompare().catch(fail);
+$("#new-game").onclick = async () => {
+  try {
+    const r = await call("/api/saves/new", { name: $("#new-name").value.trim(), seed: $("#new-seed").value.trim(), overwrite: $("#new-overwrite").checked });
+    toast(`New game ${r.loaded} started and loaded.`); $("#new-name").value = $("#new-seed").value = ""; await refreshAll();
+  } catch (e) { fail(e); }
+};
+$("#use-default").onclick = async () => { try { await call("/api/league/default", {}); toast("Using the default league."); await refreshAll(); } catch (e) { fail(e); } };
+$("#rebuild-default").onclick = async () => {
+  if (!confirm("Rebuild data/league.db from the seed? Its trades and results are lost. Saves are not touched.")) return;
+  try { await call("/api/league/rebuild", {}); toast("Default league rebuilt."); await refreshAll(); } catch (e) { fail(e); }
+};
+$("#random-scores").onclick = async () => { try { await call("/api/season/random", {}); await Promise.all([loadSeason(), loadSchedule(), loadSaves()]); } catch (e) { fail(e); } };
+$("#advance").onclick = async () => { try { const r = await call("/api/season/advance", {}); toast(`Now week ${r.week}.`); await refreshAll(); } catch (e) { fail(e); } };
+$("#check-trade").onclick = async () => { try { showTrade(await call("/api/trade/check", tradeBody()), false); } catch (e) { fail(e); } };
+$("#make-trade").onclick = async () => {
+  try {
+    const r = await call("/api/trade/make", tradeBody());
+    showTrade(r, true); toast("Trade made and logged.");
+    state.trade.a.picked.clear(); state.trade.b.picked.clear();
+    await Promise.all([loadTeams(), loadMoves(), loadSide("a"), loadSide("b"), loadRoster(), loadCompare()]);
+  } catch (e) {
+    if (e.violations) showTrade({ legal: false, violations: e.violations }, false); else fail(e);
+  }
+};
+$("#clear-trade").onclick = () => { state.trade.a.picked.clear(); state.trade.b.picked.clear(); renderSide("a"); renderSide("b"); $("#trade-result").innerHTML = ""; };
+$("#mcp-list").onclick = listMcp;
+$("#mcp-tool").onchange = e => pickMcp(e.target.value);
+$("#mcp-call").onclick = callMcp;
+$("#ask").onclick = runAgent;
+$("#examples").innerHTML = EXAMPLES.map(q => `<button class="btn sm">${esc(q)}</button>`).join("");
+$("#examples").onclick = e => { if (e.target.tagName === "BUTTON") $("#question").value = e.target.textContent; };
+
+// ---- start ------------------------------------------------------------
+$("#roster-pos").innerHTML += POSITIONS.map(p => `<option>${p}</option>`).join("");
+$$(".side-pos").forEach(el => el.innerHTML += POSITIONS.map(p => `<option>${p}</option>`).join(""));
+$$(".side-team").forEach(el => el.innerHTML = `<option>${state.trade[el.closest("[data-side]").dataset.side].team}</option>`);
+try { const tab = localStorage.getItem("fo-tab"); if (tab) $(`#tabs button[data-tab="${tab}"]`)?.click(); } catch {}
+refreshAll();
+</script>
+</body>
+</html>

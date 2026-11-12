@@ -19,6 +19,7 @@ skills/     markdown know-how + helper scripts - from 1.5
 data/       league.json (generated season start) and league.db (SQLite, the default league)
 saves/      one SQLite database per saved game (git-ignored) - from G1
 tests/      checks that run without an API key
+ui/         a local web page for trying out everything built so far
 private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
 run.py      entry point
@@ -33,6 +34,30 @@ pip install -r requirements.txt
 copy .env.example .env    # then put your OPENROUTER_API_KEY in .env
 python data/generate_league.py
 ```
+
+## Test bench (local web UI)
+
+A page for trying out everything built so far, running the real code:
+
+```powershell
+python -m ui.server      # then open http://127.0.0.1:8765
+```
+
+- **Game & saves**: start, load and list saves; enter scores or fill a week with
+  random ones (a stand-in for the simulator, 3.1); advance the week; standings
+  and the full schedule.
+- **League**: teams, payroll and cap space; any roster; each team's biggest gaps
+  from `compare_to_league`; the rules.
+- **Trades**: pick players on both sides, check the trade against the 1.2 rules
+  or make it, and see the move log.
+- **League Office (MCP)**: starts the server over stdio, as the agents do, lists
+  its tools and calls any of them with your arguments.
+- **Analytics agent**: asks the real agent a question (needs `OPENROUTER_API_KEY`
+  in `.env`) and shows its report, every tool call and the run's tokens and cost.
+
+Everything reads and changes the loaded league: a save, or `data/league.db`
+when none is loaded. The page only listens on this computer, and restarting
+it goes back to the default league. `pytest tests/test_ui.py` checks its API.
 
 ## 0.2: one agent, plain Python tools
 
