@@ -12,6 +12,15 @@ Six new game tasks use a `G` prefix (G1 - G6), and the season simulator (3.1)
 moves up from W9 - W11 to W3 - W4, because the game loop needs it from the
 start.
 
+**Change on Nov 12: a rookie draft joins the plan (G7).** Each new game opens
+with a draft run by a new Draft agent, built alongside the W4 - W5 tasks.
+
+**Also Nov 12: the owner can call the plays (G8).** The season simulator (3.1)
+plays every game snap by snap instead of picking a final score, and runs to
+W5. Each week the owner can sim a game, watch it drive by drive, or call the
+Herons' plays. The game loop (G2) is now a web page, built from the test bench
+(`ui/`), instead of a terminal menu.
+
 ## The game
 
 You are the owner of the Harbor City Herons. Each week of the 17-week season
@@ -21,6 +30,9 @@ win by making the playoffs, and then the championship, without ever going over
 the hard cap.
 
 ### One week, as the player sees it
+
+The game is a web page (G2); this sketch shows what a week contains, not its
+layout.
 
 ```
 === Week 6: Herons 3-2, 3rd of 6 ===  Cap space: $5.5M   Trade deadline: week 9
@@ -45,8 +57,9 @@ GM briefing
 - **Plain Python owns the rules and the simulation.** Cap checks, roster
   limits, the trade deadline, schedules and game results are code, not model
   output. The agents only make decisions and write text.
-- **Seeded and repeatable.** The same save and seed give the same season, so
-  tests and the demo are predictable.
+- **Seeded and repeatable.** The same save and seed give the same season, and
+  the same play calls give the same game, so tests and the demo are
+  predictable.
 - **Playable before the AI is finished.** Menus, standings and simulated games
   work with no API key. Each agent plugs into the loop as it is built.
 - **Every move is legal and grounded.** The League Office rejects illegal moves
@@ -59,10 +72,10 @@ GM briefing
 | W1   | Oct 26 - Nov 1 | 0.1, 0.2 (done)                     |
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
 | W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                 |
-| W4   | Nov 16 - 22    | 3.1, G2, 1.3                        |
-| W5   | Nov 23 - 29    | 1.3, 1.4, G3                        |
-| W6   | Nov 30 - Dec 6 | 1.5, 2.1                            |
-| W7   | Dec 7 - 13     | 2.1, G4, 2.2                        |
+| W4   | Nov 16 - 22    | 3.1, G2, 1.3, G7                    |
+| W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3, G7               |
+| W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8                        |
+| W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8                    |
 | W8   | Dec 14 - 20    | 2.2, G5                             |
 | W9   | Dec 21 - 27    | 2.3                                 |
 | W10  | Dec 28 - Jan 3 | 3.2, G6                             |
@@ -72,8 +85,9 @@ GM briefing
 | W14  | Jan 25 - 31    | 5.1, 5.2                            |
 
 Milestones: the game is **playable with no AI** at the end of W4 (G2), the GM
-**briefs the owner** each week at the end of W5 (G3), and **trades work inside
-the game** by the deadline task in W9 (2.3).
+**briefs the owner** each week at the end of W5 (G3), the owner **calls plays
+at key moments** by the end of W7 (G8), and **trades work inside the game** by
+the deadline task in W9 (2.3).
 
 ## Phase 0: Setup and first agent
 
@@ -108,13 +122,54 @@ New SQLite tables for the current week, the 17-week schedule (each rival three
 or four times), game results, standings and a log of every move. "New game"
 copies the `league.json` seed into a fresh save; "Load game" continues one.
 
-### 3.1 Season simulator (W3 - W4, moved up from W9 - W11)
-Decides each game from team ratings with a seeded random number generator, and
-updates results and standings. Plain Python, no model calls.
+### 3.1 Season simulator: play by play (W3 - W5, moved up from W9 - W11)
+Plays each game one snap at a time, in plain Python with a seeded random number
+generator and no model calls. The game state is the down, distance, yard line,
+clock, score and timeouts. Each snap, the offense picks a play (inside or
+outside run, short or deep pass, play action, screen, punt, field goal) and the
+defense a call (base, blitz, cover 2, deep zone, run stuff). The ratings of the
+players on the field decide the result: a deep pass sets QB arm strength and WR
+speed against CB and safety coverage, an inside run sets RB rushing and OL run
+blocking against DL run defense and LB tackling. Plain-Python tendencies, by
+situation, call plays for any team the owner isn't coaching.
 
-### G2 Terminal game loop (W4)
-The weekly menu above: view roster, standings and cap, play the week, save and
-quit. Fully playable with no API key, with no agent features yet.
+Every play goes into a play log, and player game stats build box scores and
+season stats. Results and standings update as in G1. Tests tune the engine over
+many seeded games: about 20 - 24 points and 60 - 65 plays per team on average,
+with the better-rated team winning more often.
+
+Built in stages: "Sim it" (a game in one step) by W4 so G2 is playable, then
+"Watch it" (drive by drive, from the play log) in W5.
+
+### G2 Web game loop (W4)
+The week above as a web page, grown from the test bench in `ui/`: roster,
+standings, schedule and cap, play the week, save and quit. Fully playable with
+no API key, with no agent features yet.
+
+### G7 Rookie draft and the Draft agent (W4 - W5, added Nov 12)
+Before week 1 of a new game, the six teams hold a rookie draft. A seeded pool of
+prospects is generated with the league, and the draft order comes from a seeded
+lottery, since there is no previous season to rank teams by. There are at most
+five rounds, because rosters start at 48 of a 53-player maximum. The Draft
+agent scouts the pool and recommends picks. The owner makes the Herons' picks
+on its advice, and the agent picks for the rival teams until the rival GMs
+(2.2) take over. With no API key, every team takes the best prospect left.
+
+The draft is the league's first way to add a player rather than trade one, so
+the League Office gets a signing check beside the 1.2 rules: a pick joins only
+if the roster stays at or under the maximum and the payroll under the hard cap,
+on a rookie contract set by draft position. Each pick goes into the move log
+(G1), and the save keeps the prospect pool and the draft order.
+
+### G8 Call the plays (W6 - W7, added Nov 12)
+Before each Herons game the owner chooses how to play it: **Sim it**, **Watch
+it** drive by drive, or **Call it**. Calling comes in two levels: *key moments*
+(the game sims until a 4th down, the red zone, the two-minute drill or
+overtime, then hands over the call) and *every snap*. The game-day screen shows
+the score, clock, down and distance, the ball on a field strip, the play-call
+buttons and a play-by-play log. Rival games are always simmed with the same
+engine. Key-moment calling is the target; calling every snap comes after it,
+time permitting.
 
 ### 1.3 Cap & Contracts agent (W4 - W5)
 A specialist agent that reads payroll and contracts and says whether a move fits
@@ -166,6 +221,9 @@ owner in the weeks before, and the Trade Desk closes after week 9.
 Specialists for depth charts and game plans (Coaching) and injuries and games
 missed (Medical), reporting to the GM. The simulator adds injuries; Medical
 reports them in the briefing, and Coaching resets the depth chart around them.
+On game day (G8) Coaching suggests a call at key moments or when the owner
+asks, using the play log for the opponent's tendencies. That is about 5 - 10
+model calls a game, never one per snap.
 
 ### G6 Playoffs and the end of the season (W10)
 The top teams after week 17 play for the championship. The game ends with a
@@ -175,7 +233,7 @@ season summary: record, playoff result, moves made and final cap position.
 
 ### 4.1 Scouting sub-team (W12)
 A scouting team under the GM, adding a second level to the org chart. It finds
-trade targets for the GM's proposals.
+trade targets for the GM's proposals, and the Draft agent (G7) moves into it.
 
 ### 4.2 Memory (W11)
 Agents remember past decisions, trades and reports. In the game, the GM
@@ -191,13 +249,14 @@ Load real player data in place of the generated league, if ahead of schedule.
 
 ### 4.5 Difficulty levels: easy, normal, hard (W12)
 No longer a stretch goal, since a game needs it: chosen at "New game", it sets
-how shrewdly rival GMs negotiate.
+how shrewdly rival GMs negotiate and how well rival teams call plays.
 
 ## Phase 5: Testing and submission
 
 ### 5.1 Integration testing and cost check (W13 - W14)
 End-to-end tests of the full front office, including a scripted full-season
-playthrough, plus a check of what one season played costs in model tokens.
+playthrough, plus a check of what one season played costs in model tokens,
+including Coaching's game-day advice.
 
 ### 5.2 Demo script, backup recording, slides (W14)
 The demo is a live game: a few weeks of play and a trade at the deadline, with
