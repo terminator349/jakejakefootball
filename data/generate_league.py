@@ -1,14 +1,11 @@
-"""Generate a fictional six-team football league and write it to data/league.json.
+"""Generate a fictional six-team American football league and write it to data/league.json.
 
 Made-up data keeps early steps independent of any real stats API. The seed
 makes every run produce the same league, so demos are reproducible.
 
-Our team (HAR) is deliberately weak at coverage in the secondary, so the
-Step 1 agent has a real weakness to find.
-
-Football has a hard salary cap (unlike basketball's cap + luxury tax): no
-team may be generated over the cap, so "legal under the cap" holds from the
-very first run, not just after a trade-legality check is added later.
+Our team (HAR) is deliberately weak in pass coverage at cornerback and
+safety, and sits just under the hard cap, so the Step 1 agent has a real
+weakness to find and very little money to fix it with.
 """
 
 import json
@@ -18,13 +15,41 @@ from pathlib import Path
 SEED = 42
 OUR_TEAM = "HAR"
 
-# Simplified money rules, in millions of dollars. NFL-style hard cap: there
-# is no luxury-tax overage allowed, only a cap line nobody may cross.
-RULES = {
-    "salary_cap": 220.0,
-    "roster_min": 21,
-    "roster_max": 24,
+# Each position's skill ratings (25-99). A player's overall is the average of these.
+POSITION_RATINGS = {
+    "QB": ["accuracy", "arm_strength", "decision_making", "mobility"],
+    "RB": ["rushing", "receiving", "pass_protection", "speed"],
+    "WR": ["route_running", "hands", "speed"],
+    "TE": ["receiving", "blocking", "speed"],
+    "OL": ["pass_blocking", "run_blocking", "strength"],
+    "DL": ["pass_rush", "run_defense", "strength"],
+    "LB": ["run_defense", "coverage", "tackling", "pass_rush"],
+    "CB": ["coverage", "speed", "tackling"],
+    "S": ["coverage", "tackling", "speed"],
+    "K": ["kick_power", "kick_accuracy"],
+    "P": ["kick_power", "kick_accuracy"],
 }
+
+# 48 players per team; the first STARTERS[pos] players at each position start.
+ROSTER_COUNTS = {"QB": 2, "RB": 3, "WR": 6, "TE": 3, "OL": 9, "DL": 7, "LB": 6, "CB": 6, "S": 4, "K": 1, "P": 1}
+STARTERS = {"QB": 1, "RB": 1, "WR": 3, "TE": 1, "OL": 5, "DL": 4, "LB": 3, "CB": 2, "S": 2, "K": 1, "P": 1}
+
+# Simplified money and roster rules. Money is in millions of dollars.
+RULES = {
+    "salary_cap": 255.0,
+    "cap_type": "hard",
+    "roster_min": 46,
+    "roster_max": 53,
+    "season_games": 17,
+    "trade_deadline_week": 9,
+    "starters_per_position": STARTERS,
+}
+
+# What a star at each position earns before team payrolls are scaled.
+TOP_SALARY = {"QB": 50, "DL": 30, "WR": 30, "CB": 22, "OL": 22, "LB": 18, "S": 16, "TE": 15, "RB": 12, "K": 5, "P": 3}
+MIN_SALARY = 1.0
+OUR_PAYROLL = 249.5  # $5.5M of cap space
+OTHER_PAYROLL_RANGE = (225.0, 252.0)
 
 TEAMS = [
     ("HAR", "Harbor City", "Herons"),
@@ -35,116 +60,81 @@ TEAMS = [
     ("DEL", "Delta Bay", "Gators"),
 ]
 
-# One QB, a handful of skill players, a five-man line each way, a K.
-# 23 players: inside the roster_min/roster_max window above.
-ROSTER_POSITIONS = [
-    "QB",
-    "RB", "RB",
-    "WR", "WR", "WR",
-    "TE",
-    "OT", "OT", "OG", "OG", "C",
-    "EDGE", "EDGE", "DT", "DT",
-    "LB", "LB",
-    "CB", "CB",
-    "S", "S",
-    "K",
-]
-
 FIRST_NAMES = ["Marcus", "Dante", "Theo", "Jalen", "Andre", "Kofi", "Luca", "Mateo", "Isaiah",
                "Rafael", "Devin", "Omar", "Nikola", "Tariq", "Elias", "Bryce", "Caleb", "Jonah",
-               "Kenji", "Malik", "Dmitri", "Xavier", "Quentin", "Ruben"]
+               "Kenji", "Malik", "Dmitri", "Xavier", "Quentin", "Ruben", "Tyrell", "Silas", "Darius",
+               "Hunter", "Mason", "Cole", "Jamal", "Wade", "Reggie", "Tobias", "Grant", "Emeka"]
 LAST_NAMES = ["Okafor", "Reyes", "Lindqvist", "Hargrove", "Mbeki", "Castillo", "Brennan",
               "Achebe", "Novak", "Whitfield", "Tanaka", "Dubois", "Kowalski", "Ferreira",
-              "Abernathy", "Sato", "Mensah", "Vance", "Ibarra", "Holloway"]
-
-RATING_KEYS = ["passing", "rushing", "receiving", "blocking", "pass_rush",
-               "run_defense", "coverage", "kicking", "athleticism"]
-
-# Position archetypes nudge ratings so a QB passes, a CB covers, and so on.
-# Skills that are irrelevant to a position get a negative bias, the same way
-# a basketball center was biased away from three-point shooting.
-POSITION_BIAS = {
-    "QB":   {"passing": 25, "rushing": 2,   "receiving": -15, "blocking": -20, "pass_rush": -20, "run_defense": -20, "coverage": -20, "kicking": -15, "athleticism": 3},
-    "RB":   {"passing": -20, "rushing": 20, "receiving": 6,   "blocking": -5,  "pass_rush": -20, "run_defense": -18, "coverage": -18, "kicking": -15, "athleticism": 8},
-    "WR":   {"passing": -20, "rushing": -5, "receiving": 20,  "blocking": -15, "pass_rush": -20, "run_defense": -20, "coverage": -18, "kicking": -15, "athleticism": 10},
-    "TE":   {"passing": -20, "rushing": -8, "receiving": 10,  "blocking": 8,   "pass_rush": -15, "run_defense": -10, "coverage": -15, "kicking": -15, "athleticism": 2},
-    "OT":   {"passing": -20, "rushing": -15, "receiving": -18, "blocking": 18, "pass_rush": -18, "run_defense": -5,  "coverage": -20, "kicking": -18, "athleticism": -5},
-    "OG":   {"passing": -20, "rushing": -15, "receiving": -18, "blocking": 16, "pass_rush": -18, "run_defense": -5,  "coverage": -20, "kicking": -18, "athleticism": -6},
-    "C":    {"passing": -18, "rushing": -15, "receiving": -18, "blocking": 14, "pass_rush": -18, "run_defense": -5,  "coverage": -20, "kicking": -18, "athleticism": -6},
-    "EDGE": {"passing": -20, "rushing": -18, "receiving": -18, "blocking": -10, "pass_rush": 18, "run_defense": 8,  "coverage": -15, "kicking": -18, "athleticism": 6},
-    "DT":   {"passing": -20, "rushing": -18, "receiving": -18, "blocking": -8, "pass_rush": 10,  "run_defense": 16, "coverage": -18, "kicking": -18, "athleticism": 2},
-    "LB":   {"passing": -18, "rushing": -12, "receiving": -10, "blocking": -12, "pass_rush": 6,  "run_defense": 14, "coverage": 4,   "kicking": -18, "athleticism": 6},
-    "CB":   {"passing": -18, "rushing": -14, "receiving": -5,  "blocking": -15, "pass_rush": -10, "run_defense": -8, "coverage": 18, "kicking": -18, "athleticism": 10},
-    "S":    {"passing": -18, "rushing": -14, "receiving": -6,  "blocking": -14, "pass_rush": -6, "run_defense": 6,   "coverage": 12, "kicking": -18, "athleticism": 8},
-    "K":    {"passing": -20, "rushing": -20, "receiving": -20, "blocking": -20, "pass_rush": -20, "run_defense": -20, "coverage": -20, "kicking": 35, "athleticism": -10},
-}
-
-# Positions whose weakest-player-on-the-team matters most for the cap number
-# below, kept out of this generator but documented here for later agents.
-SECONDARY_POSITIONS = ("CB", "S")
+              "Abernathy", "Sato", "Mensah", "Vance", "Ibarra", "Holloway", "Pruitt", "Gaines",
+              "McAllister", "Odom", "Thibodeaux", "Kessler", "Bolden", "Strickland", "Faulk", "Riggins"]
 
 
 def clamp(value: float, low: int = 25, high: int = 99) -> int:
     return max(low, min(high, round(value)))
 
 
-def make_player(rng: random.Random, player_id: str, team_id: str, position: str, is_starter: bool) -> dict:
-    base = rng.gauss(72 if is_starter else 62, 6)
-    bias = POSITION_BIAS[position]
-    ratings = {key: clamp(base + bias.get(key, 0) + rng.gauss(0, 5)) for key in RATING_KEYS}
+def unique_name(rng: random.Random, used: set) -> str:
+    while True:
+        name = f"{rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)}"
+        if name not in used:
+            used.add(name)
+            return name
 
-    if team_id == OUR_TEAM and position in SECONDARY_POSITIONS:
-        ratings["coverage"] = clamp(ratings["coverage"] - 18)
 
-    age = rng.randint(21, 35)
-    overall = sum(ratings.values()) / len(ratings)
-    # Better players earn more; very young players are still on rookie deals.
-    salary = max(0.9, (overall - 50) * 0.9 + rng.gauss(0, 3))
+def make_player(rng: random.Random, player_id: str, name: str, team_id: str, position: str, is_starter: bool) -> dict:
+    base = rng.gauss(74 if is_starter else 63, 5)
+    ratings = {key: clamp(base + rng.gauss(0, 5)) for key in POSITION_RATINGS[position]}
+
+    if team_id == OUR_TEAM and position in ("CB", "S"):
+        ratings["coverage"] = clamp(ratings["coverage"] - 22)
+
+    overall = round(sum(ratings.values()) / len(ratings))
+    age = rng.randint(22, 38 if position in ("K", "P") else 34)
+    # Raw salary grows with the square of quality; scale_payroll turns it into dollars.
+    raw_salary = TOP_SALARY[position] * max(0.0, (overall - 55) / 35) ** 2
     if age <= 23:
-        salary = min(salary, 5.0)
+        raw_salary = min(raw_salary, 3.0)  # still on a rookie deal
 
     return {
         "id": player_id,
-        "name": f"{rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)}",
+        "name": name,
         "team_id": team_id,
         "position": position,
         "age": age,
-        "salary": round(salary, 1),
+        "overall": overall,
+        "raw_salary": raw_salary,
         "contract_years": rng.randint(1, 5),
-        "games_missed_last_season": max(0, round(rng.expovariate(1 / 3) + (age - 29) * 0.5)),
+        "games_missed_last_season": min(17, max(0, round(rng.expovariate(1 / 2) + max(0, age - 29) * 0.4))),
         "ratings": ratings,
     }
 
 
-def enforce_hard_cap(players: list[dict], cap: float) -> None:
-    """Scale a team's salaries down in place if they generated over the cap.
-
-    The league must be legal under the cap from the moment it's generated,
-    not just after a future Contracts agent checks it.
-    """
-    total = sum(p["salary"] for p in players)
-    target = cap * 0.95  # leave real teams a little room, like real front offices do
-    if total > target:
-        factor = target / total
-        for player in players:
-            player["salary"] = round(player["salary"] * factor, 1)
+def scale_payroll(roster: list[dict], target: float) -> None:
+    """Every player earns at least MIN_SALARY; the rest of the target is shared by raw salary."""
+    total_raw = sum(p["raw_salary"] for p in roster)
+    per_raw = (target - MIN_SALARY * len(roster)) / total_raw
+    for player in roster:
+        player["salary"] = round(MIN_SALARY + player.pop("raw_salary") * per_raw, 2)
 
 
 def generate() -> dict:
     rng = random.Random(SEED)
-    teams, players = [], []
+    teams, players, used_names = [], [], set()
 
     for team_id, city, nickname in TEAMS:
         teams.append({"id": team_id, "city": city, "name": nickname})
-        team_players = []
-        for index, position in enumerate(ROSTER_POSITIONS):
-            # The first player listed at each position is that position's starter.
-            is_starter = position not in ROSTER_POSITIONS[:index]
-            team_players.append(make_player(rng, f"{team_id}-{index + 1:02d}", team_id, position, is_starter))
-        enforce_hard_cap(team_players, RULES["salary_cap"])
-        players.extend(team_players)
+        roster = []
+        for position, count in ROSTER_COUNTS.items():
+            for depth in range(count):
+                player_id = f"{team_id}-{len(roster) + 1:02d}"
+                name = unique_name(rng, used_names)
+                roster.append(make_player(rng, player_id, name, team_id, position, depth < STARTERS[position]))
+        target = OUR_PAYROLL if team_id == OUR_TEAM else round(rng.uniform(*OTHER_PAYROLL_RANGE), 1)
+        scale_payroll(roster, target)
+        players.extend(roster)
 
-    return {"our_team": OUR_TEAM, "rules": RULES, "teams": teams, "players": players}
+    return {"sport": "american_football", "our_team": OUR_TEAM, "rules": RULES, "teams": teams, "players": players}
 
 
 if __name__ == "__main__":

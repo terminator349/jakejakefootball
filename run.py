@@ -1,19 +1,20 @@
 """Ask the Analytics agent a question about our roster.
 
     python run.py
-    python run.py "Who is our best defender?"
+    python run.py "How does our offensive line compare to the league?"
     python run.py --debug      # print every tool call and model message
 """
 
 import argparse
+import asyncio
 import os
 import sys
 
 from dotenv import load_dotenv
 
-from agents.analytics import RosterReport, build_analytics_agent
+from agents.analytics import RosterReport, build_analytics_agent, ground_report, league_office_tools
 
-DEFAULT_QUESTION = "We're on a 3-game losing streak. Where is our roster weakest, and what should we look for?"
+DEFAULT_QUESTION = "We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?"
 
 
 def print_report(report: RosterReport) -> None:
@@ -24,11 +25,18 @@ def print_report(report: RosterReport) -> None:
     for line in report.evidence:
         print(f"  - {line}")
     print(f"Target profile: {report.target_profile}")
-    if report.room_under_cap >= 0:
-        cap_status = f"${report.room_under_cap:.1f}M of cap room"
+    if report.cap_space >= 0:
+        cap_status = f"${report.cap_space:.1f}M of cap space"
     else:
-        cap_status = f"${-report.room_under_cap:.1f}M OVER the hard cap (illegal)"
+        cap_status = f"${-report.cap_space:.1f}M OVER the cap"
     print(f"Payroll:        ${report.payroll:.1f}M  ({cap_status})")
+
+
+async def ask(question: str, debug: bool):
+    # Start the League Office server for this run; it stops when the block ends.
+    async with league_office_tools() as league_office:
+        agent = build_analytics_agent(league_office, debug=debug)
+        return await agent.arun(question)
 
 
 def main() -> None:
@@ -41,11 +49,10 @@ def main() -> None:
     if not os.getenv("OPENROUTER_API_KEY"):
         sys.exit("OPENROUTER_API_KEY is not set. Add your OpenRouter key to .env (see .env.example).")
 
-    agent = build_analytics_agent(debug=args.debug)
-    response = agent.run(args.question)
+    response = asyncio.run(ask(args.question, args.debug))
 
     if isinstance(response.content, RosterReport):
-        print_report(response.content)
+        print_report(ground_report(response.content))
     else:
         # The model didn't return the schema; show what it did say.
         print(response.content)

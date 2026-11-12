@@ -2,6 +2,7 @@ agno>=3.1
 anthropic>=2.3
 openai>=3.40
 mcp>=2.3
+fastmcp>=4.0,<5   # Agno's MCPTools builds its connections with it
 python-dotenv>=1.0
 pydantic>=2.0
 pytest>=8.0,<9.0

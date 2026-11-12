@@ -1,9 +1,26 @@
 {
+  "sport": "american_football",
   "our_team": "HAR",
   "rules": {
-    "salary_cap": 220.0,
-    "roster_min": 21,
-    "roster_max": 24
+    "salary_cap": 255.0,
+    "cap_type": "hard",
+    "roster_min": 46,
+    "roster_max": 53,
+    "season_games": 17,
+    "trade_deadline_week": 9,
+    "starters_per_position": {
+      "QB": 1,
+      "RB": 1,
+      "WR": 3,
+      "TE": 1,
+      "OL": 5,
+      "DL": 4,
+      "LB": 3,
+      "CB": 2,
+      "S": 2,
+      "K": 1,
+      "P": 1
+    }
   },
   "teams": [
     {
@@ -40,2901 +57,4665 @@
   "players": [
     {
       "id": "HAR-01",
-      "name": "Jonah Brennan",
+      "name": "Mateo Okafor",
       "team_id": "HAR",
       "position": "QB",
-      "age": 24,
-      "salary": 10.9,
-      "contract_years": 5,
-      "games_missed_last_season": 0,
+      "age": 31,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 95,
-        "rushing": 73,
-        "receiving": 60,
-        "blocking": 50,
-        "pass_rush": 44,
-        "run_defense": 53,
-        "coverage": 50,
-        "kicking": 55,
-        "athleticism": 75
-      }
+        "accuracy": 70,
+        "arm_strength": 75,
+        "decision_making": 76,
+        "mobility": 73
+      },
+      "salary": 16.54
     },
     {
       "id": "HAR-02",
-      "name": "Jalen Dubois",
+      "name": "Kofi Brennan",
       "team_id": "HAR",
-      "position": "RB",
-      "age": 27,
-      "salary": 20.0,
-      "contract_years": 3,
-      "games_missed_last_season": 2,
+      "position": "QB",
+      "age": 33,
+      "overall": 56,
+      "contract_years": 5,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 56,
-        "rushing": 99,
-        "receiving": 92,
-        "blocking": 69,
-        "pass_rush": 63,
-        "run_defense": 67,
-        "coverage": 61,
-        "kicking": 69,
-        "athleticism": 88
-      }
+        "accuracy": 57,
+        "arm_strength": 63,
+        "decision_making": 49,
+        "mobility": 54
+      },
+      "salary": 1.04
     },
     {
       "id": "HAR-03",
-      "name": "Rafael Lindqvist",
+      "name": "Mason Ibarra",
       "team_id": "HAR",
       "position": "RB",
-      "age": 32,
-      "salary": 8.9,
-      "contract_years": 2,
-      "games_missed_last_season": 8,
+      "age": 25,
+      "overall": 73,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 38,
-        "rushing": 72,
-        "receiving": 68,
-        "blocking": 56,
-        "pass_rush": 50,
-        "run_defense": 51,
-        "coverage": 41,
-        "kicking": 55,
-        "athleticism": 68
-      }
+        "rushing": 82,
+        "receiving": 72,
+        "pass_protection": 69,
+        "speed": 69
+      },
+      "salary": 4.35
     },
     {
       "id": "HAR-04",
-      "name": "Ruben Achebe",
+      "name": "Tyrell Hargrove",
       "team_id": "HAR",
-      "position": "WR",
+      "position": "RB",
       "age": 29,
-      "salary": 16.2,
-      "contract_years": 2,
-      "games_missed_last_season": 2,
+      "overall": 65,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 52,
-        "rushing": 74,
-        "receiving": 97,
-        "blocking": 58,
-        "pass_rush": 51,
-        "run_defense": 62,
-        "coverage": 55,
-        "kicking": 53,
-        "athleticism": 92
-      }
+        "rushing": 62,
+        "receiving": 68,
+        "pass_protection": 65,
+        "speed": 66
+      },
+      "salary": 2.03
     },
     {
       "id": "HAR-05",
-      "name": "Quentin Tanaka",
+      "name": "Tyrell Lindqvist",
       "team_id": "HAR",
-      "position": "WR",
+      "position": "RB",
       "age": 22,
-      "salary": 4.6,
+      "overall": 48,
       "contract_years": 2,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 52,
-        "rushing": 54,
-        "receiving": 77,
-        "blocking": 41,
-        "pass_rush": 48,
-        "run_defense": 49,
-        "coverage": 45,
-        "kicking": 47,
-        "athleticism": 66
-      }
+        "rushing": 51,
+        "receiving": 47,
+        "pass_protection": 47,
+        "speed": 47
+      },
+      "salary": 1.0
     },
     {
       "id": "HAR-06",
-      "name": "Andre Mensah",
+      "name": "Kofi Strickland",
       "team_id": "HAR",
       "position": "WR",
-      "age": 24,
-      "salary": 14.4,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "age": 27,
+      "overall": 71,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 47,
-        "rushing": 78,
-        "receiving": 92,
-        "blocking": 62,
-        "pass_rush": 56,
-        "run_defense": 62,
-        "coverage": 57,
-        "kicking": 68,
-        "athleticism": 90
-      }
+        "route_running": 71,
+        "hands": 73,
+        "speed": 69
+      },
+      "salary": 7.61
     },
     {
       "id": "HAR-07",
-      "name": "Jalen Vance",
+      "name": "Tariq Gaines",
       "team_id": "HAR",
-      "position": "TE",
-      "age": 34,
-      "salary": 17.3,
-      "contract_years": 3,
-      "games_missed_last_season": 7,
+      "position": "WR",
+      "age": 24,
+      "overall": 83,
+      "contract_years": 5,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 55,
-        "rushing": 61,
-        "receiving": 78,
-        "blocking": 81,
-        "pass_rush": 61,
-        "run_defense": 53,
-        "coverage": 71,
-        "kicking": 47,
-        "athleticism": 74
-      }
+        "route_running": 80,
+        "hands": 93,
+        "speed": 77
+      },
+      "salary": 21.25
     },
     {
       "id": "HAR-08",
-      "name": "Rafael Mensah",
+      "name": "Devin Abernathy",
       "team_id": "HAR",
-      "position": "OT",
-      "age": 31,
-      "salary": 6.3,
-      "contract_years": 5,
-      "games_missed_last_season": 2,
+      "position": "WR",
+      "age": 32,
+      "overall": 67,
+      "contract_years": 3,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 47,
-        "rushing": 57,
-        "receiving": 51,
-        "blocking": 87,
-        "pass_rush": 49,
-        "run_defense": 56,
-        "coverage": 57,
-        "kicking": 49,
-        "athleticism": 61
-      }
+        "route_running": 58,
+        "hands": 79,
+        "speed": 64
+      },
+      "salary": 4.72
     },
     {
       "id": "HAR-09",
-      "name": "Kenji Lindqvist",
+      "name": "Jalen Achebe",
       "team_id": "HAR",
-      "position": "OT",
-      "age": 33,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 6,
+      "position": "WR",
+      "age": 31,
+      "overall": 56,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 42,
-        "rushing": 55,
-        "receiving": 38,
-        "blocking": 83,
-        "pass_rush": 38,
-        "run_defense": 52,
-        "coverage": 40,
-        "kicking": 32,
-        "athleticism": 66
-      }
+        "route_running": 62,
+        "hands": 50,
+        "speed": 57
+      },
+      "salary": 1.03
     },
     {
       "id": "HAR-10",
-      "name": "Jonah Brennan",
+      "name": "Wade Kowalski",
       "team_id": "HAR",
-      "position": "OG",
-      "age": 35,
-      "salary": 3.4,
-      "contract_years": 3,
-      "games_missed_last_season": 5,
+      "position": "WR",
+      "age": 33,
+      "overall": 65,
+      "contract_years": 5,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 60,
-        "rushing": 46,
-        "receiving": 53,
-        "blocking": 89,
-        "pass_rush": 49,
-        "run_defense": 59,
-        "coverage": 57,
-        "kicking": 61,
-        "athleticism": 58
-      }
+        "route_running": 69,
+        "hands": 59,
+        "speed": 66
+      },
+      "salary": 3.58
     },
     {
       "id": "HAR-11",
-      "name": "Dante Tanaka",
+      "name": "Hunter Faulk",
       "team_id": "HAR",
-      "position": "OG",
-      "age": 32,
-      "salary": 0.9,
+      "position": "WR",
+      "age": 29,
+      "overall": 64,
       "contract_years": 1,
-      "games_missed_last_season": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 35,
-        "rushing": 49,
-        "receiving": 38,
-        "blocking": 75,
-        "pass_rush": 43,
-        "run_defense": 61,
-        "coverage": 40,
-        "kicking": 41,
-        "athleticism": 53
-      }
+        "route_running": 61,
+        "hands": 63,
+        "speed": 68
+      },
+      "salary": 3.09
     },
     {
       "id": "HAR-12",
-      "name": "Tariq Dubois",
+      "name": "Mateo Mbeki",
       "team_id": "HAR",
-      "position": "C",
-      "age": 31,
-      "salary": 7.1,
-      "contract_years": 4,
-      "games_missed_last_season": 3,
+      "position": "TE",
+      "age": 28,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 11,
       "ratings": {
-        "passing": 50,
-        "rushing": 59,
-        "receiving": 43,
-        "blocking": 81,
-        "pass_rush": 56,
-        "run_defense": 59,
-        "coverage": 49,
-        "kicking": 56,
-        "athleticism": 61
-      }
+        "receiving": 68,
+        "blocking": 68,
+        "speed": 72
+      },
+      "salary": 3.53
     },
     {
       "id": "HAR-13",
-      "name": "Mateo Lindqvist",
+      "name": "Tobias Novak",
       "team_id": "HAR",
-      "position": "EDGE",
-      "age": 23,
-      "salary": 5.0,
-      "contract_years": 4,
-      "games_missed_last_season": 2,
+      "position": "TE",
+      "age": 32,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 52,
-        "rushing": 51,
-        "receiving": 49,
-        "blocking": 71,
-        "pass_rush": 94,
-        "run_defense": 82,
-        "coverage": 56,
-        "kicking": 58,
-        "athleticism": 85
-      }
+        "receiving": 74,
+        "blocking": 62,
+        "speed": 72
+      },
+      "salary": 3.53
     },
     {
       "id": "HAR-14",
-      "name": "Nikola Reyes",
+      "name": "Xavier Hargrove",
       "team_id": "HAR",
-      "position": "EDGE",
-      "age": 34,
-      "salary": 6.6,
-      "contract_years": 2,
-      "games_missed_last_season": 4,
+      "position": "TE",
+      "age": 33,
+      "overall": 67,
+      "contract_years": 3,
+      "games_missed_last_season": 9,
       "ratings": {
-        "passing": 46,
-        "rushing": 45,
-        "receiving": 43,
-        "blocking": 49,
-        "pass_rush": 84,
-        "run_defense": 72,
-        "coverage": 49,
-        "kicking": 43,
-        "athleticism": 66
-      }
+        "receiving": 63,
+        "blocking": 66,
+        "speed": 72
+      },
+      "salary": 2.86
     },
     {
       "id": "HAR-15",
-      "name": "Ruben Vance",
+      "name": "Omar Mensah",
       "team_id": "HAR",
-      "position": "DT",
-      "age": 25,
-      "salary": 16.4,
-      "contract_years": 1,
-      "games_missed_last_season": 2,
+      "position": "OL",
+      "age": 31,
+      "overall": 75,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 56,
-        "rushing": 60,
-        "receiving": 53,
-        "blocking": 58,
-        "pass_rush": 93,
-        "run_defense": 99,
-        "coverage": 59,
-        "kicking": 58,
-        "athleticism": 76
-      }
+        "pass_blocking": 83,
+        "run_blocking": 69,
+        "strength": 72
+      },
+      "salary": 8.57
     },
     {
       "id": "HAR-16",
-      "name": "Nikola Hargrove",
+      "name": "Devin Vance",
       "team_id": "HAR",
-      "position": "DT",
-      "age": 24,
-      "salary": 4.4,
-      "contract_years": 5,
+      "position": "OL",
+      "age": 29,
+      "overall": 86,
+      "contract_years": 1,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 50,
-        "rushing": 48,
-        "receiving": 36,
-        "blocking": 56,
-        "pass_rush": 81,
-        "run_defense": 91,
-        "coverage": 49,
-        "kicking": 48,
-        "athleticism": 60
-      }
+        "pass_blocking": 92,
+        "run_blocking": 78,
+        "strength": 87
+      },
+      "salary": 19.2
     },
     {
       "id": "HAR-17",
-      "name": "Theo Okafor",
+      "name": "Ruben Faulk",
       "team_id": "HAR",
-      "position": "LB",
+      "position": "OL",
       "age": 31,
-      "salary": 7.0,
-      "contract_years": 4,
-      "games_missed_last_season": 4,
+      "overall": 74,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 43,
-        "rushing": 47,
-        "receiving": 58,
-        "blocking": 42,
-        "pass_rush": 69,
-        "run_defense": 81,
-        "coverage": 77,
-        "kicking": 47,
-        "athleticism": 76
-      }
+        "pass_blocking": 80,
+        "run_blocking": 70,
+        "strength": 71
+      },
+      "salary": 7.84
     },
     {
       "id": "HAR-18",
-      "name": "Quentin Whitfield",
+      "name": "Wade Bolden",
       "team_id": "HAR",
-      "position": "LB",
+      "position": "OL",
       "age": 29,
-      "salary": 5.2,
+      "overall": 81,
       "contract_years": 5,
-      "games_missed_last_season": 12,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 37,
-        "rushing": 44,
-        "receiving": 41,
-        "blocking": 43,
-        "pass_rush": 66,
-        "run_defense": 74,
-        "coverage": 64,
-        "kicking": 40,
-        "athleticism": 62
-      }
+        "pass_blocking": 85,
+        "run_blocking": 81,
+        "strength": 78
+      },
+      "salary": 13.8
     },
     {
       "id": "HAR-19",
-      "name": "Quentin Tanaka",
+      "name": "Tobias Strickland",
       "team_id": "HAR",
-      "position": "CB",
-      "age": 23,
-      "salary": 5.0,
+      "position": "OL",
+      "age": 33,
+      "overall": 68,
       "contract_years": 2,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 51,
-        "rushing": 57,
-        "receiving": 64,
-        "blocking": 62,
-        "pass_rush": 64,
-        "run_defense": 69,
-        "coverage": 72,
-        "kicking": 63,
-        "athleticism": 79
-      }
+        "pass_blocking": 61,
+        "run_blocking": 63,
+        "strength": 79
+      },
+      "salary": 4.2
     },
     {
       "id": "HAR-20",
-      "name": "Kofi Abernathy",
+      "name": "Silas Gaines",
       "team_id": "HAR",
-      "position": "CB",
+      "position": "OL",
       "age": 25,
-      "salary": 13.4,
-      "contract_years": 5,
-      "games_missed_last_season": 2,
+      "overall": 56,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 56,
-        "rushing": 51,
-        "receiving": 65,
-        "blocking": 66,
-        "pass_rush": 67,
-        "run_defense": 64,
-        "coverage": 71,
-        "kicking": 51,
-        "athleticism": 79
-      }
+        "pass_blocking": 56,
+        "run_blocking": 55,
+        "strength": 57
+      },
+      "salary": 1.02
     },
     {
       "id": "HAR-21",
-      "name": "Dante Dubois",
+      "name": "Emeka Achebe",
       "team_id": "HAR",
-      "position": "S",
-      "age": 26,
-      "salary": 15.3,
-      "contract_years": 2,
-      "games_missed_last_season": 2,
+      "position": "OL",
+      "age": 23,
+      "overall": 62,
+      "contract_years": 1,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 50,
-        "rushing": 62,
-        "receiving": 61,
-        "blocking": 56,
-        "pass_rush": 64,
-        "run_defense": 71,
-        "coverage": 68,
-        "kicking": 50,
-        "athleticism": 78
-      }
+        "pass_blocking": 62,
+        "run_blocking": 62,
+        "strength": 62
+      },
+      "salary": 1.93
     },
     {
       "id": "HAR-22",
-      "name": "Tariq Okafor",
+      "name": "Andre Mensah",
       "team_id": "HAR",
-      "position": "S",
-      "age": 23,
-      "salary": 2.2,
-      "contract_years": 2,
-      "games_missed_last_season": 1,
+      "position": "OL",
+      "age": 31,
+      "overall": 64,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 35,
-        "rushing": 38,
-        "receiving": 40,
-        "blocking": 38,
-        "pass_rush": 58,
-        "run_defense": 60,
-        "coverage": 53,
-        "kicking": 36,
-        "athleticism": 68
-      }
+        "pass_blocking": 62,
+        "run_blocking": 69,
+        "strength": 62
+      },
+      "salary": 2.53
     },
     {
       "id": "HAR-23",
-      "name": "Omar Whitfield",
+      "name": "Jamal Kessler",
       "team_id": "HAR",
-      "position": "K",
-      "age": 24,
-      "salary": 3.4,
+      "position": "OL",
+      "age": 28,
+      "overall": 65,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "pass_blocking": 64,
+        "run_blocking": 67,
+        "strength": 63
+      },
+      "salary": 2.89
+    },
+    {
+      "id": "HAR-24",
+      "name": "Jalen Gaines",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 34,
+      "overall": 69,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "pass_rush": 66,
+        "run_defense": 64,
+        "strength": 78
+      },
+      "salary": 6.06
+    },
+    {
+      "id": "HAR-25",
+      "name": "Nikola Vance",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 23,
+      "overall": 76,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "pass_rush": 72,
+        "run_defense": 79,
+        "strength": 76
+      },
+      "salary": 4.16
+    },
+    {
+      "id": "HAR-26",
+      "name": "Emeka Hargrove",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 34,
+      "overall": 88,
       "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 96,
+        "run_defense": 84,
+        "strength": 85
+      },
+      "salary": 29.12
+    },
+    {
+      "id": "HAR-27",
+      "name": "Wade Sato",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 28,
+      "overall": 66,
+      "contract_years": 3,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 68,
+        "strength": 67
+      },
+      "salary": 4.12
+    },
+    {
+      "id": "HAR-28",
+      "name": "Cole Whitfield",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 33,
+      "overall": 65,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 54,
+        "run_defense": 71,
+        "strength": 71
+      },
+      "salary": 3.58
+    },
+    {
+      "id": "HAR-29",
+      "name": "Kenji Brennan",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 22,
+      "overall": 62,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 62,
+        "strength": 55
+      },
+      "salary": 2.27
+    },
+    {
+      "id": "HAR-30",
+      "name": "Reggie Riggins",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 24,
+      "overall": 61,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 63,
+        "run_defense": 58,
+        "strength": 63
+      },
+      "salary": 1.93
+    },
+    {
+      "id": "HAR-31",
+      "name": "Bryce Kowalski",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 31,
+      "overall": 79,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 81,
+        "coverage": 81,
+        "tackling": 74,
+        "pass_rush": 80
+      },
+      "salary": 9.92
+    },
+    {
+      "id": "HAR-32",
+      "name": "Tobias Tanaka",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 26,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 76,
+        "coverage": 76,
+        "tackling": 73,
+        "pass_rush": 71
+      },
+      "salary": 6.59
+    },
+    {
+      "id": "HAR-33",
+      "name": "Andre Okafor",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 25,
+      "overall": 76,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 61,
+        "coverage": 83,
+        "tackling": 80,
+        "pass_rush": 78
+      },
+      "salary": 7.83
+    },
+    {
+      "id": "HAR-34",
+      "name": "Quentin Faulk",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 34,
+      "overall": 67,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 68,
+        "coverage": 65,
+        "tackling": 72,
+        "pass_rush": 62
+      },
+      "salary": 3.23
+    },
+    {
+      "id": "HAR-35",
+      "name": "Emeka Whitfield",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 23,
+      "overall": 62,
+      "contract_years": 5,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 55,
-        "rushing": 48,
-        "receiving": 36,
-        "blocking": 47,
-        "pass_rush": 41,
-        "run_defense": 46,
-        "coverage": 43,
-        "kicking": 99,
-        "athleticism": 48
-      }
+        "run_defense": 64,
+        "coverage": 61,
+        "tackling": 65,
+        "pass_rush": 59
+      },
+      "salary": 1.76
+    },
+    {
+      "id": "HAR-36",
+      "name": "Kenji Holloway",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 22,
+      "overall": 61,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 69,
+        "coverage": 60,
+        "tackling": 55,
+        "pass_rush": 60
+      },
+      "salary": 1.56
+    },
+    {
+      "id": "HAR-37",
+      "name": "Jonah Reyes",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 33,
+      "overall": 68,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 60,
+        "speed": 74,
+        "tackling": 71
+      },
+      "salary": 4.2
+    },
+    {
+      "id": "HAR-38",
+      "name": "Hunter Vance",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 30,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 51,
+        "speed": 71,
+        "tackling": 79
+      },
+      "salary": 3.73
+    },
+    {
+      "id": "HAR-39",
+      "name": "Emeka Mbeki",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 22,
+      "overall": 45,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 32,
+        "speed": 56,
+        "tackling": 48
+      },
+      "salary": 1.0
+    },
+    {
+      "id": "HAR-40",
+      "name": "Bryce Gaines",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 31,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "coverage": 57,
+        "speed": 77,
+        "tackling": 76
+      },
+      "salary": 5.26
+    },
+    {
+      "id": "HAR-41",
+      "name": "Bryce Strickland",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 24,
+      "overall": 57,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 42,
+        "speed": 67,
+        "tackling": 62
+      },
+      "salary": 1.08
+    },
+    {
+      "id": "HAR-42",
+      "name": "Darius Kessler",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 33,
+      "overall": 57,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 42,
+        "speed": 60,
+        "tackling": 68
+      },
+      "salary": 1.08
+    },
+    {
+      "id": "HAR-43",
+      "name": "Theo Strickland",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 34,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 52,
+        "tackling": 78,
+        "speed": 81
+      },
+      "salary": 4.1
+    },
+    {
+      "id": "HAR-44",
+      "name": "Nikola Kowalski",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 32,
+      "overall": 67,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 45,
+        "tackling": 81,
+        "speed": 76
+      },
+      "salary": 2.98
+    },
+    {
+      "id": "HAR-45",
+      "name": "Grant Tanaka",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 26,
+      "overall": 56,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 42,
+        "tackling": 61,
+        "speed": 65
+      },
+      "salary": 1.01
+    },
+    {
+      "id": "HAR-46",
+      "name": "Hunter Dubois",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 28,
+      "overall": 52,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 40,
+        "tackling": 58,
+        "speed": 58
+      },
+      "salary": 1.0
+    },
+    {
+      "id": "HAR-47",
+      "name": "Theo McAllister",
+      "team_id": "HAR",
+      "position": "K",
+      "age": 28,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "kick_power": 65,
+        "kick_accuracy": 73
+      },
+      "salary": 1.84
+    },
+    {
+      "id": "HAR-48",
+      "name": "Xavier Holloway",
+      "team_id": "HAR",
+      "position": "P",
+      "age": 31,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "kick_power": 79,
+        "kick_accuracy": 69
+      },
+      "salary": 1.93
     },
     {
       "id": "MES-01",
-      "name": "Jalen Novak",
+      "name": "Kenji Vance",
       "team_id": "MES",
       "position": "QB",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 2,
-      "games_missed_last_season": 0,
+      "age": 24,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 99,
-        "rushing": 83,
-        "receiving": 69,
-        "blocking": 67,
-        "pass_rush": 65,
-        "run_defense": 60,
-        "coverage": 57,
-        "kicking": 69,
-        "athleticism": 90
-      }
+        "accuracy": 73,
+        "arm_strength": 74,
+        "decision_making": 77,
+        "mobility": 67
+      },
+      "salary": 14.3
     },
     {
       "id": "MES-02",
-      "name": "Jonah Brennan",
+      "name": "Silas Vance",
       "team_id": "MES",
-      "position": "RB",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "QB",
+      "age": 29,
+      "overall": 66,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 54,
-        "rushing": 90,
-        "receiving": 77,
-        "blocking": 70,
-        "pass_rush": 48,
-        "run_defense": 58,
-        "coverage": 55,
-        "kicking": 61,
-        "athleticism": 80
-      }
+        "accuracy": 61,
+        "arm_strength": 67,
+        "decision_making": 74,
+        "mobility": 62
+      },
+      "salary": 5.97
     },
     {
       "id": "MES-03",
-      "name": "Andre Brennan",
+      "name": "Reggie Sato",
       "team_id": "MES",
       "position": "RB",
-      "age": 29,
-      "salary": 8.3,
-      "contract_years": 4,
-      "games_missed_last_season": 3,
+      "age": 26,
+      "overall": 67,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 52,
-        "rushing": 78,
-        "receiving": 62,
-        "blocking": 52,
-        "pass_rush": 49,
-        "run_defense": 51,
-        "coverage": 36,
-        "kicking": 46,
-        "athleticism": 66
-      }
+        "rushing": 75,
+        "receiving": 59,
+        "pass_protection": 71,
+        "speed": 64
+      },
+      "salary": 2.42
     },
     {
       "id": "MES-04",
-      "name": "Luca Mensah",
+      "name": "Xavier Lindqvist",
       "team_id": "MES",
-      "position": "WR",
-      "age": 26,
-      "salary": 2.7,
+      "position": "RB",
+      "age": 25,
+      "overall": 64,
       "contract_years": 4,
-      "games_missed_last_season": 3,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 50,
-        "rushing": 63,
-        "receiving": 91,
-        "blocking": 42,
-        "pass_rush": 50,
-        "run_defense": 44,
-        "coverage": 50,
-        "kicking": 51,
-        "athleticism": 68
-      }
+        "rushing": 59,
+        "receiving": 65,
+        "pass_protection": 63,
+        "speed": 67
+      },
+      "salary": 1.8
     },
     {
       "id": "MES-05",
-      "name": "Luca Mbeki",
+      "name": "Andre Abernathy",
       "team_id": "MES",
-      "position": "WR",
-      "age": 33,
-      "salary": 7.1,
-      "contract_years": 1,
-      "games_missed_last_season": 2,
+      "position": "RB",
+      "age": 29,
+      "overall": 66,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 51,
-        "rushing": 56,
-        "receiving": 81,
-        "blocking": 45,
-        "pass_rush": 40,
-        "run_defense": 37,
-        "coverage": 56,
-        "kicking": 55,
-        "athleticism": 74
-      }
+        "rushing": 58,
+        "receiving": 68,
+        "pass_protection": 67,
+        "speed": 71
+      },
+      "salary": 2.19
     },
     {
       "id": "MES-06",
-      "name": "Jalen Ferreira",
+      "name": "Marcus Faulk",
       "team_id": "MES",
       "position": "WR",
-      "age": 32,
-      "salary": 13.8,
-      "contract_years": 2,
-      "games_missed_last_season": 2,
+      "age": 24,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 50,
-        "rushing": 66,
-        "receiving": 85,
-        "blocking": 60,
-        "pass_rush": 46,
-        "run_defense": 49,
-        "coverage": 47,
-        "kicking": 53,
-        "athleticism": 82
-      }
+        "route_running": 65,
+        "hands": 78,
+        "speed": 77
+      },
+      "salary": 8.98
     },
     {
       "id": "MES-07",
-      "name": "Elias Holloway",
+      "name": "Mateo Abernathy",
       "team_id": "MES",
-      "position": "TE",
-      "age": 33,
-      "salary": 14.6,
-      "contract_years": 5,
-      "games_missed_last_season": 4,
+      "position": "WR",
+      "age": 27,
+      "overall": 76,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 58,
-        "rushing": 63,
-        "receiving": 86,
-        "blocking": 82,
-        "pass_rush": 61,
-        "run_defense": 58,
-        "coverage": 60,
-        "kicking": 50,
-        "athleticism": 81
-      }
+        "route_running": 82,
+        "hands": 71,
+        "speed": 76
+      },
+      "salary": 11.86
     },
     {
       "id": "MES-08",
-      "name": "Rafael Achebe",
+      "name": "Reggie Ferreira",
       "team_id": "MES",
-      "position": "OT",
-      "age": 24,
-      "salary": 14.3,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "WR",
+      "age": 29,
+      "overall": 76,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 54,
-        "rushing": 68,
-        "receiving": 68,
-        "blocking": 87,
-        "pass_rush": 62,
-        "run_defense": 75,
-        "coverage": 54,
-        "kicking": 60,
-        "athleticism": 67
-      }
+        "route_running": 72,
+        "hands": 84,
+        "speed": 72
+      },
+      "salary": 11.86
     },
     {
       "id": "MES-09",
-      "name": "Tariq Kowalski",
+      "name": "Bryce Bolden",
       "team_id": "MES",
-      "position": "OT",
-      "age": 34,
-      "salary": 3.9,
-      "contract_years": 5,
-      "games_missed_last_season": 11,
+      "position": "WR",
+      "age": 26,
+      "overall": 53,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 46,
-        "rushing": 48,
-        "receiving": 49,
-        "blocking": 86,
-        "pass_rush": 48,
-        "run_defense": 62,
-        "coverage": 41,
-        "kicking": 49,
-        "athleticism": 58
-      }
+        "route_running": 51,
+        "hands": 51,
+        "speed": 57
+      },
+      "salary": 1.0
     },
     {
       "id": "MES-10",
-      "name": "Mateo Sato",
+      "name": "Kenji Achebe",
       "team_id": "MES",
-      "position": "OG",
-      "age": 32,
-      "salary": 15.3,
-      "contract_years": 2,
+      "position": "WR",
+      "age": 25,
+      "overall": 63,
+      "contract_years": 4,
       "games_missed_last_season": 2,
       "ratings": {
-        "passing": 66,
-        "rushing": 64,
-        "receiving": 64,
-        "blocking": 99,
-        "pass_rush": 65,
-        "run_defense": 71,
-        "coverage": 71,
-        "kicking": 69,
-        "athleticism": 73
-      }
+        "route_running": 67,
+        "hands": 60,
+        "speed": 62
+      },
+      "salary": 2.58
     },
     {
       "id": "MES-11",
-      "name": "Kenji Okafor",
+      "name": "Tariq Lindqvist",
       "team_id": "MES",
-      "position": "OG",
-      "age": 30,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 4,
+      "position": "WR",
+      "age": 28,
+      "overall": 59,
+      "contract_years": 4,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 35,
-        "rushing": 45,
-        "receiving": 37,
-        "blocking": 68,
-        "pass_rush": 40,
-        "run_defense": 45,
-        "coverage": 52,
-        "kicking": 35,
-        "athleticism": 43
-      }
+        "route_running": 61,
+        "hands": 57,
+        "speed": 60
+      },
+      "salary": 1.39
     },
     {
       "id": "MES-12",
-      "name": "Ruben Vance",
+      "name": "Dante Strickland",
       "team_id": "MES",
-      "position": "C",
-      "age": 25,
-      "salary": 15.4,
-      "contract_years": 1,
-      "games_missed_last_season": 26,
+      "position": "TE",
+      "age": 26,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 63,
-        "rushing": 66,
-        "receiving": 60,
-        "blocking": 91,
-        "pass_rush": 63,
-        "run_defense": 72,
-        "coverage": 52,
-        "kicking": 59,
-        "athleticism": 61
-      }
+        "receiving": 74,
+        "blocking": 67,
+        "speed": 81
+      },
+      "salary": 5.45
     },
     {
       "id": "MES-13",
-      "name": "Jalen Ibarra",
+      "name": "Darius Vance",
       "team_id": "MES",
-      "position": "EDGE",
-      "age": 31,
-      "salary": 7.9,
-      "contract_years": 2,
-      "games_missed_last_season": 3,
+      "position": "TE",
+      "age": 25,
+      "overall": 59,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 42,
-        "rushing": 54,
-        "receiving": 50,
-        "blocking": 49,
-        "pass_rush": 85,
-        "run_defense": 62,
-        "coverage": 51,
-        "kicking": 49,
-        "athleticism": 74
-      }
+        "receiving": 57,
+        "blocking": 60,
+        "speed": 61
+      },
+      "salary": 1.2
     },
     {
       "id": "MES-14",
-      "name": "Nikola Brennan",
+      "name": "Dante Kowalski",
       "team_id": "MES",
-      "position": "EDGE",
-      "age": 30,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 3,
+      "position": "TE",
+      "age": 29,
+      "overall": 61,
+      "contract_years": 2,
+      "games_missed_last_season": 8,
       "ratings": {
-        "passing": 47,
-        "rushing": 34,
-        "receiving": 36,
-        "blocking": 50,
-        "pass_rush": 71,
-        "run_defense": 72,
-        "coverage": 50,
-        "kicking": 34,
-        "athleticism": 62
-      }
+        "receiving": 66,
+        "blocking": 57,
+        "speed": 61
+      },
+      "salary": 1.44
     },
     {
       "id": "MES-15",
-      "name": "Omar Lindqvist",
+      "name": "Grant Okafor",
       "team_id": "MES",
-      "position": "DT",
-      "age": 31,
-      "salary": 0.9,
-      "contract_years": 5,
+      "position": "OL",
+      "age": 28,
+      "overall": 77,
+      "contract_years": 2,
       "games_missed_last_season": 4,
       "ratings": {
-        "passing": 40,
-        "rushing": 37,
-        "receiving": 39,
-        "blocking": 46,
-        "pass_rush": 65,
-        "run_defense": 66,
-        "coverage": 42,
-        "kicking": 34,
-        "athleticism": 66
-      }
+        "pass_blocking": 76,
+        "run_blocking": 78,
+        "strength": 78
+      },
+      "salary": 9.74
     },
     {
       "id": "MES-16",
-      "name": "Jonah Sato",
+      "name": "Omar Reyes",
       "team_id": "MES",
-      "position": "DT",
-      "age": 31,
-      "salary": 8.8,
-      "contract_years": 4,
+      "position": "OL",
+      "age": 28,
+      "overall": 74,
+      "contract_years": 3,
       "games_missed_last_season": 3,
       "ratings": {
-        "passing": 49,
-        "rushing": 45,
-        "receiving": 51,
-        "blocking": 53,
-        "pass_rush": 86,
-        "run_defense": 81,
-        "coverage": 51,
-        "kicking": 53,
-        "athleticism": 76
-      }
+        "pass_blocking": 78,
+        "run_blocking": 69,
+        "strength": 75
+      },
+      "salary": 7.52
     },
     {
       "id": "MES-17",
-      "name": "Bryce Tanaka",
+      "name": "Darius Novak",
       "team_id": "MES",
-      "position": "LB",
-      "age": 21,
-      "salary": 5.0,
+      "position": "OL",
+      "age": 27,
+      "overall": 75,
       "contract_years": 2,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 64,
-        "rushing": 67,
-        "receiving": 78,
-        "blocking": 63,
-        "pass_rush": 98,
-        "run_defense": 99,
-        "coverage": 87,
-        "kicking": 70,
-        "athleticism": 85
-      }
+        "pass_blocking": 72,
+        "run_blocking": 77,
+        "strength": 75
+      },
+      "salary": 8.23
     },
     {
       "id": "MES-18",
-      "name": "Dmitri Sato",
+      "name": "Theo Thibodeaux",
       "team_id": "MES",
-      "position": "LB",
-      "age": 29,
-      "salary": 5.5,
-      "contract_years": 4,
-      "games_missed_last_season": 5,
+      "position": "OL",
+      "age": 25,
+      "overall": 77,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 44,
-        "rushing": 46,
-        "receiving": 56,
-        "blocking": 52,
-        "pass_rush": 61,
-        "run_defense": 70,
-        "coverage": 63,
-        "kicking": 41,
-        "athleticism": 70
-      }
+        "pass_blocking": 78,
+        "run_blocking": 81,
+        "strength": 72
+      },
+      "salary": 9.74
     },
     {
       "id": "MES-19",
-      "name": "Elias Novak",
+      "name": "Mateo Ibarra",
       "team_id": "MES",
-      "position": "CB",
-      "age": 32,
-      "salary": 1.5,
-      "contract_years": 3,
-      "games_missed_last_season": 2,
+      "position": "OL",
+      "age": 31,
+      "overall": 80,
+      "contract_years": 5,
+      "games_missed_last_season": 7,
       "ratings": {
-        "passing": 48,
-        "rushing": 51,
-        "receiving": 56,
-        "blocking": 44,
-        "pass_rush": 48,
-        "run_defense": 52,
-        "coverage": 76,
-        "kicking": 44,
-        "athleticism": 73
-      }
+        "pass_blocking": 77,
+        "run_blocking": 79,
+        "strength": 84
+      },
+      "salary": 12.29
     },
     {
       "id": "MES-20",
-      "name": "Luca Whitfield",
+      "name": "Mateo Thibodeaux",
       "team_id": "MES",
-      "position": "CB",
-      "age": 29,
-      "salary": 0.9,
-      "contract_years": 2,
-      "games_missed_last_season": 1,
+      "position": "OL",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 49,
-        "rushing": 55,
-        "receiving": 64,
-        "blocking": 50,
-        "pass_rush": 52,
-        "run_defense": 58,
-        "coverage": 88,
-        "kicking": 45,
-        "athleticism": 61
-      }
+        "pass_blocking": 57,
+        "run_blocking": 69,
+        "strength": 69
+      },
+      "salary": 2.81
     },
     {
       "id": "MES-21",
-      "name": "Kenji Whitfield",
+      "name": "Tyrell Kowalski",
       "team_id": "MES",
-      "position": "S",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 25,
+      "overall": 61,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 42,
-        "rushing": 56,
-        "receiving": 57,
-        "blocking": 49,
-        "pass_rush": 60,
-        "run_defense": 70,
-        "coverage": 81,
-        "kicking": 42,
-        "athleticism": 70
-      }
+        "pass_blocking": 65,
+        "run_blocking": 58,
+        "strength": 61
+      },
+      "salary": 1.65
     },
     {
       "id": "MES-22",
-      "name": "Mateo Hargrove",
+      "name": "Malik Strickland",
       "team_id": "MES",
-      "position": "S",
-      "age": 33,
-      "salary": 0.9,
-      "contract_years": 5,
-      "games_missed_last_season": 6,
+      "position": "OL",
+      "age": 22,
+      "overall": 55,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 47,
-        "rushing": 39,
-        "receiving": 58,
-        "blocking": 41,
-        "pass_rush": 49,
-        "run_defense": 53,
-        "coverage": 66,
-        "kicking": 34,
-        "athleticism": 59
-      }
+        "pass_blocking": 51,
+        "run_blocking": 61,
+        "strength": 53
+      },
+      "salary": 1.0
     },
     {
       "id": "MES-23",
-      "name": "Ruben Hargrove",
+      "name": "Ruben Lindqvist",
       "team_id": "MES",
-      "position": "K",
-      "age": 30,
-      "salary": 9.2,
+      "position": "OL",
+      "age": 23,
+      "overall": 58,
+      "contract_years": 4,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "pass_blocking": 58,
+        "run_blocking": 64,
+        "strength": 51
+      },
+      "salary": 1.16
+    },
+    {
+      "id": "MES-24",
+      "name": "Cole McAllister",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 31,
+      "overall": 74,
+      "contract_years": 5,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "pass_rush": 78,
+        "run_defense": 69,
+        "strength": 75
+      },
+      "salary": 9.89
+    },
+    {
+      "id": "MES-25",
+      "name": "Cole Ferreira",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 23,
+      "overall": 75,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 75,
+        "strength": 80
+      },
+      "salary": 4.02
+    },
+    {
+      "id": "MES-26",
+      "name": "Bryce Thibodeaux",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 27,
+      "overall": 68,
       "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 66,
+        "strength": 68
+      },
+      "salary": 5.16
+    },
+    {
+      "id": "MES-27",
+      "name": "Quentin Kessler",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 30,
+      "overall": 70,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 78,
+        "run_defense": 65,
+        "strength": 68
+      },
+      "salary": 6.54
+    },
+    {
+      "id": "MES-28",
+      "name": "Nikola Lindqvist",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 29,
+      "overall": 63,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 68,
+        "run_defense": 60,
+        "strength": 62
+      },
+      "salary": 2.58
+    },
+    {
+      "id": "MES-29",
+      "name": "Dante Lindqvist",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 27,
+      "overall": 66,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 66,
+        "run_defense": 62,
+        "strength": 69
+      },
+      "salary": 3.98
+    },
+    {
+      "id": "MES-30",
+      "name": "Quentin Ferreira",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 26,
+      "overall": 70,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 66,
+        "strength": 74
+      },
+      "salary": 6.54
+    },
+    {
+      "id": "MES-31",
+      "name": "Nikola Tanaka",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 33,
+      "overall": 79,
+      "contract_years": 5,
+      "games_missed_last_season": 9,
+      "ratings": {
+        "run_defense": 83,
+        "coverage": 79,
+        "tackling": 75,
+        "pass_rush": 80
+      },
+      "salary": 9.51
+    },
+    {
+      "id": "MES-32",
+      "name": "Tobias Holloway",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 24,
+      "overall": 81,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 79,
+        "coverage": 82,
+        "tackling": 81,
+        "pass_rush": 83
+      },
+      "salary": 10.99
+    },
+    {
+      "id": "MES-33",
+      "name": "Grant Mbeki",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 29,
+      "overall": 74,
+      "contract_years": 1,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "run_defense": 85,
+        "coverage": 65,
+        "tackling": 69,
+        "pass_rush": 79
+      },
+      "salary": 6.34
+    },
+    {
+      "id": "MES-34",
+      "name": "Kenji Sato",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 29,
+      "overall": 70,
+      "contract_years": 1,
       "games_missed_last_season": 3,
       "ratings": {
-        "passing": 43,
-        "rushing": 45,
-        "receiving": 51,
-        "blocking": 56,
-        "pass_rush": 45,
-        "run_defense": 52,
-        "coverage": 60,
-        "kicking": 93,
-        "athleticism": 58
-      }
+        "run_defense": 66,
+        "coverage": 71,
+        "tackling": 74,
+        "pass_rush": 69
+      },
+      "salary": 4.33
+    },
+    {
+      "id": "MES-35",
+      "name": "Silas Sato",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 25,
+      "overall": 70,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 72,
+        "coverage": 72,
+        "tackling": 70,
+        "pass_rush": 65
+      },
+      "salary": 4.33
+    },
+    {
+      "id": "MES-36",
+      "name": "Darius Holloway",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 29,
+      "overall": 58,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "run_defense": 56,
+        "coverage": 57,
+        "tackling": 62,
+        "pass_rush": 57
+      },
+      "salary": 1.13
+    },
+    {
+      "id": "MES-37",
+      "name": "Hunter Whitfield",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 34,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 72,
+        "speed": 75,
+        "tackling": 72
+      },
+      "salary": 6.85
+    },
+    {
+      "id": "MES-38",
+      "name": "Caleb Gaines",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 28,
+      "overall": 76,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 79,
+        "speed": 74,
+        "tackling": 76
+      },
+      "salary": 8.97
+    },
+    {
+      "id": "MES-39",
+      "name": "Jamal Whitfield",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 23,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "coverage": 68,
+        "speed": 65,
+        "tackling": 77
+      },
+      "salary": 4.02
+    },
+    {
+      "id": "MES-40",
+      "name": "Nikola Ferreira",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 24,
+      "overall": 68,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 68,
+        "speed": 68,
+        "tackling": 69
+      },
+      "salary": 4.05
+    },
+    {
+      "id": "MES-41",
+      "name": "Malik Holloway",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 33,
+      "overall": 61,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 56,
+        "speed": 62,
+        "tackling": 65
+      },
+      "salary": 1.65
+    },
+    {
+      "id": "MES-42",
+      "name": "Jonah Mensah",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 33,
+      "overall": 52,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 56,
+        "speed": 49,
+        "tackling": 52
+      },
+      "salary": 1.0
+    },
+    {
+      "id": "MES-43",
+      "name": "Elias Gaines",
+      "team_id": "MES",
+      "position": "S",
+      "age": 32,
+      "overall": 80,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 72,
+        "tackling": 96,
+        "speed": 71
+      },
+      "salary": 9.21
+    },
+    {
+      "id": "MES-44",
+      "name": "Omar Sato",
+      "team_id": "MES",
+      "position": "S",
+      "age": 28,
+      "overall": 73,
+      "contract_years": 4,
+      "games_missed_last_season": 7,
+      "ratings": {
+        "coverage": 68,
+        "tackling": 66,
+        "speed": 85
+      },
+      "salary": 5.26
+    },
+    {
+      "id": "MES-45",
+      "name": "Jamal Dubois",
+      "team_id": "MES",
+      "position": "S",
+      "age": 28,
+      "overall": 62,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 62,
+        "tackling": 62,
+        "speed": 61
+      },
+      "salary": 1.64
+    },
+    {
+      "id": "MES-46",
+      "name": "Silas Bolden",
+      "team_id": "MES",
+      "position": "S",
+      "age": 23,
+      "overall": 64,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 62,
+        "tackling": 66,
+        "speed": 65
+      },
+      "salary": 2.06
+    },
+    {
+      "id": "MES-47",
+      "name": "Marcus Gaines",
+      "team_id": "MES",
+      "position": "K",
+      "age": 37,
+      "overall": 78,
+      "contract_years": 4,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "kick_power": 74,
+        "kick_accuracy": 83
+      },
+      "salary": 3.17
+    },
+    {
+      "id": "MES-48",
+      "name": "Tariq Novak",
+      "team_id": "MES",
+      "position": "P",
+      "age": 36,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "kick_power": 65,
+        "kick_accuracy": 73
+      },
+      "salary": 1.48
     },
     {
       "id": "IRN-01",
-      "name": "Xavier Achebe",
+      "name": "Bryce McAllister",
       "team_id": "IRN",
       "position": "QB",
-      "age": 25,
-      "salary": 12.1,
-      "contract_years": 3,
-      "games_missed_last_season": 3,
+      "age": 29,
+      "overall": 81,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 99,
-        "rushing": 74,
-        "receiving": 63,
-        "blocking": 55,
-        "pass_rush": 56,
-        "run_defense": 50,
-        "coverage": 47,
-        "kicking": 61,
-        "athleticism": 76
-      }
+        "accuracy": 83,
+        "arm_strength": 75,
+        "decision_making": 77,
+        "mobility": 88
+      },
+      "salary": 28.49
     },
     {
       "id": "IRN-02",
-      "name": "Malik Ibarra",
+      "name": "Rafael Sato",
       "team_id": "IRN",
-      "position": "RB",
-      "age": 25,
-      "salary": 7.6,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "QB",
+      "age": 29,
+      "overall": 61,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 40,
-        "rushing": 80,
-        "receiving": 76,
-        "blocking": 59,
-        "pass_rush": 39,
-        "run_defense": 46,
-        "coverage": 56,
-        "kicking": 46,
-        "athleticism": 76
-      }
+        "accuracy": 66,
+        "arm_strength": 61,
+        "decision_making": 61,
+        "mobility": 57
+      },
+      "salary": 2.46
     },
     {
       "id": "IRN-03",
-      "name": "Kenji Ibarra",
+      "name": "Tyrell Brennan",
       "team_id": "IRN",
       "position": "RB",
-      "age": 21,
-      "salary": 3.6,
-      "contract_years": 1,
-      "games_missed_last_season": 19,
+      "age": 28,
+      "overall": 78,
+      "contract_years": 3,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 38,
-        "rushing": 74,
-        "receiving": 65,
-        "blocking": 47,
-        "pass_rush": 36,
-        "run_defense": 30,
-        "coverage": 33,
-        "kicking": 41,
-        "athleticism": 58
-      }
+        "rushing": 76,
+        "receiving": 87,
+        "pass_protection": 72,
+        "speed": 78
+      },
+      "salary": 6.16
     },
     {
       "id": "IRN-04",
-      "name": "Theo Sato",
+      "name": "Reggie Novak",
       "team_id": "IRN",
-      "position": "WR",
-      "age": 28,
-      "salary": 15.2,
-      "contract_years": 3,
-      "games_missed_last_season": 1,
+      "position": "RB",
+      "age": 32,
+      "overall": 72,
+      "contract_years": 4,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 58,
-        "rushing": 72,
-        "receiving": 99,
-        "blocking": 67,
-        "pass_rush": 53,
-        "run_defense": 62,
-        "coverage": 65,
-        "kicking": 64,
-        "athleticism": 84
-      }
+        "rushing": 73,
+        "receiving": 68,
+        "pass_protection": 70,
+        "speed": 78
+      },
+      "salary": 3.82
     },
     {
       "id": "IRN-05",
-      "name": "Nikola Mensah",
+      "name": "Mason Vance",
       "team_id": "IRN",
-      "position": "WR",
-      "age": 25,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 1,
+      "position": "RB",
+      "age": 33,
+      "overall": 60,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 43,
         "rushing": 59,
-        "receiving": 85,
-        "blocking": 38,
-        "pass_rush": 41,
-        "run_defense": 34,
-        "coverage": 48,
-        "kicking": 48,
-        "athleticism": 71
-      }
+        "receiving": 59,
+        "pass_protection": 54,
+        "speed": 68
+      },
+      "salary": 1.24
     },
     {
       "id": "IRN-06",
-      "name": "Quentin Sato",
+      "name": "Elias Strickland",
       "team_id": "IRN",
       "position": "WR",
-      "age": 28,
-      "salary": 11.1,
-      "contract_years": 1,
-      "games_missed_last_season": 0,
+      "age": 34,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 51,
-        "rushing": 70,
-        "receiving": 98,
-        "blocking": 66,
-        "pass_rush": 57,
-        "run_defense": 49,
-        "coverage": 58,
-        "kicking": 58,
-        "athleticism": 75
-      }
+        "route_running": 70,
+        "hands": 68,
+        "speed": 70
+      },
+      "salary": 5.78
     },
     {
       "id": "IRN-07",
-      "name": "Quentin Whitfield",
+      "name": "Theo Mbeki",
       "team_id": "IRN",
-      "position": "TE",
-      "age": 31,
-      "salary": 10.8,
-      "contract_years": 5,
-      "games_missed_last_season": 5,
+      "position": "WR",
+      "age": 29,
+      "overall": 66,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 38,
-        "rushing": 56,
-        "receiving": 70,
-        "blocking": 78,
-        "pass_rush": 50,
-        "run_defense": 56,
-        "coverage": 59,
-        "kicking": 59,
-        "athleticism": 75
-      }
+        "route_running": 60,
+        "hands": 66,
+        "speed": 73
+      },
+      "salary": 3.95
     },
     {
       "id": "IRN-08",
-      "name": "Tariq Tanaka",
+      "name": "Cole Okafor",
       "team_id": "IRN",
-      "position": "OT",
-      "age": 33,
-      "salary": 3.8,
-      "contract_years": 5,
-      "games_missed_last_season": 3,
+      "position": "WR",
+      "age": 29,
+      "overall": 64,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 41,
-        "rushing": 54,
-        "receiving": 42,
-        "blocking": 85,
-        "pass_rush": 50,
-        "run_defense": 63,
-        "coverage": 39,
-        "kicking": 43,
-        "athleticism": 62
-      }
+        "route_running": 66,
+        "hands": 62,
+        "speed": 65
+      },
+      "salary": 2.98
     },
     {
       "id": "IRN-09",
-      "name": "Luca Achebe",
+      "name": "Silas Pruitt",
       "team_id": "IRN",
-      "position": "OT",
+      "position": "WR",
       "age": 27,
-      "salary": 5.2,
-      "contract_years": 5,
-      "games_missed_last_season": 0,
+      "overall": 62,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 52,
-        "rushing": 60,
-        "receiving": 48,
-        "blocking": 84,
-        "pass_rush": 45,
-        "run_defense": 61,
-        "coverage": 54,
-        "kicking": 49,
-        "athleticism": 74
-      }
+        "route_running": 65,
+        "hands": 63,
+        "speed": 58
+      },
+      "salary": 2.2
     },
     {
       "id": "IRN-10",
-      "name": "Andre Mensah",
+      "name": "Theo Holloway",
       "team_id": "IRN",
-      "position": "OG",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 5,
-      "games_missed_last_season": 0,
+      "position": "WR",
+      "age": 33,
+      "overall": 66,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 57,
-        "rushing": 54,
-        "receiving": 53,
-        "blocking": 95,
-        "pass_rush": 60,
-        "run_defense": 66,
-        "coverage": 62,
-        "kicking": 55,
-        "athleticism": 66
-      }
+        "route_running": 64,
+        "hands": 60,
+        "speed": 73
+      },
+      "salary": 3.95
     },
     {
       "id": "IRN-11",
-      "name": "Dmitri Lindqvist",
+      "name": "Luca Thibodeaux",
       "team_id": "IRN",
-      "position": "OG",
-      "age": 25,
-      "salary": 9.9,
-      "contract_years": 3,
-      "games_missed_last_season": 4,
+      "position": "WR",
+      "age": 22,
+      "overall": 48,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 57,
-        "rushing": 65,
-        "receiving": 60,
-        "blocking": 90,
-        "pass_rush": 54,
-        "run_defense": 75,
-        "coverage": 42,
-        "kicking": 61,
-        "athleticism": 69
-      }
+        "route_running": 48,
+        "hands": 47,
+        "speed": 48
+      },
+      "salary": 1.0
     },
     {
       "id": "IRN-12",
-      "name": "Ruben Lindqvist",
+      "name": "Jalen Whitfield",
       "team_id": "IRN",
-      "position": "C",
-      "age": 24,
-      "salary": 10.1,
-      "contract_years": 4,
-      "games_missed_last_season": 9,
+      "position": "TE",
+      "age": 32,
+      "overall": 77,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 65,
-        "rushing": 61,
-        "receiving": 59,
-        "blocking": 99,
-        "pass_rush": 62,
-        "run_defense": 65,
-        "coverage": 62,
-        "kicking": 62,
-        "athleticism": 66
-      }
+        "receiving": 73,
+        "blocking": 81,
+        "speed": 77
+      },
+      "salary": 6.9
     },
     {
       "id": "IRN-13",
-      "name": "Kofi Castillo",
+      "name": "Kofi Holloway",
       "team_id": "IRN",
-      "position": "EDGE",
+      "position": "TE",
       "age": 24,
-      "salary": 9.7,
+      "overall": 68,
       "contract_years": 2,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 45,
-        "rushing": 57,
-        "receiving": 56,
-        "blocking": 62,
-        "pass_rush": 92,
-        "run_defense": 80,
-        "coverage": 59,
-        "kicking": 51,
-        "athleticism": 83
-      }
+        "receiving": 73,
+        "blocking": 63,
+        "speed": 69
+      },
+      "salary": 3.06
     },
     {
       "id": "IRN-14",
-      "name": "Rafael Vance",
+      "name": "Caleb Abernathy",
       "team_id": "IRN",
-      "position": "EDGE",
-      "age": 35,
-      "salary": 6.2,
-      "contract_years": 2,
-      "games_missed_last_season": 3,
+      "position": "TE",
+      "age": 32,
+      "overall": 76,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 45,
-        "rushing": 37,
-        "receiving": 43,
-        "blocking": 62,
-        "pass_rush": 82,
-        "run_defense": 73,
-        "coverage": 45,
-        "kicking": 46,
-        "athleticism": 76
-      }
+        "receiving": 74,
+        "blocking": 75,
+        "speed": 78
+      },
+      "salary": 6.38
     },
     {
       "id": "IRN-15",
-      "name": "Quentin Whitfield",
+      "name": "Mason Dubois",
       "team_id": "IRN",
-      "position": "DT",
-      "age": 27,
-      "salary": 25.1,
-      "contract_years": 1,
-      "games_missed_last_season": 10,
+      "position": "OL",
+      "age": 29,
+      "overall": 68,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 64,
-        "rushing": 67,
-        "receiving": 83,
-        "blocking": 79,
-        "pass_rush": 94,
-        "run_defense": 99,
-        "coverage": 89,
-        "kicking": 72,
-        "athleticism": 89
-      }
+        "pass_blocking": 68,
+        "run_blocking": 64,
+        "strength": 71
+      },
+      "salary": 4.02
     },
     {
       "id": "IRN-16",
-      "name": "Mateo Holloway",
+      "name": "Tyrell Strickland",
       "team_id": "IRN",
-      "position": "DT",
+      "position": "OL",
       "age": 33,
-      "salary": 0.9,
+      "overall": 69,
       "contract_years": 3,
-      "games_missed_last_season": 3,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 36,
-        "rushing": 37,
-        "receiving": 34,
-        "blocking": 48,
-        "pass_rush": 69,
-        "run_defense": 73,
-        "coverage": 36,
-        "kicking": 37,
-        "athleticism": 64
-      }
+        "pass_blocking": 69,
+        "run_blocking": 73,
+        "strength": 66
+      },
+      "salary": 4.51
     },
     {
       "id": "IRN-17",
-      "name": "Theo Whitfield",
+      "name": "Silas Novak",
       "team_id": "IRN",
-      "position": "LB",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 31,
+      "overall": 76,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 59,
-        "rushing": 62,
-        "receiving": 55,
-        "blocking": 61,
-        "pass_rush": 77,
-        "run_defense": 93,
-        "coverage": 82,
-        "kicking": 64,
-        "athleticism": 82
-      }
+        "pass_blocking": 81,
+        "run_blocking": 72,
+        "strength": 74
+      },
+      "salary": 8.89
     },
     {
       "id": "IRN-18",
-      "name": "Rafael Tanaka",
+      "name": "Kenji Thibodeaux",
       "team_id": "IRN",
-      "position": "LB",
-      "age": 33,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 4,
+      "position": "OL",
+      "age": 31,
+      "overall": 58,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 41,
-        "rushing": 48,
-        "receiving": 34,
-        "blocking": 42,
-        "pass_rush": 52,
-        "run_defense": 69,
-        "coverage": 63,
-        "kicking": 36,
-        "athleticism": 66
-      }
+        "pass_blocking": 63,
+        "run_blocking": 54,
+        "strength": 56
+      },
+      "salary": 1.16
     },
     {
       "id": "IRN-19",
-      "name": "Xavier Novak",
+      "name": "Isaiah Pruitt",
       "team_id": "IRN",
-      "position": "CB",
-      "age": 25,
-      "salary": 19.8,
+      "position": "OL",
+      "age": 22,
+      "overall": 86,
       "contract_years": 5,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 67,
-        "rushing": 68,
-        "receiving": 83,
-        "blocking": 64,
-        "pass_rush": 66,
-        "run_defense": 77,
-        "coverage": 94,
-        "kicking": 67,
-        "athleticism": 94
-      }
+        "pass_blocking": 85,
+        "run_blocking": 84,
+        "strength": 88
+      },
+      "salary": 3.99
     },
     {
       "id": "IRN-20",
-      "name": "Quentin Whitfield",
+      "name": "Isaiah Lindqvist",
       "team_id": "IRN",
-      "position": "CB",
-      "age": 28,
-      "salary": 0.9,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 34,
+      "overall": 65,
+      "contract_years": 5,
+      "games_missed_last_season": 6,
       "ratings": {
-        "passing": 39,
-        "rushing": 43,
-        "receiving": 53,
-        "blocking": 40,
-        "pass_rush": 42,
-        "run_defense": 44,
-        "coverage": 75,
-        "kicking": 49,
-        "athleticism": 66
-      }
+        "pass_blocking": 69,
+        "run_blocking": 63,
+        "strength": 62
+      },
+      "salary": 2.79
     },
     {
       "id": "IRN-21",
-      "name": "Andre Ferreira",
+      "name": "Ruben Mensah",
       "team_id": "IRN",
-      "position": "S",
+      "position": "OL",
       "age": 29,
-      "salary": 13.4,
-      "contract_years": 1,
-      "games_missed_last_season": 5,
+      "overall": 65,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 56,
-        "rushing": 62,
-        "receiving": 68,
-        "blocking": 60,
-        "pass_rush": 74,
-        "run_defense": 76,
-        "coverage": 89,
-        "kicking": 63,
-        "athleticism": 79
-      }
+        "pass_blocking": 61,
+        "run_blocking": 65,
+        "strength": 70
+      },
+      "salary": 2.79
     },
     {
       "id": "IRN-22",
-      "name": "Dmitri Dubois",
+      "name": "Xavier Kessler",
       "team_id": "IRN",
-      "position": "S",
-      "age": 35,
-      "salary": 10.4,
-      "contract_years": 1,
-      "games_missed_last_season": 5,
+      "position": "OL",
+      "age": 32,
+      "overall": 81,
+      "contract_years": 4,
+      "games_missed_last_season": 8,
       "ratings": {
-        "passing": 40,
-        "rushing": 45,
-        "receiving": 59,
-        "blocking": 60,
-        "pass_rush": 62,
-        "run_defense": 78,
-        "coverage": 79,
-        "kicking": 54,
-        "athleticism": 80
-      }
+        "pass_blocking": 82,
+        "run_blocking": 81,
+        "strength": 81
+      },
+      "salary": 13.09
     },
     {
       "id": "IRN-23",
-      "name": "Jonah Brennan",
+      "name": "Emeka Dubois",
       "team_id": "IRN",
-      "position": "K",
+      "position": "OL",
+      "age": 27,
+      "overall": 75,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_blocking": 77,
+        "run_blocking": 76,
+        "strength": 73
+      },
+      "salary": 8.16
+    },
+    {
+      "id": "IRN-24",
+      "name": "Ruben Hargrove",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 27,
+      "overall": 71,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 74,
+        "run_defense": 72,
+        "strength": 68
+      },
+      "salary": 7.25
+    },
+    {
+      "id": "IRN-25",
+      "name": "Andre Pruitt",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 24,
+      "overall": 64,
+      "contract_years": 1,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 56,
+        "strength": 64
+      },
+      "salary": 2.98
+    },
+    {
+      "id": "IRN-26",
+      "name": "Malik Sato",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 27,
+      "overall": 79,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 82,
+        "run_defense": 81,
+        "strength": 74
+      },
+      "salary": 15.05
+    },
+    {
+      "id": "IRN-27",
+      "name": "Rafael Faulk",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 26,
+      "overall": 71,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 74,
+        "strength": 68
+      },
+      "salary": 7.25
+    },
+    {
+      "id": "IRN-28",
+      "name": "Tariq Abernathy",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 27,
+      "overall": 60,
+      "contract_years": 5,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "pass_rush": 60,
+        "run_defense": 65,
+        "strength": 54
+      },
+      "salary": 1.61
+    },
+    {
+      "id": "IRN-29",
+      "name": "Quentin Reyes",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 29,
+      "overall": 76,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 76,
+        "strength": 81
+      },
+      "salary": 11.76
+    },
+    {
+      "id": "IRN-30",
+      "name": "Dante Reyes",
+      "team_id": "IRN",
+      "position": "DL",
       "age": 23,
-      "salary": 5.0,
+      "overall": 70,
       "contract_years": 5,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 56,
-        "rushing": 56,
-        "receiving": 49,
-        "blocking": 49,
-        "pass_rush": 47,
+        "pass_rush": 71,
+        "run_defense": 66,
+        "strength": 74
+      },
+      "salary": 3.99
+    },
+    {
+      "id": "IRN-31",
+      "name": "Tariq Bolden",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 22,
+      "overall": 82,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "run_defense": 82,
+        "coverage": 75,
+        "tackling": 85,
+        "pass_rush": 87
+      },
+      "salary": 3.99
+    },
+    {
+      "id": "IRN-32",
+      "name": "Rafael Mbeki",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 34,
+      "overall": 69,
+      "contract_years": 2,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "run_defense": 63,
+        "coverage": 73,
+        "tackling": 72,
+        "pass_rush": 69
+      },
+      "salary": 3.87
+    },
+    {
+      "id": "IRN-33",
+      "name": "Dante Castillo",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 23,
+      "overall": 78,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 77,
+        "coverage": 80,
+        "tackling": 75,
+        "pass_rush": 79
+      },
+      "salary": 3.99
+    },
+    {
+      "id": "IRN-34",
+      "name": "Luca Abernathy",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 29,
+      "overall": 54,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 51,
+        "coverage": 59,
+        "tackling": 53,
+        "pass_rush": 55
+      },
+      "salary": 1.0
+    },
+    {
+      "id": "IRN-35",
+      "name": "Jamal Strickland",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 23,
+      "overall": 56,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
         "run_defense": 52,
-        "coverage": 53,
-        "kicking": 99,
-        "athleticism": 59
-      }
+        "coverage": 63,
+        "tackling": 48,
+        "pass_rush": 59
+      },
+      "salary": 1.01
+    },
+    {
+      "id": "IRN-36",
+      "name": "Rafael Lindqvist",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 73,
+        "coverage": 61,
+        "tackling": 64,
+        "pass_rush": 63
+      },
+      "salary": 2.46
+    },
+    {
+      "id": "IRN-37",
+      "name": "Hunter Hargrove",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 30,
+      "overall": 76,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 79,
+        "speed": 76,
+        "tackling": 73
+      },
+      "salary": 8.89
+    },
+    {
+      "id": "IRN-38",
+      "name": "Elias Ferreira",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 28,
+      "overall": 66,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 63,
+        "speed": 70,
+        "tackling": 64
+      },
+      "salary": 3.16
+    },
+    {
+      "id": "IRN-39",
+      "name": "Ruben Mbeki",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 28,
+      "overall": 62,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 62,
+        "speed": 59,
+        "tackling": 66
+      },
+      "salary": 1.88
+    },
+    {
+      "id": "IRN-40",
+      "name": "Ruben Kessler",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 32,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 65,
+        "speed": 65,
+        "tackling": 70
+      },
+      "salary": 3.58
+    },
+    {
+      "id": "IRN-41",
+      "name": "Hunter Strickland",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 23,
+      "overall": 61,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 63,
+        "speed": 60,
+        "tackling": 60
+      },
+      "salary": 1.64
+    },
+    {
+      "id": "IRN-42",
+      "name": "Rafael Gaines",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 23,
+      "overall": 63,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 58,
+        "speed": 68,
+        "tackling": 63
+      },
+      "salary": 2.14
+    },
+    {
+      "id": "IRN-43",
+      "name": "Emeka Thibodeaux",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 32,
+      "overall": 78,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 82,
+        "tackling": 73,
+        "speed": 78
+      },
+      "salary": 7.88
+    },
+    {
+      "id": "IRN-44",
+      "name": "Jonah McAllister",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 24,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 62,
+        "speed": 71
+      },
+      "salary": 3.55
+    },
+    {
+      "id": "IRN-45",
+      "name": "Andre Mbeki",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 28,
+      "overall": 63,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 65,
+        "tackling": 52,
+        "speed": 71
+      },
+      "salary": 1.83
+    },
+    {
+      "id": "IRN-46",
+      "name": "Devin Dubois",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 22,
+      "overall": 69,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 65,
+        "tackling": 70,
+        "speed": 73
+      },
+      "salary": 3.55
+    },
+    {
+      "id": "IRN-47",
+      "name": "Kofi Novak",
+      "team_id": "IRN",
+      "position": "K",
+      "age": 36,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "kick_power": 67,
+        "kick_accuracy": 73
+      },
+      "salary": 1.91
+    },
+    {
+      "id": "IRN-48",
+      "name": "Reggie Hargrove",
+      "team_id": "IRN",
+      "position": "P",
+      "age": 38,
+      "overall": 72,
+      "contract_years": 3,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "kick_power": 75,
+        "kick_accuracy": 70
+      },
+      "salary": 1.71
     },
     {
       "id": "LAK-01",
-      "name": "Marcus Mbeki",
+      "name": "Jalen Okafor",
       "team_id": "LAK",
       "position": "QB",
-      "age": 31,
-      "salary": 13.0,
-      "contract_years": 1,
-      "games_missed_last_season": 2,
+      "age": 26,
+      "overall": 70,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 96,
-        "rushing": 67,
-        "receiving": 59,
-        "blocking": 57,
-        "pass_rush": 58,
-        "run_defense": 48,
-        "coverage": 50,
-        "kicking": 55,
-        "athleticism": 71
-      }
+        "accuracy": 71,
+        "arm_strength": 80,
+        "decision_making": 69,
+        "mobility": 60
+      },
+      "salary": 10.23
     },
     {
       "id": "LAK-02",
-      "name": "Malik Reyes",
+      "name": "Wade Odom",
       "team_id": "LAK",
-      "position": "RB",
-      "age": 30,
-      "salary": 18.5,
-      "contract_years": 5,
-      "games_missed_last_season": 2,
+      "position": "QB",
+      "age": 27,
+      "overall": 58,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 47,
-        "rushing": 98,
-        "receiving": 80,
-        "blocking": 73,
-        "pass_rush": 58,
-        "run_defense": 57,
-        "coverage": 57,
-        "kicking": 54,
-        "athleticism": 83
-      }
+        "accuracy": 62,
+        "arm_strength": 57,
+        "decision_making": 60,
+        "mobility": 54
+      },
+      "salary": 1.37
     },
     {
       "id": "LAK-03",
-      "name": "Theo Mbeki",
+      "name": "Theo Ferreira",
       "team_id": "LAK",
       "position": "RB",
-      "age": 23,
-      "salary": 5.0,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "age": 31,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 46,
-        "rushing": 86,
-        "receiving": 82,
-        "blocking": 61,
-        "pass_rush": 44,
-        "run_defense": 50,
-        "coverage": 47,
-        "kicking": 46,
-        "athleticism": 78
-      }
+        "rushing": 83,
+        "receiving": 73,
+        "pass_protection": 76,
+        "speed": 66
+      },
+      "salary": 4.55
     },
     {
       "id": "LAK-04",
-      "name": "Luca Ferreira",
+      "name": "Darius Whitfield",
       "team_id": "LAK",
-      "position": "WR",
-      "age": 35,
-      "salary": 5.4,
-      "contract_years": 4,
-      "games_missed_last_season": 10,
+      "position": "RB",
+      "age": 27,
+      "overall": 63,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 40,
-        "rushing": 54,
-        "receiving": 88,
-        "blocking": 47,
-        "pass_rush": 50,
-        "run_defense": 36,
-        "coverage": 50,
-        "kicking": 54,
-        "athleticism": 79
-      }
+        "rushing": 64,
+        "receiving": 60,
+        "pass_protection": 72,
+        "speed": 57
+      },
+      "salary": 1.63
     },
     {
       "id": "LAK-05",
-      "name": "Theo Lindqvist",
+      "name": "Luca Achebe",
       "team_id": "LAK",
-      "position": "WR",
-      "age": 22,
-      "salary": 0.9,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "position": "RB",
+      "age": 33,
+      "overall": 60,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 25,
         "rushing": 52,
-        "receiving": 66,
-        "blocking": 42,
-        "pass_rush": 31,
-        "run_defense": 36,
-        "coverage": 34,
-        "kicking": 50,
-        "athleticism": 60
-      }
+        "receiving": 59,
+        "pass_protection": 66,
+        "speed": 61
+      },
+      "salary": 1.25
     },
     {
       "id": "LAK-06",
-      "name": "Rafael Holloway",
+      "name": "Devin Lindqvist",
       "team_id": "LAK",
       "position": "WR",
-      "age": 34,
-      "salary": 0.9,
+      "age": 27,
+      "overall": 68,
       "contract_years": 3,
-      "games_missed_last_season": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 32,
-        "rushing": 50,
-        "receiving": 79,
-        "blocking": 42,
-        "pass_rush": 40,
-        "run_defense": 45,
-        "coverage": 46,
-        "kicking": 42,
-        "athleticism": 64
-      }
+        "route_running": 71,
+        "hands": 61,
+        "speed": 71
+      },
+      "salary": 5.16
     },
     {
       "id": "LAK-07",
-      "name": "Jonah Holloway",
+      "name": "Rafael Achebe",
       "team_id": "LAK",
-      "position": "TE",
+      "position": "WR",
       "age": 34,
-      "salary": 9.8,
-      "contract_years": 5,
-      "games_missed_last_season": 6,
+      "overall": 79,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 48,
-        "rushing": 61,
-        "receiving": 79,
-        "blocking": 76,
-        "pass_rush": 64,
-        "run_defense": 67,
-        "coverage": 50,
-        "kicking": 62,
-        "athleticism": 65
-      }
+        "route_running": 79,
+        "hands": 78,
+        "speed": 80
+      },
+      "salary": 15.17
     },
     {
       "id": "LAK-08",
-      "name": "Andre Okafor",
+      "name": "Wade Abernathy",
       "team_id": "LAK",
-      "position": "OT",
-      "age": 23,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 1,
+      "position": "WR",
+      "age": 31,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 42,
-        "rushing": 45,
-        "receiving": 40,
-        "blocking": 86,
-        "pass_rush": 47,
-        "run_defense": 60,
-        "coverage": 33,
-        "kicking": 44,
-        "athleticism": 62
-      }
+        "route_running": 66,
+        "hands": 63,
+        "speed": 78
+      },
+      "salary": 5.82
     },
     {
       "id": "LAK-09",
-      "name": "Dante Lindqvist",
+      "name": "Dmitri Mbeki",
       "team_id": "LAK",
-      "position": "OT",
-      "age": 30,
-      "salary": 0.9,
-      "contract_years": 3,
+      "position": "WR",
+      "age": 31,
+      "overall": 54,
+      "contract_years": 1,
       "games_missed_last_season": 2,
       "ratings": {
-        "passing": 41,
-        "rushing": 50,
-        "receiving": 39,
-        "blocking": 82,
-        "pass_rush": 40,
-        "run_defense": 46,
-        "coverage": 38,
-        "kicking": 41,
-        "athleticism": 57
-      }
+        "route_running": 60,
+        "hands": 52,
+        "speed": 51
+      },
+      "salary": 1.0
     },
     {
       "id": "LAK-10",
-      "name": "Malik Reyes",
+      "name": "Andre Whitfield",
       "team_id": "LAK",
-      "position": "OG",
-      "age": 25,
-      "salary": 5.7,
+      "position": "WR",
+      "age": 32,
+      "overall": 62,
       "contract_years": 1,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 48,
-        "rushing": 47,
-        "receiving": 49,
-        "blocking": 76,
-        "pass_rush": 46,
-        "run_defense": 65,
-        "coverage": 50,
-        "kicking": 42,
-        "athleticism": 55
-      }
+        "route_running": 62,
+        "hands": 59,
+        "speed": 65
+      },
+      "salary": 2.21
     },
     {
       "id": "LAK-11",
-      "name": "Xavier Dubois",
+      "name": "Reggie Kowalski",
       "team_id": "LAK",
-      "position": "OG",
+      "position": "WR",
       "age": 29,
-      "salary": 2.1,
-      "contract_years": 1,
+      "overall": 55,
+      "contract_years": 5,
       "games_missed_last_season": 2,
       "ratings": {
-        "passing": 52,
-        "rushing": 46,
-        "receiving": 46,
-        "blocking": 76,
-        "pass_rush": 50,
-        "run_defense": 63,
-        "coverage": 41,
-        "kicking": 47,
-        "athleticism": 54
-      }
+        "route_running": 58,
+        "hands": 60,
+        "speed": 47
+      },
+      "salary": 1.0
     },
     {
       "id": "LAK-12",
-      "name": "Elias Dubois",
+      "name": "Dmitri Holloway",
       "team_id": "LAK",
-      "position": "C",
-      "age": 26,
-      "salary": 12.4,
+      "position": "TE",
+      "age": 27,
+      "overall": 72,
       "contract_years": 1,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 48,
-        "rushing": 55,
-        "receiving": 54,
-        "blocking": 84,
-        "pass_rush": 59,
-        "run_defense": 61,
-        "coverage": 56,
-        "kicking": 52,
-        "athleticism": 71
-      }
+        "receiving": 72,
+        "blocking": 73,
+        "speed": 72
+      },
+      "salary": 4.56
     },
     {
       "id": "LAK-13",
-      "name": "Caleb Brennan",
+      "name": "Mason Abernathy",
       "team_id": "LAK",
-      "position": "EDGE",
-      "age": 29,
-      "salary": 27.9,
-      "contract_years": 3,
-      "games_missed_last_season": 1,
+      "position": "TE",
+      "age": 28,
+      "overall": 56,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 69,
-        "rushing": 70,
-        "receiving": 65,
-        "blocking": 76,
-        "pass_rush": 99,
-        "run_defense": 87,
-        "coverage": 71,
-        "kicking": 75,
-        "athleticism": 97
-      }
+        "receiving": 55,
+        "blocking": 49,
+        "speed": 65
+      },
+      "salary": 1.01
     },
     {
       "id": "LAK-14",
-      "name": "Kenji Abernathy",
+      "name": "Jalen Kessler",
       "team_id": "LAK",
-      "position": "EDGE",
-      "age": 31,
-      "salary": 9.7,
-      "contract_years": 5,
-      "games_missed_last_season": 4,
+      "position": "TE",
+      "age": 28,
+      "overall": 60,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 48,
-        "rushing": 54,
-        "receiving": 54,
-        "blocking": 60,
-        "pass_rush": 91,
-        "run_defense": 83,
-        "coverage": 62,
-        "kicking": 63,
-        "athleticism": 82
-      }
+        "receiving": 57,
+        "blocking": 57,
+        "speed": 66
+      },
+      "salary": 1.31
     },
     {
       "id": "LAK-15",
-      "name": "Rafael Abernathy",
+      "name": "Rafael Tanaka",
       "team_id": "LAK",
-      "position": "DT",
-      "age": 22,
-      "salary": 5.0,
+      "position": "OL",
+      "age": 32,
+      "overall": 82,
       "contract_years": 4,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 57,
-        "rushing": 54,
-        "receiving": 59,
-        "blocking": 64,
-        "pass_rush": 77,
-        "run_defense": 90,
-        "coverage": 48,
-        "kicking": 48,
-        "athleticism": 70
-      }
+        "pass_blocking": 84,
+        "run_blocking": 84,
+        "strength": 78
+      },
+      "salary": 14.15
     },
     {
       "id": "LAK-16",
-      "name": "Dmitri Brennan",
+      "name": "Kofi Whitfield",
       "team_id": "LAK",
-      "position": "DT",
-      "age": 21,
-      "salary": 0.9,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 33,
+      "overall": 67,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 42,
-        "rushing": 32,
-        "receiving": 30,
-        "blocking": 56,
-        "pass_rush": 72,
-        "run_defense": 70,
-        "coverage": 45,
-        "kicking": 49,
-        "athleticism": 58
-      }
+        "pass_blocking": 65,
+        "run_blocking": 66,
+        "strength": 70
+      },
+      "salary": 3.6
     },
     {
       "id": "LAK-17",
-      "name": "Caleb Mensah",
+      "name": "Hunter Mensah",
       "team_id": "LAK",
-      "position": "LB",
-      "age": 28,
-      "salary": 19.4,
-      "contract_years": 5,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 34,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 45,
-        "rushing": 63,
-        "receiving": 57,
-        "blocking": 66,
-        "pass_rush": 89,
-        "run_defense": 77,
-        "coverage": 86,
-        "kicking": 61,
-        "athleticism": 89
-      }
+        "pass_blocking": 75,
+        "run_blocking": 72,
+        "strength": 74
+      },
+      "salary": 7.51
     },
     {
       "id": "LAK-18",
-      "name": "Malik Mbeki",
+      "name": "Isaiah Mbeki",
       "team_id": "LAK",
-      "position": "LB",
-      "age": 25,
-      "salary": 3.3,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 33,
+      "overall": 88,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 44,
-        "rushing": 43,
-        "receiving": 51,
-        "blocking": 39,
-        "pass_rush": 59,
-        "run_defense": 71,
-        "coverage": 61,
-        "kicking": 47,
-        "athleticism": 69
-      }
+        "pass_blocking": 87,
+        "run_blocking": 89,
+        "strength": 88
+      },
+      "salary": 20.65
     },
     {
       "id": "LAK-19",
-      "name": "Andre Mensah",
+      "name": "Xavier Faulk",
       "team_id": "LAK",
-      "position": "CB",
-      "age": 26,
-      "salary": 20.1,
-      "contract_years": 1,
-      "games_missed_last_season": 2,
+      "position": "OL",
+      "age": 33,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 60,
-        "rushing": 60,
-        "receiving": 76,
-        "blocking": 76,
-        "pass_rush": 72,
-        "run_defense": 73,
-        "coverage": 99,
-        "kicking": 64,
-        "athleticism": 87
-      }
+        "pass_blocking": 72,
+        "run_blocking": 72,
+        "strength": 76
+      },
+      "salary": 6.85
     },
     {
       "id": "LAK-20",
-      "name": "Jonah Mensah",
+      "name": "Devin Odom",
       "team_id": "LAK",
-      "position": "CB",
-      "age": 34,
-      "salary": 2.6,
-      "contract_years": 1,
-      "games_missed_last_season": 6,
+      "position": "OL",
+      "age": 29,
+      "overall": 57,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 41,
-        "rushing": 41,
-        "receiving": 54,
-        "blocking": 45,
-        "pass_rush": 59,
-        "run_defense": 45,
-        "coverage": 75,
-        "kicking": 40,
-        "athleticism": 68
-      }
+        "pass_blocking": 60,
+        "run_blocking": 57,
+        "strength": 55
+      },
+      "salary": 1.07
     },
     {
       "id": "LAK-21",
-      "name": "Xavier Achebe",
+      "name": "Mason Achebe",
       "team_id": "LAK",
-      "position": "S",
-      "age": 26,
-      "salary": 6.6,
-      "contract_years": 4,
-      "games_missed_last_season": 1,
+      "position": "OL",
+      "age": 25,
+      "overall": 58,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 52,
-        "rushing": 46,
-        "receiving": 57,
-        "blocking": 49,
-        "pass_rush": 62,
-        "run_defense": 78,
-        "coverage": 69,
-        "kicking": 39,
-        "athleticism": 73
-      }
+        "pass_blocking": 58,
+        "run_blocking": 61,
+        "strength": 54
+      },
+      "salary": 1.16
     },
     {
       "id": "LAK-22",
-      "name": "Nikola Mensah",
+      "name": "Tyrell Mensah",
       "team_id": "LAK",
-      "position": "S",
-      "age": 28,
-      "salary": 2.9,
-      "contract_years": 5,
-      "games_missed_last_season": 1,
+      "position": "OL",
+      "age": 24,
+      "overall": 48,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 35,
-        "rushing": 49,
-        "receiving": 60,
-        "blocking": 57,
-        "pass_rush": 54,
-        "run_defense": 71,
-        "coverage": 72,
-        "kicking": 41,
-        "athleticism": 64
-      }
+        "pass_blocking": 48,
+        "run_blocking": 54,
+        "strength": 42
+      },
+      "salary": 1.0
     },
     {
       "id": "LAK-23",
-      "name": "Rafael Lindqvist",
+      "name": "Ruben Vance",
       "team_id": "LAK",
-      "position": "K",
-      "age": 22,
-      "salary": 3.8,
+      "position": "OL",
+      "age": 23,
+      "overall": 68,
       "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 67,
+        "run_blocking": 68,
+        "strength": 70
+      },
+      "salary": 4.01
+    },
+    {
+      "id": "LAK-24",
+      "name": "Reggie Mbeki",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 27,
+      "overall": 75,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 73,
+        "run_defense": 83,
+        "strength": 70
+      },
+      "salary": 10.84
+    },
+    {
+      "id": "LAK-25",
+      "name": "Silas Mensah",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 27,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "pass_rush": 74,
+        "run_defense": 74,
+        "strength": 72
+      },
+      "salary": 8.97
+    },
+    {
+      "id": "LAK-26",
+      "name": "Theo Whitfield",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 29,
+      "overall": 77,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 76,
+        "run_defense": 83,
+        "strength": 72
+      },
+      "salary": 12.91
+    },
+    {
+      "id": "LAK-27",
+      "name": "Kofi Okafor",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 30,
+      "overall": 73,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 83,
+        "run_defense": 66,
+        "strength": 71
+      },
+      "salary": 8.97
+    },
+    {
+      "id": "LAK-28",
+      "name": "Malik Hargrove",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 23,
+      "overall": 67,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 70,
+        "run_defense": 69,
+        "strength": 63
+      },
+      "salary": 4.01
+    },
+    {
+      "id": "LAK-29",
+      "name": "Dante Pruitt",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 31,
+      "overall": 62,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 59,
+        "run_defense": 63,
+        "strength": 63
+      },
+      "salary": 2.21
+    },
+    {
+      "id": "LAK-30",
+      "name": "Darius Castillo",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 30,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 60,
+        "run_defense": 64,
+        "strength": 62
+      },
+      "salary": 2.21
+    },
+    {
+      "id": "LAK-31",
+      "name": "Reggie Vance",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 27,
+      "overall": 84,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 85,
+        "coverage": 89,
+        "tackling": 85,
+        "pass_rush": 78
+      },
+      "salary": 13.41
+    },
+    {
+      "id": "LAK-32",
+      "name": "Xavier Mbeki",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 34,
+      "overall": 82,
+      "contract_years": 4,
+      "games_missed_last_season": 10,
+      "ratings": {
+        "run_defense": 86,
+        "coverage": 82,
+        "tackling": 81,
+        "pass_rush": 77
+      },
+      "salary": 11.76
+    },
+    {
+      "id": "LAK-33",
+      "name": "Jamal Pruitt",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 34,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "run_defense": 78,
+        "coverage": 73,
+        "tackling": 63,
+        "pass_rush": 78
+      },
+      "salary": 5.78
+    },
+    {
+      "id": "LAK-34",
+      "name": "Dmitri Riggins",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 22,
+      "overall": 64,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 62,
+        "coverage": 68,
+        "tackling": 66,
+        "pass_rush": 59
+      },
+      "salary": 2.2
+    },
+    {
+      "id": "LAK-35",
+      "name": "Jalen Strickland",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 28,
+      "overall": 58,
+      "contract_years": 3,
+      "games_missed_last_season": 7,
+      "ratings": {
+        "run_defense": 57,
+        "coverage": 62,
+        "tackling": 56,
+        "pass_rush": 56
+      },
+      "salary": 1.13
+    },
+    {
+      "id": "LAK-36",
+      "name": "Wade McAllister",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 33,
+      "overall": 61,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 55,
+        "coverage": 66,
+        "tackling": 57,
+        "pass_rush": 65
+      },
+      "salary": 1.53
+    },
+    {
+      "id": "LAK-37",
+      "name": "Omar Vance",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 29,
+      "overall": 75,
+      "contract_years": 5,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 76,
+        "speed": 71,
+        "tackling": 77
+      },
+      "salary": 8.22
+    },
+    {
+      "id": "LAK-38",
+      "name": "Devin McAllister",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 31,
+      "overall": 65,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 71,
+        "speed": 67,
+        "tackling": 58
+      },
+      "salary": 2.8
+    },
+    {
+      "id": "LAK-39",
+      "name": "Jalen Lindqvist",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 24,
+      "overall": 56,
+      "contract_years": 1,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 55,
-        "rushing": 56,
-        "receiving": 45,
-        "blocking": 47,
-        "pass_rush": 59,
-        "run_defense": 55,
-        "coverage": 45,
-        "kicking": 99,
-        "athleticism": 62
-      }
+        "coverage": 56,
+        "speed": 52,
+        "tackling": 60
+      },
+      "salary": 1.02
+    },
+    {
+      "id": "LAK-40",
+      "name": "Mason Reyes",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 31,
+      "overall": 64,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 68,
+        "speed": 63,
+        "tackling": 62
+      },
+      "salary": 2.46
+    },
+    {
+      "id": "LAK-41",
+      "name": "Ruben Abernathy",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 32,
+      "overall": 60,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 57,
+        "speed": 59,
+        "tackling": 63
+      },
+      "salary": 1.45
+    },
+    {
+      "id": "LAK-42",
+      "name": "Tobias Kowalski",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 25,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 64,
+        "speed": 66,
+        "tackling": 57
+      },
+      "salary": 1.88
+    },
+    {
+      "id": "LAK-43",
+      "name": "Wade Brennan",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 29,
+      "overall": 81,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 88,
+        "tackling": 71,
+        "speed": 84
+      },
+      "salary": 9.87
+    },
+    {
+      "id": "LAK-44",
+      "name": "Dmitri Gaines",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 24,
+      "overall": 69,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 63,
+        "speed": 70
+      },
+      "salary": 3.57
+    },
+    {
+      "id": "LAK-45",
+      "name": "Reggie Achebe",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 22,
+      "overall": 70,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 68,
+        "tackling": 71,
+        "speed": 72
+      },
+      "salary": 3.95
+    },
+    {
+      "id": "LAK-46",
+      "name": "Kofi Lindqvist",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 34,
+      "overall": 60,
+      "contract_years": 4,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 55,
+        "speed": 50
+      },
+      "salary": 1.33
+    },
+    {
+      "id": "LAK-47",
+      "name": "Dmitri Pruitt",
+      "team_id": "LAK",
+      "position": "K",
+      "age": 27,
+      "overall": 79,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "kick_power": 82,
+        "kick_accuracy": 76
+      },
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-48",
+      "name": "Jalen Bolden",
+      "team_id": "LAK",
+      "position": "P",
+      "age": 27,
+      "overall": 76,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "kick_power": 76,
+        "kick_accuracy": 76
+      },
+      "salary": 2.08
     },
     {
       "id": "SUM-01",
-      "name": "Mateo Okafor",
+      "name": "Quentin Mensah",
       "team_id": "SUM",
       "position": "QB",
-      "age": 24,
-      "salary": 14.0,
-      "contract_years": 3,
-      "games_missed_last_season": 6,
+      "age": 26,
+      "overall": 82,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 98,
-        "rushing": 66,
-        "receiving": 64,
-        "blocking": 56,
-        "pass_rush": 60,
-        "run_defense": 54,
-        "coverage": 56,
-        "kicking": 65,
-        "athleticism": 80
-      }
+        "accuracy": 76,
+        "arm_strength": 82,
+        "decision_making": 89,
+        "mobility": 79
+      },
+      "salary": 25.33
     },
     {
       "id": "SUM-02",
-      "name": "Theo Okafor",
+      "name": "Reggie Pruitt",
       "team_id": "SUM",
-      "position": "RB",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "QB",
+      "age": 33,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 57,
-        "rushing": 87,
-        "receiving": 80,
-        "blocking": 66,
-        "pass_rush": 51,
-        "run_defense": 65,
-        "coverage": 55,
-        "kicking": 56,
-        "athleticism": 80
-      }
+        "accuracy": 68,
+        "arm_strength": 73,
+        "decision_making": 66,
+        "mobility": 68
+      },
+      "salary": 7.54
     },
     {
       "id": "SUM-03",
-      "name": "Malik Vance",
+      "name": "Theo Bolden",
       "team_id": "SUM",
       "position": "RB",
-      "age": 22,
-      "salary": 5.0,
-      "contract_years": 1,
-      "games_missed_last_season": 0,
+      "age": 31,
+      "overall": 76,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 60,
-        "rushing": 86,
-        "receiving": 73,
-        "blocking": 66,
-        "pass_rush": 47,
-        "run_defense": 55,
-        "coverage": 55,
-        "kicking": 51,
-        "athleticism": 73
-      }
+        "rushing": 74,
+        "receiving": 83,
+        "pass_protection": 73,
+        "speed": 75
+      },
+      "salary": 4.53
     },
     {
       "id": "SUM-04",
-      "name": "Jonah Mensah",
+      "name": "Dante Sato",
       "team_id": "SUM",
-      "position": "WR",
-      "age": 29,
-      "salary": 18.1,
-      "contract_years": 5,
-      "games_missed_last_season": 2,
+      "position": "RB",
+      "age": 25,
+      "overall": 65,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 53,
-        "rushing": 72,
-        "receiving": 99,
-        "blocking": 66,
-        "pass_rush": 56,
-        "run_defense": 66,
-        "coverage": 65,
-        "kicking": 72,
-        "athleticism": 86
-      }
+        "rushing": 71,
+        "receiving": 62,
+        "pass_protection": 64,
+        "speed": 63
+      },
+      "salary": 1.8
     },
     {
       "id": "SUM-05",
-      "name": "Andre Reyes",
+      "name": "Andre McAllister",
       "team_id": "SUM",
-      "position": "WR",
+      "position": "RB",
       "age": 33,
-      "salary": 0.9,
+      "overall": 67,
       "contract_years": 3,
       "games_missed_last_season": 4,
       "ratings": {
-        "passing": 40,
-        "rushing": 43,
-        "receiving": 66,
-        "blocking": 42,
-        "pass_rush": 38,
-        "run_defense": 38,
-        "coverage": 34,
-        "kicking": 41,
-        "athleticism": 60
-      }
+        "rushing": 70,
+        "receiving": 65,
+        "pass_protection": 68,
+        "speed": 65
+      },
+      "salary": 2.15
     },
     {
       "id": "SUM-06",
-      "name": "Luca Reyes",
+      "name": "Quentin Kowalski",
       "team_id": "SUM",
       "position": "WR",
-      "age": 25,
-      "salary": 0.9,
-      "contract_years": 2,
-      "games_missed_last_season": 5,
+      "age": 29,
+      "overall": 72,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 38,
-        "rushing": 49,
-        "receiving": 78,
-        "blocking": 37,
-        "pass_rush": 35,
-        "run_defense": 30,
-        "coverage": 40,
-        "kicking": 40,
-        "athleticism": 68
-      }
+        "route_running": 75,
+        "hands": 75,
+        "speed": 67
+      },
+      "salary": 6.79
     },
     {
       "id": "SUM-07",
-      "name": "Omar Ferreira",
+      "name": "Bryce Mbeki",
       "team_id": "SUM",
-      "position": "TE",
-      "age": 31,
-      "salary": 10.4,
-      "contract_years": 4,
-      "games_missed_last_season": 5,
+      "position": "WR",
+      "age": 25,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 54,
-        "rushing": 55,
-        "receiving": 85,
-        "blocking": 77,
-        "pass_rush": 55,
-        "run_defense": 57,
-        "coverage": 52,
-        "kicking": 56,
-        "athleticism": 71
-      }
+        "route_running": 76,
+        "hands": 75,
+        "speed": 67
+      },
+      "salary": 7.49
     },
     {
       "id": "SUM-08",
-      "name": "Kofi Vance",
+      "name": "Dmitri Brennan",
       "team_id": "SUM",
-      "position": "OT",
-      "age": 30,
-      "salary": 9.4,
-      "contract_years": 3,
-      "games_missed_last_season": 2,
+      "position": "WR",
+      "age": 26,
+      "overall": 75,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 59,
-        "rushing": 57,
-        "receiving": 62,
-        "blocking": 92,
-        "pass_rush": 45,
-        "run_defense": 70,
-        "coverage": 46,
-        "kicking": 56,
-        "athleticism": 69
-      }
+        "route_running": 79,
+        "hands": 73,
+        "speed": 73
+      },
+      "salary": 9.01
     },
     {
       "id": "SUM-09",
-      "name": "Dante Lindqvist",
+      "name": "Cole Achebe",
       "team_id": "SUM",
-      "position": "OT",
-      "age": 27,
-      "salary": 6.7,
+      "position": "WR",
+      "age": 32,
+      "overall": 66,
       "contract_years": 4,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 53,
-        "rushing": 52,
-        "receiving": 58,
-        "blocking": 81,
-        "pass_rush": 55,
-        "run_defense": 64,
-        "coverage": 51,
-        "kicking": 55,
-        "athleticism": 61
-      }
+        "route_running": 63,
+        "hands": 67,
+        "speed": 68
+      },
+      "salary": 3.42
     },
     {
       "id": "SUM-10",
-      "name": "Kenji Reyes",
+      "name": "Marcus Strickland",
       "team_id": "SUM",
-      "position": "OG",
-      "age": 27,
-      "salary": 19.7,
-      "contract_years": 5,
+      "position": "WR",
+      "age": 28,
+      "overall": 66,
+      "contract_years": 3,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 71,
-        "rushing": 66,
-        "receiving": 73,
-        "blocking": 99,
-        "pass_rush": 64,
-        "run_defense": 78,
-        "coverage": 70,
-        "kicking": 71,
-        "athleticism": 83
-      }
+        "route_running": 67,
+        "hands": 67,
+        "speed": 64
+      },
+      "salary": 3.42
     },
     {
       "id": "SUM-11",
-      "name": "Jonah Hargrove",
+      "name": "Jalen Ibarra",
       "team_id": "SUM",
-      "position": "OG",
-      "age": 23,
-      "salary": 0.9,
-      "contract_years": 3,
+      "position": "WR",
+      "age": 29,
+      "overall": 65,
+      "contract_years": 5,
       "games_missed_last_season": 1,
       "ratings": {
-        "passing": 38,
-        "rushing": 40,
-        "receiving": 39,
-        "blocking": 76,
-        "pass_rush": 42,
-        "run_defense": 50,
-        "coverage": 40,
-        "kicking": 40,
-        "athleticism": 50
-      }
+        "route_running": 63,
+        "hands": 66,
+        "speed": 67
+      },
+      "salary": 3.0
     },
     {
       "id": "SUM-12",
-      "name": "Xavier Tanaka",
+      "name": "Luca Kowalski",
       "team_id": "SUM",
-      "position": "C",
-      "age": 22,
-      "salary": 5.0,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "TE",
+      "age": 24,
+      "overall": 77,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 53,
-        "rushing": 54,
-        "receiving": 48,
-        "blocking": 81,
-        "pass_rush": 57,
-        "run_defense": 67,
-        "coverage": 53,
-        "kicking": 56,
-        "athleticism": 70
-      }
+        "receiving": 69,
+        "blocking": 89,
+        "speed": 74
+      },
+      "salary": 5.85
     },
     {
       "id": "SUM-13",
-      "name": "Marcus Dubois",
+      "name": "Theo Reyes",
       "team_id": "SUM",
-      "position": "EDGE",
-      "age": 33,
-      "salary": 13.6,
+      "position": "TE",
+      "age": 24,
+      "overall": 65,
       "contract_years": 5,
-      "games_missed_last_season": 5,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 46,
-        "rushing": 48,
-        "receiving": 52,
-        "blocking": 55,
-        "pass_rush": 78,
-        "run_defense": 77,
-        "coverage": 56,
-        "kicking": 52,
-        "athleticism": 88
-      }
+        "receiving": 69,
+        "blocking": 63,
+        "speed": 63
+      },
+      "salary": 2.0
     },
     {
       "id": "SUM-14",
-      "name": "Theo Mbeki",
+      "name": "Isaiah Tanaka",
       "team_id": "SUM",
-      "position": "EDGE",
-      "age": 30,
-      "salary": 13.0,
-      "contract_years": 3,
-      "games_missed_last_season": 4,
+      "position": "TE",
+      "age": 26,
+      "overall": 56,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 36,
-        "rushing": 55,
-        "receiving": 59,
-        "blocking": 68,
-        "pass_rush": 93,
-        "run_defense": 80,
-        "coverage": 54,
-        "kicking": 47,
-        "athleticism": 72
-      }
+        "receiving": 61,
+        "blocking": 55,
+        "speed": 52
+      },
+      "salary": 1.01
     },
     {
       "id": "SUM-15",
-      "name": "Rafael Castillo",
+      "name": "Dante Dubois",
       "team_id": "SUM",
-      "position": "DT",
-      "age": 21,
-      "salary": 5.0,
-      "contract_years": 2,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 33,
+      "overall": 77,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 46,
-        "rushing": 40,
-        "receiving": 54,
-        "blocking": 57,
-        "pass_rush": 66,
-        "run_defense": 85,
-        "coverage": 57,
-        "kicking": 35,
-        "athleticism": 70
-      }
+        "pass_blocking": 77,
+        "run_blocking": 80,
+        "strength": 75
+      },
+      "salary": 8.11
     },
     {
       "id": "SUM-16",
-      "name": "Theo Mensah",
+      "name": "Caleb Pruitt",
       "team_id": "SUM",
-      "position": "DT",
-      "age": 29,
-      "salary": 0.9,
-      "contract_years": 2,
-      "games_missed_last_season": 3,
+      "position": "OL",
+      "age": 31,
+      "overall": 72,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 35,
-        "rushing": 33,
-        "receiving": 48,
-        "blocking": 44,
-        "pass_rush": 68,
-        "run_defense": 69,
-        "coverage": 33,
-        "kicking": 33,
-        "athleticism": 61
-      }
+        "pass_blocking": 78,
+        "run_blocking": 68,
+        "strength": 69
+      },
+      "salary": 5.24
     },
     {
       "id": "SUM-17",
-      "name": "Kenji Ferreira",
+      "name": "Tyrell Mbeki",
       "team_id": "SUM",
-      "position": "LB",
-      "age": 33,
-      "salary": 10.4,
-      "contract_years": 5,
-      "games_missed_last_season": 5,
+      "position": "OL",
+      "age": 25,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 49,
-        "rushing": 49,
-        "receiving": 51,
-        "blocking": 51,
-        "pass_rush": 84,
-        "run_defense": 92,
-        "coverage": 75,
-        "kicking": 61,
-        "athleticism": 81
-      }
+        "pass_blocking": 72,
+        "run_blocking": 67,
+        "strength": 63
+      },
+      "salary": 3.11
     },
     {
       "id": "SUM-18",
-      "name": "Tariq Sato",
+      "name": "Darius Mbeki",
       "team_id": "SUM",
-      "position": "LB",
-      "age": 28,
-      "salary": 2.7,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 29,
+      "overall": 68,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 33,
-        "rushing": 46,
-        "receiving": 45,
-        "blocking": 58,
-        "pass_rush": 55,
-        "run_defense": 73,
-        "coverage": 60,
-        "kicking": 36,
-        "athleticism": 66
-      }
+        "pass_blocking": 68,
+        "run_blocking": 72,
+        "strength": 64
+      },
+      "salary": 3.48
     },
     {
       "id": "SUM-19",
-      "name": "Andre Hargrove",
+      "name": "Tobias Brennan",
       "team_id": "SUM",
-      "position": "CB",
-      "age": 28,
-      "salary": 11.1,
-      "contract_years": 1,
-      "games_missed_last_season": 1,
+      "position": "OL",
+      "age": 24,
+      "overall": 64,
+      "contract_years": 4,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 47,
-        "rushing": 52,
-        "receiving": 55,
-        "blocking": 62,
-        "pass_rush": 47,
-        "run_defense": 63,
-        "coverage": 89,
-        "kicking": 46,
-        "athleticism": 76
-      }
+        "pass_blocking": 57,
+        "run_blocking": 67,
+        "strength": 69
+      },
+      "salary": 2.19
     },
     {
       "id": "SUM-20",
-      "name": "Elias Sato",
+      "name": "Xavier Vance",
       "team_id": "SUM",
-      "position": "CB",
-      "age": 29,
-      "salary": 6.5,
+      "position": "OL",
+      "age": 33,
+      "overall": 63,
       "contract_years": 3,
-      "games_missed_last_season": 2,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 43,
-        "rushing": 57,
-        "receiving": 62,
-        "blocking": 62,
-        "pass_rush": 59,
-        "run_defense": 62,
-        "coverage": 81,
-        "kicking": 47,
-        "athleticism": 77
-      }
+        "pass_blocking": 58,
+        "run_blocking": 70,
+        "strength": 62
+      },
+      "salary": 1.94
     },
     {
       "id": "SUM-21",
-      "name": "Tariq Mbeki",
+      "name": "Nikola Achebe",
       "team_id": "SUM",
-      "position": "S",
-      "age": 25,
-      "salary": 13.8,
+      "position": "OL",
+      "age": 34,
+      "overall": 61,
       "contract_years": 3,
-      "games_missed_last_season": 2,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 62,
-        "rushing": 59,
-        "receiving": 72,
-        "blocking": 62,
-        "pass_rush": 70,
-        "run_defense": 82,
-        "coverage": 96,
-        "kicking": 63,
-        "athleticism": 79
-      }
+        "pass_blocking": 55,
+        "run_blocking": 60,
+        "strength": 69
+      },
+      "salary": 1.53
     },
     {
       "id": "SUM-22",
-      "name": "Xavier Holloway",
+      "name": "Wade Tanaka",
       "team_id": "SUM",
-      "position": "S",
-      "age": 30,
-      "salary": 2.2,
+      "position": "OL",
+      "age": 26,
+      "overall": 59,
       "contract_years": 1,
-      "games_missed_last_season": 1,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 42,
-        "rushing": 41,
-        "receiving": 48,
-        "blocking": 49,
-        "pass_rush": 56,
-        "run_defense": 71,
-        "coverage": 77,
-        "kicking": 44,
-        "athleticism": 68
-      }
+        "pass_blocking": 52,
+        "run_blocking": 59,
+        "strength": 65
+      },
+      "salary": 1.23
     },
     {
       "id": "SUM-23",
-      "name": "Elias Mbeki",
+      "name": "Grant Kowalski",
       "team_id": "SUM",
-      "position": "K",
-      "age": 32,
-      "salary": 9.9,
+      "position": "OL",
+      "age": 24,
+      "overall": 59,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 64,
+        "run_blocking": 57,
+        "strength": 55
+      },
+      "salary": 1.23
+    },
+    {
+      "id": "SUM-24",
+      "name": "Kofi Dubois",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 30,
+      "overall": 82,
+      "contract_years": 3,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "pass_rush": 88,
+        "run_defense": 78,
+        "strength": 81
+      },
+      "salary": 15.6
+    },
+    {
+      "id": "SUM-25",
+      "name": "Jonah Mbeki",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 30,
+      "overall": 75,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 77,
+        "run_defense": 76,
+        "strength": 71
+      },
+      "salary": 9.01
+    },
+    {
+      "id": "SUM-26",
+      "name": "Jalen Hargrove",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 22,
+      "overall": 77,
       "contract_years": 5,
       "games_missed_last_season": 8,
       "ratings": {
-        "passing": 60,
-        "rushing": 63,
-        "receiving": 56,
-        "blocking": 55,
-        "pass_rush": 59,
-        "run_defense": 53,
-        "coverage": 54,
-        "kicking": 99,
-        "athleticism": 67
-      }
+        "pass_rush": 69,
+        "run_defense": 80,
+        "strength": 83
+      },
+      "salary": 3.45
+    },
+    {
+      "id": "SUM-27",
+      "name": "Devin Ferreira",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 34,
+      "overall": 72,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "pass_rush": 73,
+        "run_defense": 71,
+        "strength": 72
+      },
+      "salary": 6.79
+    },
+    {
+      "id": "SUM-28",
+      "name": "Jalen Riggins",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 22,
+      "overall": 62,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 65,
+        "run_defense": 57,
+        "strength": 65
+      },
+      "salary": 1.98
+    },
+    {
+      "id": "SUM-29",
+      "name": "Omar Riggins",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 33,
+      "overall": 72,
+      "contract_years": 3,
+      "games_missed_last_season": 6,
+      "ratings": {
+        "pass_rush": 86,
+        "run_defense": 63,
+        "strength": 66
+      },
+      "salary": 6.79
+    },
+    {
+      "id": "SUM-30",
+      "name": "Marcus Whitfield",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 32,
+      "overall": 67,
+      "contract_years": 5,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 66,
+        "strength": 71
+      },
+      "salary": 3.88
+    },
+    {
+      "id": "SUM-31",
+      "name": "Isaiah Strickland",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 33,
+      "overall": 72,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "run_defense": 70,
+        "coverage": 73,
+        "tackling": 75,
+        "pass_rush": 69
+      },
+      "salary": 4.47
+    },
+    {
+      "id": "SUM-32",
+      "name": "Omar Okafor",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 28,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 64,
+        "coverage": 66,
+        "tackling": 70,
+        "pass_rush": 78
+      },
+      "salary": 3.7
+    },
+    {
+      "id": "SUM-33",
+      "name": "Kofi Kowalski",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 25,
+      "overall": 83,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 81,
+        "coverage": 80,
+        "tackling": 86,
+        "pass_rush": 86
+      },
+      "salary": 10.42
+    },
+    {
+      "id": "SUM-34",
+      "name": "Bryce Abernathy",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 33,
+      "overall": 64,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 51,
+        "coverage": 61,
+        "tackling": 71,
+        "pass_rush": 71
+      },
+      "salary": 1.97
+    },
+    {
+      "id": "SUM-35",
+      "name": "Malik Castillo",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 26,
+      "overall": 64,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 59,
+        "coverage": 67,
+        "tackling": 70,
+        "pass_rush": 59
+      },
+      "salary": 1.97
+    },
+    {
+      "id": "SUM-36",
+      "name": "Kenji Dubois",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 28,
+      "overall": 61,
+      "contract_years": 5,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "run_defense": 58,
+        "coverage": 62,
+        "tackling": 63,
+        "pass_rush": 60
+      },
+      "salary": 1.43
+    },
+    {
+      "id": "SUM-37",
+      "name": "Grant Kessler",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 34,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 65,
+        "speed": 64,
+        "tackling": 67
+      },
+      "salary": 2.47
+    },
+    {
+      "id": "SUM-38",
+      "name": "Tobias McAllister",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 30,
+      "overall": 85,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 75,
+        "speed": 91,
+        "tackling": 90
+      },
+      "salary": 14.22
+    },
+    {
+      "id": "SUM-39",
+      "name": "Rafael Castillo",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 31,
+      "overall": 71,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 66,
+        "speed": 74,
+        "tackling": 72
+      },
+      "salary": 4.76
+    },
+    {
+      "id": "SUM-40",
+      "name": "Reggie Abernathy",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 22,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 67,
+        "speed": 60,
+        "tackling": 60
+      },
+      "salary": 1.72
+    },
+    {
+      "id": "SUM-41",
+      "name": "Malik Odom",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 23,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 66,
+        "speed": 63,
+        "tackling": 66
+      },
+      "salary": 2.47
+    },
+    {
+      "id": "SUM-42",
+      "name": "Andre Vance",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 22,
+      "overall": 71,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 75,
+        "speed": 63,
+        "tackling": 74
+      },
+      "salary": 3.45
+    },
+    {
+      "id": "SUM-43",
+      "name": "Isaiah Thibodeaux",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 28,
+      "overall": 77,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 73,
+        "speed": 84
+      },
+      "salary": 6.17
+    },
+    {
+      "id": "SUM-44",
+      "name": "Kofi Gaines",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 23,
+      "overall": 78,
+      "contract_years": 2,
+      "games_missed_last_season": 10,
+      "ratings": {
+        "coverage": 83,
+        "tackling": 71,
+        "speed": 80
+      },
+      "salary": 3.45
+    },
+    {
+      "id": "SUM-45",
+      "name": "Isaiah Odom",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 29,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 80,
+        "tackling": 69,
+        "speed": 71
+      },
+      "salary": 4.46
+    },
+    {
+      "id": "SUM-46",
+      "name": "Tyrell Bolden",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 33,
+      "overall": 52,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 50,
+        "tackling": 55,
+        "speed": 51
+      },
+      "salary": 1.0
+    },
+    {
+      "id": "SUM-47",
+      "name": "Dante Achebe",
+      "team_id": "SUM",
+      "position": "K",
+      "age": 23,
+      "overall": 78,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "kick_power": 77,
+        "kick_accuracy": 79
+      },
+      "salary": 2.77
+    },
+    {
+      "id": "SUM-48",
+      "name": "Theo Kowalski",
+      "team_id": "SUM",
+      "position": "P",
+      "age": 26,
+      "overall": 70,
+      "contract_years": 5,
+      "games_missed_last_season": 10,
+      "ratings": {
+        "kick_power": 71,
+        "kick_accuracy": 68
+      },
+      "salary": 1.45
     },
     {
       "id": "DEL-01",
-      "name": "Rafael Sato",
+      "name": "Dmitri Ibarra",
       "team_id": "DEL",
       "position": "QB",
-      "age": 30,
-      "salary": 14.9,
-      "contract_years": 1,
-      "games_missed_last_season": 2,
+      "age": 24,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 99,
-        "rushing": 89,
-        "receiving": 61,
-        "blocking": 62,
-        "pass_rush": 51,
-        "run_defense": 51,
-        "coverage": 53,
-        "kicking": 60,
-        "athleticism": 75
-      }
+        "accuracy": 59,
+        "arm_strength": 61,
+        "decision_making": 64,
+        "mobility": 69
+      },
+      "salary": 3.44
     },
     {
       "id": "DEL-02",
-      "name": "Dante Ibarra",
+      "name": "Malik Novak",
       "team_id": "DEL",
-      "position": "RB",
-      "age": 33,
-      "salary": 2.8,
-      "contract_years": 4,
-      "games_missed_last_season": 3,
+      "position": "QB",
+      "age": 29,
+      "overall": 75,
+      "contract_years": 1,
+      "games_missed_last_season": 7,
       "ratings": {
-        "passing": 32,
-        "rushing": 77,
-        "receiving": 66,
-        "blocking": 58,
-        "pass_rush": 37,
-        "run_defense": 52,
-        "coverage": 47,
-        "kicking": 58,
-        "athleticism": 70
-      }
+        "accuracy": 79,
+        "arm_strength": 82,
+        "decision_making": 67,
+        "mobility": 71
+      },
+      "salary": 16.27
     },
     {
       "id": "DEL-03",
-      "name": "Tariq Brennan",
+      "name": "Tyrell Kessler",
       "team_id": "DEL",
       "position": "RB",
-      "age": 23,
-      "salary": 2.3,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "age": 24,
+      "overall": 68,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 35,
-        "rushing": 75,
-        "receiving": 67,
-        "blocking": 53,
-        "pass_rush": 39,
-        "run_defense": 41,
-        "coverage": 44,
-        "kicking": 44,
-        "athleticism": 72
-      }
+        "rushing": 63,
+        "receiving": 69,
+        "pass_protection": 67,
+        "speed": 73
+      },
+      "salary": 2.55
     },
     {
       "id": "DEL-04",
-      "name": "Jonah Dubois",
+      "name": "Elias Whitfield",
       "team_id": "DEL",
-      "position": "WR",
-      "age": 23,
-      "salary": 0.9,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "RB",
+      "age": 30,
+      "overall": 63,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 43,
-        "rushing": 66,
-        "receiving": 80,
-        "blocking": 50,
-        "pass_rush": 41,
-        "run_defense": 30,
-        "coverage": 42,
-        "kicking": 47,
-        "athleticism": 77
-      }
+        "rushing": 63,
+        "receiving": 63,
+        "pass_protection": 65,
+        "speed": 60
+      },
+      "salary": 1.59
     },
     {
       "id": "DEL-05",
-      "name": "Jonah Novak",
+      "name": "Caleb Brennan",
       "team_id": "DEL",
-      "position": "WR",
-      "age": 26,
-      "salary": 2.2,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "RB",
+      "age": 30,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 45,
-        "rushing": 62,
-        "receiving": 81,
-        "blocking": 48,
-        "pass_rush": 48,
-        "run_defense": 43,
-        "coverage": 45,
-        "kicking": 52,
-        "athleticism": 73
-      }
+        "rushing": 65,
+        "receiving": 67,
+        "pass_protection": 61,
+        "speed": 67
+      },
+      "salary": 1.92
     },
     {
       "id": "DEL-06",
-      "name": "Luca Brennan",
+      "name": "Tyrell Gaines",
       "team_id": "DEL",
       "position": "WR",
-      "age": 28,
-      "salary": 0.9,
+      "age": 31,
+      "overall": 77,
       "contract_years": 5,
-      "games_missed_last_season": 0,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 35,
-        "rushing": 64,
-        "receiving": 78,
-        "blocking": 53,
-        "pass_rush": 37,
-        "run_defense": 38,
-        "coverage": 45,
-        "kicking": 43,
-        "athleticism": 65
-      }
+        "route_running": 72,
+        "hands": 81,
+        "speed": 77
+      },
+      "salary": 12.09
     },
     {
       "id": "DEL-07",
-      "name": "Quentin Sato",
+      "name": "Tariq Strickland",
       "team_id": "DEL",
-      "position": "TE",
-      "age": 26,
-      "salary": 8.4,
+      "position": "WR",
+      "age": 25,
+      "overall": 77,
       "contract_years": 1,
-      "games_missed_last_season": 2,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 40,
-        "rushing": 54,
-        "receiving": 80,
-        "blocking": 77,
-        "pass_rush": 49,
-        "run_defense": 55,
-        "coverage": 52,
-        "kicking": 47,
-        "athleticism": 66
-      }
+        "route_running": 75,
+        "hands": 80,
+        "speed": 76
+      },
+      "salary": 12.09
     },
     {
       "id": "DEL-08",
-      "name": "Theo Ibarra",
+      "name": "Jamal Riggins",
       "team_id": "DEL",
-      "position": "OT",
-      "age": 25,
-      "salary": 13.6,
-      "contract_years": 2,
-      "games_missed_last_season": 0,
+      "position": "WR",
+      "age": 30,
+      "overall": 81,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 72,
-        "rushing": 70,
-        "receiving": 64,
-        "blocking": 94,
-        "pass_rush": 56,
-        "run_defense": 70,
-        "coverage": 63,
-        "kicking": 64,
-        "athleticism": 73
-      }
+        "route_running": 81,
+        "hands": 77,
+        "speed": 85
+      },
+      "salary": 16.49
     },
     {
       "id": "DEL-09",
-      "name": "Ruben Whitfield",
+      "name": "Tyrell Abernathy",
       "team_id": "DEL",
-      "position": "OT",
-      "age": 35,
-      "salary": 0.9,
-      "contract_years": 1,
-      "games_missed_last_season": 3,
+      "position": "WR",
+      "age": 29,
+      "overall": 60,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
       "ratings": {
-        "passing": 30,
-        "rushing": 25,
-        "receiving": 36,
-        "blocking": 68,
-        "pass_rush": 36,
-        "run_defense": 45,
-        "coverage": 47,
-        "kicking": 25,
-        "athleticism": 42
-      }
+        "route_running": 57,
+        "hands": 58,
+        "speed": 64
+      },
+      "salary": 1.57
     },
     {
       "id": "DEL-10",
-      "name": "Ruben Abernathy",
+      "name": "Jamal Thibodeaux",
       "team_id": "DEL",
-      "position": "OG",
-      "age": 24,
-      "salary": 7.7,
-      "contract_years": 3,
-      "games_missed_last_season": 1,
+      "position": "WR",
+      "age": 31,
+      "overall": 66,
+      "contract_years": 2,
+      "games_missed_last_season": 4,
       "ratings": {
-        "passing": 48,
-        "rushing": 58,
-        "receiving": 51,
-        "blocking": 92,
-        "pass_rush": 51,
-        "run_defense": 53,
-        "coverage": 50,
-        "kicking": 55,
-        "athleticism": 59
-      }
+        "route_running": 60,
+        "hands": 65,
+        "speed": 73
+      },
+      "salary": 3.77
     },
     {
       "id": "DEL-11",
-      "name": "Xavier Hargrove",
+      "name": "Dante Novak",
       "team_id": "DEL",
-      "position": "OG",
-      "age": 27,
-      "salary": 0.9,
-      "contract_years": 2,
-      "games_missed_last_season": 11,
+      "position": "WR",
+      "age": 25,
+      "overall": 55,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 42,
-        "rushing": 42,
-        "receiving": 37,
-        "blocking": 80,
-        "pass_rush": 41,
-        "run_defense": 58,
-        "coverage": 34,
-        "kicking": 35,
-        "athleticism": 47
-      }
+        "route_running": 55,
+        "hands": 56,
+        "speed": 53
+      },
+      "salary": 1.0
     },
     {
       "id": "DEL-12",
-      "name": "Jalen Abernathy",
+      "name": "Bryce Sato",
       "team_id": "DEL",
-      "position": "C",
-      "age": 26,
-      "salary": 0.9,
-      "contract_years": 3,
-      "games_missed_last_season": 0,
+      "position": "TE",
+      "age": 29,
+      "overall": 62,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 42,
-        "rushing": 48,
-        "receiving": 40,
-        "blocking": 68,
-        "pass_rush": 41,
-        "run_defense": 50,
-        "coverage": 44,
-        "kicking": 37,
-        "athleticism": 50
-      }
+        "receiving": 59,
+        "blocking": 58,
+        "speed": 70
+      },
+      "salary": 1.56
     },
     {
       "id": "DEL-13",
-      "name": "Andre Abernathy",
+      "name": "Quentin Castillo",
       "team_id": "DEL",
-      "position": "EDGE",
-      "age": 28,
-      "salary": 16.8,
-      "contract_years": 5,
-      "games_missed_last_season": 1,
+      "position": "TE",
+      "age": 32,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 46,
-        "rushing": 42,
-        "receiving": 59,
-        "blocking": 54,
-        "pass_rush": 85,
-        "run_defense": 71,
-        "coverage": 59,
-        "kicking": 50,
-        "athleticism": 78
-      }
+        "receiving": 72,
+        "blocking": 71,
+        "speed": 77
+      },
+      "salary": 4.71
     },
     {
       "id": "DEL-14",
-      "name": "Kenji Hargrove",
+      "name": "Andre Bolden",
       "team_id": "DEL",
-      "position": "EDGE",
-      "age": 29,
-      "salary": 0.9,
+      "position": "TE",
+      "age": 25,
+      "overall": 55,
       "contract_years": 1,
-      "games_missed_last_season": 5,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 28,
-        "rushing": 40,
-        "receiving": 31,
-        "blocking": 52,
-        "pass_rush": 69,
-        "run_defense": 63,
-        "coverage": 37,
-        "kicking": 41,
-        "athleticism": 58
-      }
+        "receiving": 51,
+        "blocking": 51,
+        "speed": 64
+      },
+      "salary": 1.0
     },
     {
       "id": "DEL-15",
-      "name": "Dante Abernathy",
+      "name": "Marcus Brennan",
       "team_id": "DEL",
-      "position": "DT",
-      "age": 28,
-      "salary": 8.4,
-      "contract_years": 2,
-      "games_missed_last_season": 2,
+      "position": "OL",
+      "age": 31,
+      "overall": 66,
+      "contract_years": 4,
+      "games_missed_last_season": 3,
       "ratings": {
-        "passing": 52,
-        "rushing": 50,
-        "receiving": 49,
-        "blocking": 61,
-        "pass_rush": 83,
-        "run_defense": 81,
-        "coverage": 48,
-        "kicking": 44,
-        "athleticism": 61
-      }
+        "pass_blocking": 69,
+        "run_blocking": 64,
+        "strength": 64
+      },
+      "salary": 3.03
     },
     {
       "id": "DEL-16",
-      "name": "Dante Lindqvist",
+      "name": "Dante Okafor",
       "team_id": "DEL",
-      "position": "DT",
-      "age": 26,
-      "salary": 0.9,
-      "contract_years": 4,
+      "position": "OL",
+      "age": 30,
+      "overall": 72,
+      "contract_years": 3,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 40,
-        "rushing": 33,
-        "receiving": 44,
-        "blocking": 51,
-        "pass_rush": 65,
-        "run_defense": 79,
-        "coverage": 34,
-        "kicking": 41,
-        "athleticism": 61
-      }
+        "pass_blocking": 68,
+        "run_blocking": 77,
+        "strength": 70
+      },
+      "salary": 5.86
     },
     {
       "id": "DEL-17",
-      "name": "Theo Vance",
+      "name": "Hunter Kessler",
       "team_id": "DEL",
-      "position": "LB",
-      "age": 27,
-      "salary": 3.7,
+      "position": "OL",
+      "age": 25,
+      "overall": 77,
       "contract_years": 2,
       "games_missed_last_season": 2,
       "ratings": {
-        "passing": 40,
-        "rushing": 58,
-        "receiving": 56,
-        "blocking": 39,
-        "pass_rush": 68,
-        "run_defense": 75,
-        "coverage": 74,
-        "kicking": 47,
-        "athleticism": 78
-      }
+        "pass_blocking": 76,
+        "run_blocking": 82,
+        "strength": 74
+      },
+      "salary": 9.13
     },
     {
       "id": "DEL-18",
-      "name": "Mateo Achebe",
+      "name": "Caleb Bolden",
       "team_id": "DEL",
-      "position": "LB",
+      "position": "OL",
       "age": 29,
-      "salary": 1.9,
-      "contract_years": 4,
+      "overall": 77,
+      "contract_years": 5,
       "games_missed_last_season": 1,
       "ratings": {
-        "passing": 44,
-        "rushing": 42,
-        "receiving": 48,
-        "blocking": 47,
-        "pass_rush": 62,
-        "run_defense": 75,
-        "coverage": 64,
-        "kicking": 40,
-        "athleticism": 73
-      }
+        "pass_blocking": 76,
+        "run_blocking": 80,
+        "strength": 75
+      },
+      "salary": 9.13
     },
     {
       "id": "DEL-19",
-      "name": "Malik Reyes",
+      "name": "Kofi Pruitt",
       "team_id": "DEL",
-      "position": "CB",
-      "age": 22,
-      "salary": 5.0,
-      "contract_years": 4,
-      "games_missed_last_season": 0,
+      "position": "OL",
+      "age": 28,
+      "overall": 83,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
       "ratings": {
-        "passing": 55,
-        "rushing": 72,
-        "receiving": 69,
-        "blocking": 57,
-        "pass_rush": 67,
-        "run_defense": 62,
-        "coverage": 94,
-        "kicking": 46,
-        "athleticism": 88
-      }
+        "pass_blocking": 81,
+        "run_blocking": 86,
+        "strength": 82
+      },
+      "salary": 14.17
     },
     {
       "id": "DEL-20",
-      "name": "Kenji Holloway",
+      "name": "Marcus McAllister",
       "team_id": "DEL",
-      "position": "CB",
-      "age": 34,
-      "salary": 6.9,
-      "contract_years": 3,
-      "games_missed_last_season": 3,
+      "position": "OL",
+      "age": 31,
+      "overall": 66,
+      "contract_years": 1,
+      "games_missed_last_season": 5,
       "ratings": {
-        "passing": 42,
-        "rushing": 47,
-        "receiving": 51,
-        "blocking": 47,
-        "pass_rush": 55,
-        "run_defense": 55,
-        "coverage": 78,
-        "kicking": 39,
-        "athleticism": 71
-      }
+        "pass_blocking": 71,
+        "run_blocking": 58,
+        "strength": 69
+      },
+      "salary": 3.03
     },
     {
       "id": "DEL-21",
-      "name": "Bryce Reyes",
+      "name": "Theo Achebe",
       "team_id": "DEL",
-      "position": "S",
-      "age": 29,
-      "salary": 14.3,
-      "contract_years": 3,
-      "games_missed_last_season": 9,
+      "position": "OL",
+      "age": 22,
+      "overall": 69,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 60,
-        "rushing": 44,
-        "receiving": 57,
-        "blocking": 53,
-        "pass_rush": 61,
-        "run_defense": 80,
-        "coverage": 73,
-        "kicking": 46,
-        "athleticism": 79
-      }
+        "pass_blocking": 75,
+        "run_blocking": 70,
+        "strength": 62
+      },
+      "salary": 3.81
     },
     {
       "id": "DEL-22",
-      "name": "Dante Vance",
+      "name": "Jonah Faulk",
       "team_id": "DEL",
-      "position": "S",
-      "age": 32,
-      "salary": 2.9,
-      "contract_years": 4,
-      "games_missed_last_season": 12,
+      "position": "OL",
+      "age": 22,
+      "overall": 60,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
       "ratings": {
-        "passing": 31,
-        "rushing": 41,
-        "receiving": 56,
-        "blocking": 46,
-        "pass_rush": 55,
-        "run_defense": 63,
-        "coverage": 63,
-        "kicking": 41,
-        "athleticism": 62
-      }
+        "pass_blocking": 54,
+        "run_blocking": 60,
+        "strength": 65
+      },
+      "salary": 1.42
     },
     {
       "id": "DEL-23",
-      "name": "Nikola Holloway",
+      "name": "Silas Riggins",
       "team_id": "DEL",
-      "position": "K",
-      "age": 25,
-      "salary": 8.3,
+      "position": "OL",
+      "age": 28,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 67,
+        "run_blocking": 66,
+        "strength": 75
+      },
+      "salary": 4.29
+    },
+    {
+      "id": "DEL-24",
+      "name": "Isaiah Kessler",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 22,
+      "overall": 77,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 81,
+        "run_defense": 68,
+        "strength": 82
+      },
+      "salary": 3.81
+    },
+    {
+      "id": "DEL-25",
+      "name": "Andre Tanaka",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 27,
+      "overall": 61,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 58,
+        "strength": 61
+      },
+      "salary": 1.82
+    },
+    {
+      "id": "DEL-26",
+      "name": "Mason Sato",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 31,
+      "overall": 77,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 81,
+        "run_defense": 73,
+        "strength": 77
+      },
+      "salary": 12.09
+    },
+    {
+      "id": "DEL-27",
+      "name": "Kenji Kessler",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 34,
+      "overall": 76,
+      "contract_years": 2,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "pass_rush": 76,
+        "run_defense": 73,
+        "strength": 79
+      },
+      "salary": 11.1
+    },
+    {
+      "id": "DEL-28",
+      "name": "Dmitri Dubois",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 62,
+        "strength": 68
+      },
+      "salary": 3.29
+    },
+    {
+      "id": "DEL-29",
+      "name": "Omar Ferreira",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 27,
+      "overall": 58,
       "contract_years": 5,
       "games_missed_last_season": 0,
       "ratings": {
-        "passing": 55,
-        "rushing": 56,
-        "receiving": 57,
-        "blocking": 61,
-        "pass_rush": 50,
-        "run_defense": 48,
+        "pass_rush": 59,
+        "run_defense": 56,
+        "strength": 58
+      },
+      "salary": 1.21
+    },
+    {
+      "id": "DEL-30",
+      "name": "Dmitri Strickland",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 30,
+      "overall": 61,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 63,
+        "run_defense": 58,
+        "strength": 61
+      },
+      "salary": 1.82
+    },
+    {
+      "id": "DEL-31",
+      "name": "Devin Gaines",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 28,
+      "overall": 75,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 74,
+        "coverage": 70,
+        "tackling": 78,
+        "pass_rush": 77
+      },
+      "salary": 6.5
+    },
+    {
+      "id": "DEL-32",
+      "name": "Andre Dubois",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 25,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 76,
+        "coverage": 80,
+        "tackling": 71,
+        "pass_rush": 71
+      },
+      "salary": 5.96
+    },
+    {
+      "id": "DEL-33",
+      "name": "Malik Okafor",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 32,
+      "overall": 74,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 77,
+        "coverage": 72,
+        "tackling": 72,
+        "pass_rush": 76
+      },
+      "salary": 5.96
+    },
+    {
+      "id": "DEL-34",
+      "name": "Nikola Sato",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 33,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 8,
+      "ratings": {
+        "run_defense": 62,
+        "coverage": 79,
+        "tackling": 71,
+        "pass_rush": 66
+      },
+      "salary": 4.09
+    },
+    {
+      "id": "DEL-35",
+      "name": "Bryce Tanaka",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 30,
+      "overall": 56,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "run_defense": 63,
+        "coverage": 55,
+        "tackling": 58,
+        "pass_rush": 50
+      },
+      "salary": 1.01
+    },
+    {
+      "id": "DEL-36",
+      "name": "Emeka Okafor",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 26,
+      "overall": 60,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "run_defense": 66,
         "coverage": 59,
-        "kicking": 99,
-        "athleticism": 67
-      }
+        "tackling": 59,
+        "pass_rush": 55
+      },
+      "salary": 1.34
+    },
+    {
+      "id": "DEL-37",
+      "name": "Darius Gaines",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 33,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 5,
+      "ratings": {
+        "coverage": 67,
+        "speed": 67,
+        "tackling": 74
+      },
+      "salary": 4.29
+    },
+    {
+      "id": "DEL-38",
+      "name": "Jamal Ibarra",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 30,
+      "overall": 71,
+      "contract_years": 1,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 73,
+        "speed": 76,
+        "tackling": 65
+      },
+      "salary": 5.3
+    },
+    {
+      "id": "DEL-39",
+      "name": "Ruben McAllister",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 34,
+      "overall": 66,
+      "contract_years": 2,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "coverage": 64,
+        "speed": 67,
+        "tackling": 66
+      },
+      "salary": 3.03
+    },
+    {
+      "id": "DEL-40",
+      "name": "Theo Ibarra",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 34,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 70,
+        "speed": 64,
+        "tackling": 75
+      },
+      "salary": 4.78
+    },
+    {
+      "id": "DEL-41",
+      "name": "Luca Novak",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 25,
+      "overall": 64,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 73,
+        "speed": 57,
+        "tackling": 62
+      },
+      "salary": 2.36
+    },
+    {
+      "id": "DEL-42",
+      "name": "Cole Thibodeaux",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 29,
+      "overall": 66,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 53,
+        "speed": 70,
+        "tackling": 74
+      },
+      "salary": 3.03
+    },
+    {
+      "id": "DEL-43",
+      "name": "Kofi Hargrove",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 34,
+      "overall": 76,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 71,
+        "tackling": 75,
+        "speed": 82
+      },
+      "salary": 6.39
+    },
+    {
+      "id": "DEL-44",
+      "name": "Quentin Sato",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 22,
+      "overall": 82,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 85,
+        "tackling": 79,
+        "speed": 81
+      },
+      "salary": 3.81
+    },
+    {
+      "id": "DEL-45",
+      "name": "Xavier Pruitt",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 30,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 76,
+        "tackling": 77,
+        "speed": 66
+      },
+      "salary": 4.96
+    },
+    {
+      "id": "DEL-46",
+      "name": "Hunter Abernathy",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 28,
+      "overall": 68,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 69,
+        "tackling": 66,
+        "speed": 70
+      },
+      "salary": 3.07
+    },
+    {
+      "id": "DEL-47",
+      "name": "Nikola Abernathy",
+      "team_id": "DEL",
+      "position": "K",
+      "age": 24,
+      "overall": 68,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 67,
+        "kick_accuracy": 69
+      },
+      "salary": 1.65
+    },
+    {
+      "id": "DEL-48",
+      "name": "Grant Castillo",
+      "team_id": "DEL",
+      "position": "P",
+      "age": 25,
+      "overall": 71,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "kick_power": 69,
+        "kick_accuracy": 73
+      },
+      "salary": 1.59
     }
   ]
 }
