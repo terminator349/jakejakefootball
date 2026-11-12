@@ -1,0 +1,5486 @@
+{
+  "draft_order": [
+    "IRN",
+    "DEL",
+    "HAR",
+    "MES",
+    "SUM",
+    "LAK"
+  ],
+  "teams": [
+    {
+      "id": "HAR",
+      "city": "Harbor City",
+      "name": "Herons",
+      "is_user": false,
+      "philosophy": "Best player available: take the highest-value player almost regardless of position, as long as the position isn't already full.",
+      "payroll": 141.6,
+      "cap_room": 78.4,
+      "players": [
+        {
+          "id": "QB-03",
+          "name": "Joe Burrow",
+          "position": "QB",
+          "overall": 97,
+          "team_id": "HAR",
+          "salary": 14.0,
+          "pick_number": 3
+        },
+        {
+          "id": "EDGE-03",
+          "name": "Maxx Crosby",
+          "position": "EDGE",
+          "overall": 96,
+          "team_id": "HAR",
+          "salary": 11.0,
+          "pick_number": 10
+        },
+        {
+          "id": "OT-03",
+          "name": "Jordan Mailata",
+          "position": "OT",
+          "overall": 96,
+          "team_id": "HAR",
+          "salary": 9.8,
+          "pick_number": 15
+        },
+        {
+          "id": "WR-05",
+          "name": "Tyreek Hill",
+          "position": "WR",
+          "overall": 95,
+          "team_id": "HAR",
+          "salary": 8.8,
+          "pick_number": 22
+        },
+        {
+          "id": "DT-01",
+          "name": "Chris Jones",
+          "position": "DT",
+          "overall": 97,
+          "team_id": "HAR",
+          "salary": 7.4,
+          "pick_number": 27
+        },
+        {
+          "id": "CB-06",
+          "name": "Derek Stingley Jr.",
+          "position": "CB",
+          "overall": 93,
+          "team_id": "HAR",
+          "salary": 7.0,
+          "pick_number": 34
+        },
+        {
+          "id": "S-02",
+          "name": "Derwin James Jr.",
+          "position": "S",
+          "overall": 93,
+          "team_id": "HAR",
+          "salary": 6.2,
+          "pick_number": 39
+        },
+        {
+          "id": "TE-02",
+          "name": "Travis Kelce",
+          "position": "TE",
+          "overall": 93,
+          "team_id": "HAR",
+          "salary": 5.3,
+          "pick_number": 46
+        },
+        {
+          "id": "RB-04",
+          "name": "Christian McCaffrey",
+          "position": "RB",
+          "overall": 94,
+          "team_id": "HAR",
+          "salary": 4.6,
+          "pick_number": 51
+        },
+        {
+          "id": "LB-04",
+          "name": "Demario Davis",
+          "position": "LB",
+          "overall": 90,
+          "team_id": "HAR",
+          "salary": 4.4,
+          "pick_number": 58
+        },
+        {
+          "id": "C-01",
+          "name": "Creed Humphrey",
+          "position": "C",
+          "overall": 94,
+          "team_id": "HAR",
+          "salary": 3.7,
+          "pick_number": 63
+        },
+        {
+          "id": "OG-06",
+          "name": "Trey Smith",
+          "position": "OG",
+          "overall": 90,
+          "team_id": "HAR",
+          "salary": 3.5,
+          "pick_number": 70
+        },
+        {
+          "id": "WR-09",
+          "name": "Drake London",
+          "position": "WR",
+          "overall": 91,
+          "team_id": "HAR",
+          "salary": 4.0,
+          "pick_number": 75
+        },
+        {
+          "id": "QB-10",
+          "name": "Jayden Daniels",
+          "position": "QB",
+          "overall": 85,
+          "team_id": "HAR",
+          "salary": 4.4,
+          "pick_number": 82
+        },
+        {
+          "id": "OT-10",
+          "name": "Ronnie Stanley",
+          "position": "OT",
+          "overall": 90,
+          "team_id": "HAR",
+          "salary": 3.3,
+          "pick_number": 87
+        },
+        {
+          "id": "EDGE-12",
+          "name": "Greg Rousseau",
+          "position": "EDGE",
+          "overall": 88,
+          "team_id": "HAR",
+          "salary": 3.1,
+          "pick_number": 94
+        },
+        {
+          "id": "CB-11",
+          "name": "A.J. Terrell Jr.",
+          "position": "CB",
+          "overall": 88,
+          "team_id": "HAR",
+          "salary": 2.6,
+          "pick_number": 99
+        },
+        {
+          "id": "WR-16",
+          "name": "Malik Nabers",
+          "position": "WR",
+          "overall": 87,
+          "team_id": "HAR",
+          "salary": 2.5,
+          "pick_number": 106
+        },
+        {
+          "id": "S-08",
+          "name": "Kyle Hamilton",
+          "position": "S",
+          "overall": 90,
+          "team_id": "HAR",
+          "salary": 2.1,
+          "pick_number": 111
+        },
+        {
+          "id": "DT-11",
+          "name": "Jonathan Allen",
+          "position": "DT",
+          "overall": 88,
+          "team_id": "HAR",
+          "salary": 1.9,
+          "pick_number": 118
+        },
+        {
+          "id": "QB-13",
+          "name": "Jordan Love",
+          "position": "QB",
+          "overall": 83,
+          "team_id": "HAR",
+          "salary": 2.3,
+          "pick_number": 123
+        },
+        {
+          "id": "EDGE-16",
+          "name": "Jared Verse",
+          "position": "EDGE",
+          "overall": 86,
+          "team_id": "HAR",
+          "salary": 1.8,
+          "pick_number": 130
+        },
+        {
+          "id": "CB-16",
+          "name": "Jamel Dean",
+          "position": "CB",
+          "overall": 86,
+          "team_id": "HAR",
+          "salary": 1.5,
+          "pick_number": 135
+        },
+        {
+          "id": "WR-23",
+          "name": "Chris Godwin Jr.",
+          "position": "WR",
+          "overall": 85,
+          "team_id": "HAR",
+          "salary": 1.4,
+          "pick_number": 142
+        },
+        {
+          "id": "LB-09",
+          "name": "Dre Greenlaw",
+          "position": "LB",
+          "overall": 86,
+          "team_id": "HAR",
+          "salary": 1.2,
+          "pick_number": 147
+        },
+        {
+          "id": "OT-18",
+          "name": "Taylor Moton",
+          "position": "OT",
+          "overall": 86,
+          "team_id": "HAR",
+          "salary": 1.2,
+          "pick_number": 154
+        },
+        {
+          "id": "TE-08",
+          "name": "Dallas Goedert",
+          "position": "TE",
+          "overall": 87,
+          "team_id": "HAR",
+          "salary": 1.0,
+          "pick_number": 159
+        },
+        {
+          "id": "RB-11",
+          "name": "Bucky Irving",
+          "position": "RB",
+          "overall": 87,
+          "team_id": "HAR",
+          "salary": 0.8,
+          "pick_number": 166
+        },
+        {
+          "id": "CB-21",
+          "name": "Carlton Davis III",
+          "position": "CB",
+          "overall": 85,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 171
+        },
+        {
+          "id": "WR-28",
+          "name": "Brian Thomas Jr.",
+          "position": "WR",
+          "overall": 84,
+          "team_id": "HAR",
+          "salary": 1.0,
+          "pick_number": 178
+        },
+        {
+          "id": "DT-14",
+          "name": "D.J. Reader",
+          "position": "DT",
+          "overall": 85,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 183
+        },
+        {
+          "id": "EDGE-19",
+          "name": "George Karlaftis",
+          "position": "EDGE",
+          "overall": 84,
+          "team_id": "HAR",
+          "salary": 1.0,
+          "pick_number": 190
+        },
+        {
+          "id": "S-15",
+          "name": "Talanoa Hufanga",
+          "position": "S",
+          "overall": 84,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 195
+        },
+        {
+          "id": "LB-16",
+          "name": "Daiyan Henley",
+          "position": "LB",
+          "overall": 83,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 202
+        },
+        {
+          "id": "OG-10",
+          "name": "Joel Bitonio",
+          "position": "OG",
+          "overall": 85,
+          "team_id": "HAR",
+          "salary": 0.8,
+          "pick_number": 207
+        },
+        {
+          "id": "OT-22",
+          "name": "Paris Johnson Jr.",
+          "position": "OT",
+          "overall": 84,
+          "team_id": "HAR",
+          "salary": 1.0,
+          "pick_number": 214
+        },
+        {
+          "id": "CB-28",
+          "name": "Trevon Diggs",
+          "position": "CB",
+          "overall": 84,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 219
+        },
+        {
+          "id": "WR-35",
+          "name": "Rashee Rice",
+          "position": "WR",
+          "overall": 83,
+          "team_id": "HAR",
+          "salary": 1.0,
+          "pick_number": 226
+        },
+        {
+          "id": "RB-15",
+          "name": "Aaron Jones Sr.",
+          "position": "RB",
+          "overall": 85,
+          "team_id": "HAR",
+          "salary": 0.8,
+          "pick_number": 231
+        },
+        {
+          "id": "LB-22",
+          "name": "Quincy Williams",
+          "position": "LB",
+          "overall": 82,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 238
+        },
+        {
+          "id": "WR-39",
+          "name": "Michael Pittman Jr.",
+          "position": "WR",
+          "overall": 82,
+          "team_id": "HAR",
+          "salary": 1.0,
+          "pick_number": 243
+        },
+        {
+          "id": "S-20",
+          "name": "Jevon Holland",
+          "position": "S",
+          "overall": 83,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 250
+        },
+        {
+          "id": "CB-34",
+          "name": "Paulson Adebo",
+          "position": "CB",
+          "overall": 82,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 255
+        },
+        {
+          "id": "DT-23",
+          "name": "Calais Campbell",
+          "position": "DT",
+          "overall": 82,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 262
+        },
+        {
+          "id": "OG-13",
+          "name": "Damien Lewis",
+          "position": "OG",
+          "overall": 83,
+          "team_id": "HAR",
+          "salary": 0.8,
+          "pick_number": 267
+        },
+        {
+          "id": "TE-17",
+          "name": "Dalton Schultz",
+          "position": "TE",
+          "overall": 80,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 274
+        },
+        {
+          "id": "LB-28",
+          "name": "Frankie Luvu",
+          "position": "LB",
+          "overall": 80,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 279
+        },
+        {
+          "id": "RB-22",
+          "name": "De'Von Achane",
+          "position": "RB",
+          "overall": 83,
+          "team_id": "HAR",
+          "salary": 0.8,
+          "pick_number": 286
+        },
+        {
+          "id": "C-10",
+          "name": "Joe Tippmann",
+          "position": "C",
+          "overall": 79,
+          "team_id": "HAR",
+          "salary": 0.8,
+          "pick_number": 291
+        },
+        {
+          "id": "LB-34",
+          "name": "Edgerrin Cooper",
+          "position": "LB",
+          "overall": 79,
+          "team_id": "HAR",
+          "salary": 0.9,
+          "pick_number": 298
+        },
+        {
+          "id": "K-03",
+          "name": "Harrison Butker",
+          "position": "K",
+          "overall": 82,
+          "team_id": "HAR",
+          "salary": 0.4,
+          "pick_number": 303
+        },
+        {
+          "id": "P-04",
+          "name": "Corey Bojorquez",
+          "position": "P",
+          "overall": 82,
+          "team_id": "HAR",
+          "salary": 0.3,
+          "pick_number": 310
+        },
+        {
+          "id": "LS-03",
+          "name": "Tyler Ott",
+          "position": "LS",
+          "overall": 71,
+          "team_id": "HAR",
+          "salary": 0.3,
+          "pick_number": 315
+        }
+      ]
+    },
+    {
+      "id": "MES",
+      "city": "Mesa Verde",
+      "name": "Coyotes",
+      "is_user": false,
+      "philosophy": "Need-first: fill the biggest roster gaps even if it means passing on a slightly higher-graded player at a position you've already addressed.",
+      "payroll": 141.9,
+      "cap_room": 78.1,
+      "players": [
+        {
+          "id": "QB-04",
+          "name": "Patrick Mahomes",
+          "position": "QB",
+          "overall": 95,
+          "team_id": "MES",
+          "salary": 14.0,
+          "pick_number": 4
+        },
+        {
+          "id": "OT-01",
+          "name": "Lane Johnson",
+          "position": "OT",
+          "overall": 99,
+          "team_id": "MES",
+          "salary": 10.7,
+          "pick_number": 9
+        },
+        {
+          "id": "EDGE-06",
+          "name": "Aidan Hutchinson",
+          "position": "EDGE",
+          "overall": 93,
+          "team_id": "MES",
+          "salary": 10.1,
+          "pick_number": 16
+        },
+        {
+          "id": "WR-04",
+          "name": "CeeDee Lamb",
+          "position": "WR",
+          "overall": 95,
+          "team_id": "MES",
+          "salary": 8.9,
+          "pick_number": 21
+        },
+        {
+          "id": "DT-02",
+          "name": "Dexter Lawrence II",
+          "position": "DT",
+          "overall": 97,
+          "team_id": "MES",
+          "salary": 7.3,
+          "pick_number": 28
+        },
+        {
+          "id": "CB-05",
+          "name": "Trent McDuffie",
+          "position": "CB",
+          "overall": 94,
+          "team_id": "MES",
+          "salary": 7.1,
+          "pick_number": 33
+        },
+        {
+          "id": "S-03",
+          "name": "Xavier McKinney",
+          "position": "S",
+          "overall": 93,
+          "team_id": "MES",
+          "salary": 6.1,
+          "pick_number": 40
+        },
+        {
+          "id": "LB-02",
+          "name": "Roquan Smith",
+          "position": "LB",
+          "overall": 94,
+          "team_id": "MES",
+          "salary": 5.4,
+          "pick_number": 45
+        },
+        {
+          "id": "TE-03",
+          "name": "Trey McBride",
+          "position": "TE",
+          "overall": 92,
+          "team_id": "MES",
+          "salary": 4.8,
+          "pick_number": 52
+        },
+        {
+          "id": "RB-05",
+          "name": "Bijan Robinson",
+          "position": "RB",
+          "overall": 92,
+          "team_id": "MES",
+          "salary": 4.2,
+          "pick_number": 57
+        },
+        {
+          "id": "OG-05",
+          "name": "Kevin Zeitler",
+          "position": "OG",
+          "overall": 91,
+          "team_id": "MES",
+          "salary": 3.8,
+          "pick_number": 64
+        },
+        {
+          "id": "QB-08",
+          "name": "Justin Herbert",
+          "position": "QB",
+          "overall": 86,
+          "team_id": "MES",
+          "salary": 5.3,
+          "pick_number": 69
+        },
+        {
+          "id": "WR-10",
+          "name": "Davante Adams",
+          "position": "WR",
+          "overall": 90,
+          "team_id": "MES",
+          "salary": 3.9,
+          "pick_number": 76
+        },
+        {
+          "id": "OT-09",
+          "name": "Dion Dawkins",
+          "position": "OT",
+          "overall": 91,
+          "team_id": "MES",
+          "salary": 3.6,
+          "pick_number": 81
+        },
+        {
+          "id": "EDGE-11",
+          "name": "Alex Highsmith",
+          "position": "EDGE",
+          "overall": 88,
+          "team_id": "MES",
+          "salary": 3.4,
+          "pick_number": 88
+        },
+        {
+          "id": "CB-09",
+          "name": "Denzel Ward",
+          "position": "CB",
+          "overall": 90,
+          "team_id": "MES",
+          "salary": 2.9,
+          "pick_number": 93
+        },
+        {
+          "id": "C-04",
+          "name": "Elgton Jenkins",
+          "position": "C",
+          "overall": 87,
+          "team_id": "MES",
+          "salary": 2.1,
+          "pick_number": 100
+        },
+        {
+          "id": "WR-15",
+          "name": "Brandon Aiyuk",
+          "position": "WR",
+          "overall": 87,
+          "team_id": "MES",
+          "salary": 2.5,
+          "pick_number": 105
+        },
+        {
+          "id": "S-09",
+          "name": "Brian Branch",
+          "position": "S",
+          "overall": 89,
+          "team_id": "MES",
+          "salary": 2.1,
+          "pick_number": 112
+        },
+        {
+          "id": "EDGE-14",
+          "name": "Khalil Mack",
+          "position": "EDGE",
+          "overall": 87,
+          "team_id": "MES",
+          "salary": 2.2,
+          "pick_number": 117
+        },
+        {
+          "id": "DT-12",
+          "name": "Leonard Williams",
+          "position": "DT",
+          "overall": 87,
+          "team_id": "MES",
+          "salary": 1.7,
+          "pick_number": 124
+        },
+        {
+          "id": "WR-21",
+          "name": "Garrett Wilson",
+          "position": "WR",
+          "overall": 86,
+          "team_id": "MES",
+          "salary": 1.7,
+          "pick_number": 129
+        },
+        {
+          "id": "CB-17",
+          "name": "Jaycee Horn",
+          "position": "CB",
+          "overall": 86,
+          "team_id": "MES",
+          "salary": 1.5,
+          "pick_number": 136
+        },
+        {
+          "id": "RB-07",
+          "name": "Josh Jacobs",
+          "position": "RB",
+          "overall": 90,
+          "team_id": "MES",
+          "salary": 1.2,
+          "pick_number": 141
+        },
+        {
+          "id": "OT-16",
+          "name": "Brian O'Neill",
+          "position": "OT",
+          "overall": 86,
+          "team_id": "MES",
+          "salary": 1.3,
+          "pick_number": 148
+        },
+        {
+          "id": "LB-10",
+          "name": "Devin Lloyd",
+          "position": "LB",
+          "overall": 85,
+          "team_id": "MES",
+          "salary": 1.1,
+          "pick_number": 153
+        },
+        {
+          "id": "WR-25",
+          "name": "DK Metcalf",
+          "position": "WR",
+          "overall": 85,
+          "team_id": "MES",
+          "salary": 1.1,
+          "pick_number": 160
+        },
+        {
+          "id": "QB-17",
+          "name": "Bo Nix",
+          "position": "QB",
+          "overall": 79,
+          "team_id": "MES",
+          "salary": 1.2,
+          "pick_number": 165
+        },
+        {
+          "id": "CB-22",
+          "name": "Christian Benford",
+          "position": "CB",
+          "overall": 85,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 172
+        },
+        {
+          "id": "DT-13",
+          "name": "Zach Allen",
+          "position": "DT",
+          "overall": 86,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 177
+        },
+        {
+          "id": "TE-11",
+          "name": "Pat Freiermuth",
+          "position": "TE",
+          "overall": 84,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 184
+        },
+        {
+          "id": "LB-14",
+          "name": "Matt Milano",
+          "position": "LB",
+          "overall": 84,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 189
+        },
+        {
+          "id": "OT-19",
+          "name": "Bernhard Raimann",
+          "position": "OT",
+          "overall": 85,
+          "team_id": "MES",
+          "salary": 1.0,
+          "pick_number": 196
+        },
+        {
+          "id": "EDGE-22",
+          "name": "Jonathan Greenard",
+          "position": "EDGE",
+          "overall": 83,
+          "team_id": "MES",
+          "salary": 1.0,
+          "pick_number": 201
+        },
+        {
+          "id": "OG-11",
+          "name": "Kevin Dotson",
+          "position": "OG",
+          "overall": 85,
+          "team_id": "MES",
+          "salary": 0.8,
+          "pick_number": 208
+        },
+        {
+          "id": "S-18",
+          "name": "Jaquan Brisker",
+          "position": "S",
+          "overall": 83,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 213
+        },
+        {
+          "id": "WR-33",
+          "name": "George Pickens",
+          "position": "WR",
+          "overall": 83,
+          "team_id": "MES",
+          "salary": 1.0,
+          "pick_number": 220
+        },
+        {
+          "id": "CB-30",
+          "name": "Cooper DeJean",
+          "position": "CB",
+          "overall": 83,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 225
+        },
+        {
+          "id": "RB-16",
+          "name": "Chuba Hubbard",
+          "position": "RB",
+          "overall": 85,
+          "team_id": "MES",
+          "salary": 0.8,
+          "pick_number": 232
+        },
+        {
+          "id": "LB-21",
+          "name": "Patrick Queen",
+          "position": "LB",
+          "overall": 82,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 237
+        },
+        {
+          "id": "WR-40",
+          "name": "Tank Dell",
+          "position": "WR",
+          "overall": 82,
+          "team_id": "MES",
+          "salary": 1.0,
+          "pick_number": 244
+        },
+        {
+          "id": "DT-21",
+          "name": "Kenny Clark",
+          "position": "DT",
+          "overall": 83,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 249
+        },
+        {
+          "id": "S-22",
+          "name": "Camryn Bynum",
+          "position": "S",
+          "overall": 82,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 256
+        },
+        {
+          "id": "TE-14",
+          "name": "Darren Waller",
+          "position": "TE",
+          "overall": 82,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 261
+        },
+        {
+          "id": "CB-35",
+          "name": "Cam Taylor-Britt",
+          "position": "CB",
+          "overall": 81,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 268
+        },
+        {
+          "id": "RB-20",
+          "name": "David Montgomery",
+          "position": "RB",
+          "overall": 84,
+          "team_id": "MES",
+          "salary": 0.8,
+          "pick_number": 273
+        },
+        {
+          "id": "OG-17",
+          "name": "Robert Hunt",
+          "position": "OG",
+          "overall": 82,
+          "team_id": "MES",
+          "salary": 0.8,
+          "pick_number": 280
+        },
+        {
+          "id": "LB-30",
+          "name": "Tremaine Edmunds",
+          "position": "LB",
+          "overall": 80,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 285
+        },
+        {
+          "id": "LB-31",
+          "name": "Zaire Franklin",
+          "position": "LB",
+          "overall": 80,
+          "team_id": "MES",
+          "salary": 0.9,
+          "pick_number": 292
+        },
+        {
+          "id": "C-12",
+          "name": "Ted Karras",
+          "position": "C",
+          "overall": 78,
+          "team_id": "MES",
+          "salary": 0.8,
+          "pick_number": 297
+        },
+        {
+          "id": "K-04",
+          "name": "Ka'imi Fairbairn",
+          "position": "K",
+          "overall": 80,
+          "team_id": "MES",
+          "salary": 0.4,
+          "pick_number": 304
+        },
+        {
+          "id": "P-03",
+          "name": "Michael Dickson",
+          "position": "P",
+          "overall": 83,
+          "team_id": "MES",
+          "salary": 0.3,
+          "pick_number": 309
+        },
+        {
+          "id": "LS-04",
+          "name": "Rick Lovato",
+          "position": "LS",
+          "overall": 66,
+          "team_id": "MES",
+          "salary": 0.3,
+          "pick_number": 316
+        }
+      ]
+    },
+    {
+      "id": "IRN",
+      "city": "Iron Falls",
+      "name": "Foundry",
+      "is_user": false,
+      "philosophy": "Trenches first: prioritize offensive and defensive line value a bit above the rest of the roster - you believe games are won up front.",
+      "payroll": 142.0,
+      "cap_room": 78.0,
+      "players": [
+        {
+          "id": "QB-01",
+          "name": "Josh Allen",
+          "position": "QB",
+          "overall": 99,
+          "team_id": "IRN",
+          "salary": 14.0,
+          "pick_number": 1
+        },
+        {
+          "id": "EDGE-05",
+          "name": "Nick Bosa",
+          "position": "EDGE",
+          "overall": 95,
+          "team_id": "IRN",
+          "salary": 10.7,
+          "pick_number": 12
+        },
+        {
+          "id": "OT-02",
+          "name": "Trent Williams",
+          "position": "OT",
+          "overall": 97,
+          "team_id": "IRN",
+          "salary": 10.1,
+          "pick_number": 13
+        },
+        {
+          "id": "WR-06",
+          "name": "Terry McLaurin",
+          "position": "WR",
+          "overall": 94,
+          "team_id": "IRN",
+          "salary": 8.5,
+          "pick_number": 24
+        },
+        {
+          "id": "CB-02",
+          "name": "Christian Gonzalez",
+          "position": "CB",
+          "overall": 95,
+          "team_id": "IRN",
+          "salary": 8.0,
+          "pick_number": 25
+        },
+        {
+          "id": "LB-01",
+          "name": "Fred Warner",
+          "position": "LB",
+          "overall": 97,
+          "team_id": "IRN",
+          "salary": 6.2,
+          "pick_number": 36
+        },
+        {
+          "id": "DT-04",
+          "name": "Cam Heyward",
+          "position": "DT",
+          "overall": 94,
+          "team_id": "IRN",
+          "salary": 6.4,
+          "pick_number": 37
+        },
+        {
+          "id": "S-06",
+          "name": "Antoine Winfield Jr.",
+          "position": "S",
+          "overall": 91,
+          "team_id": "IRN",
+          "salary": 5.4,
+          "pick_number": 48
+        },
+        {
+          "id": "RB-03",
+          "name": "Jahmyr Gibbs",
+          "position": "RB",
+          "overall": 95,
+          "team_id": "IRN",
+          "salary": 4.8,
+          "pick_number": 49
+        },
+        {
+          "id": "OG-04",
+          "name": "Quenton Nelson",
+          "position": "OG",
+          "overall": 92,
+          "team_id": "IRN",
+          "salary": 4.1,
+          "pick_number": 60
+        },
+        {
+          "id": "WR-07",
+          "name": "A.J. Brown",
+          "position": "WR",
+          "overall": 93,
+          "team_id": "IRN",
+          "salary": 4.9,
+          "pick_number": 61
+        },
+        {
+          "id": "TE-06",
+          "name": "David Njoku",
+          "position": "TE",
+          "overall": 89,
+          "team_id": "IRN",
+          "salary": 3.6,
+          "pick_number": 72
+        },
+        {
+          "id": "OT-07",
+          "name": "Rashawn Slater",
+          "position": "OT",
+          "overall": 93,
+          "team_id": "IRN",
+          "salary": 4.1,
+          "pick_number": 73
+        },
+        {
+          "id": "QB-12",
+          "name": "Dak Prescott",
+          "position": "QB",
+          "overall": 84,
+          "team_id": "IRN",
+          "salary": 4.2,
+          "pick_number": 84
+        },
+        {
+          "id": "EDGE-10",
+          "name": "Will Anderson Jr.",
+          "position": "EDGE",
+          "overall": 89,
+          "team_id": "IRN",
+          "salary": 3.6,
+          "pick_number": 85
+        },
+        {
+          "id": "CB-10",
+          "name": "Jaylon Johnson",
+          "position": "CB",
+          "overall": 89,
+          "team_id": "IRN",
+          "salary": 2.7,
+          "pick_number": 96
+        },
+        {
+          "id": "DT-07",
+          "name": "Jeffery Simmons",
+          "position": "DT",
+          "overall": 92,
+          "team_id": "IRN",
+          "salary": 2.6,
+          "pick_number": 97
+        },
+        {
+          "id": "S-07",
+          "name": "Kerby Joseph",
+          "position": "S",
+          "overall": 90,
+          "team_id": "IRN",
+          "salary": 2.2,
+          "pick_number": 108
+        },
+        {
+          "id": "WR-18",
+          "name": "Chris Olave",
+          "position": "WR",
+          "overall": 86,
+          "team_id": "IRN",
+          "salary": 2.4,
+          "pick_number": 109
+        },
+        {
+          "id": "CB-14",
+          "name": "Charvarius Ward Sr.",
+          "position": "CB",
+          "overall": 87,
+          "team_id": "IRN",
+          "salary": 1.9,
+          "pick_number": 120
+        },
+        {
+          "id": "C-06",
+          "name": "Ryan Kelly",
+          "position": "C",
+          "overall": 83,
+          "team_id": "IRN",
+          "salary": 1.5,
+          "pick_number": 121
+        },
+        {
+          "id": "OT-13",
+          "name": "Kolton Miller",
+          "position": "OT",
+          "overall": 87,
+          "team_id": "IRN",
+          "salary": 1.7,
+          "pick_number": 132
+        },
+        {
+          "id": "LB-07",
+          "name": "Foyesade Oluokun",
+          "position": "LB",
+          "overall": 87,
+          "team_id": "IRN",
+          "salary": 1.4,
+          "pick_number": 133
+        },
+        {
+          "id": "EDGE-18",
+          "name": "Josh Sweat",
+          "position": "EDGE",
+          "overall": 85,
+          "team_id": "IRN",
+          "salary": 1.5,
+          "pick_number": 144
+        },
+        {
+          "id": "WR-24",
+          "name": "Courtland Sutton",
+          "position": "WR",
+          "overall": 85,
+          "team_id": "IRN",
+          "salary": 1.4,
+          "pick_number": 145
+        },
+        {
+          "id": "RB-09",
+          "name": "Jonathan Taylor",
+          "position": "RB",
+          "overall": 88,
+          "team_id": "IRN",
+          "salary": 1.0,
+          "pick_number": 156
+        },
+        {
+          "id": "CB-19",
+          "name": "Riq Woolen",
+          "position": "CB",
+          "overall": 86,
+          "team_id": "IRN",
+          "salary": 1.1,
+          "pick_number": 157
+        },
+        {
+          "id": "QB-18",
+          "name": "Kyler Murray",
+          "position": "QB",
+          "overall": 79,
+          "team_id": "IRN",
+          "salary": 1.2,
+          "pick_number": 168
+        },
+        {
+          "id": "OG-07",
+          "name": "Landon Dickerson",
+          "position": "OG",
+          "overall": 88,
+          "team_id": "IRN",
+          "salary": 0.8,
+          "pick_number": 169
+        },
+        {
+          "id": "WR-30",
+          "name": "Jordan Addison",
+          "position": "WR",
+          "overall": 84,
+          "team_id": "IRN",
+          "salary": 1.0,
+          "pick_number": 180
+        },
+        {
+          "id": "S-13",
+          "name": "Julian Love",
+          "position": "S",
+          "overall": 86,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 181
+        },
+        {
+          "id": "EDGE-20",
+          "name": "Nik Bonitto",
+          "position": "EDGE",
+          "overall": 84,
+          "team_id": "IRN",
+          "salary": 1.0,
+          "pick_number": 192
+        },
+        {
+          "id": "DT-18",
+          "name": "Zach Sieler",
+          "position": "DT",
+          "overall": 84,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 193
+        },
+        {
+          "id": "TE-12",
+          "name": "Hunter Henry",
+          "position": "TE",
+          "overall": 83,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 204
+        },
+        {
+          "id": "LB-18",
+          "name": "Nick Bolton",
+          "position": "LB",
+          "overall": 83,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 205
+        },
+        {
+          "id": "CB-26",
+          "name": "Taron Johnson",
+          "position": "CB",
+          "overall": 84,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 216
+        },
+        {
+          "id": "WR-32",
+          "name": "Deebo Samuel Sr.",
+          "position": "WR",
+          "overall": 83,
+          "team_id": "IRN",
+          "salary": 1.0,
+          "pick_number": 217
+        },
+        {
+          "id": "OT-24",
+          "name": "Braden Smith",
+          "position": "OT",
+          "overall": 83,
+          "team_id": "IRN",
+          "salary": 1.0,
+          "pick_number": 228
+        },
+        {
+          "id": "RB-14",
+          "name": "Tony Pollard",
+          "position": "RB",
+          "overall": 86,
+          "team_id": "IRN",
+          "salary": 0.8,
+          "pick_number": 229
+        },
+        {
+          "id": "LB-24",
+          "name": "Shaq Thompson",
+          "position": "LB",
+          "overall": 81,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 240
+        },
+        {
+          "id": "WR-37",
+          "name": "Jameson Williams",
+          "position": "WR",
+          "overall": 82,
+          "team_id": "IRN",
+          "salary": 1.0,
+          "pick_number": 241
+        },
+        {
+          "id": "CB-32",
+          "name": "Deommodore Lenoir",
+          "position": "CB",
+          "overall": 82,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 252
+        },
+        {
+          "id": "DT-22",
+          "name": "Braden Fiske",
+          "position": "DT",
+          "overall": 82,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 253
+        },
+        {
+          "id": "S-24",
+          "name": "Josh Metellus",
+          "position": "S",
+          "overall": 82,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 264
+        },
+        {
+          "id": "TE-15",
+          "name": "Jake Ferguson",
+          "position": "TE",
+          "overall": 81,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 265
+        },
+        {
+          "id": "OG-16",
+          "name": "Mike Onwenu",
+          "position": "OG",
+          "overall": 82,
+          "team_id": "IRN",
+          "salary": 0.8,
+          "pick_number": 276
+        },
+        {
+          "id": "LB-26",
+          "name": "Azeez Al-Shaair",
+          "position": "LB",
+          "overall": 80,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 277
+        },
+        {
+          "id": "C-08",
+          "name": "Hjalte Froholdt",
+          "position": "C",
+          "overall": 80,
+          "team_id": "IRN",
+          "salary": 0.8,
+          "pick_number": 288
+        },
+        {
+          "id": "RB-24",
+          "name": "J.K. Dobbins",
+          "position": "RB",
+          "overall": 82,
+          "team_id": "IRN",
+          "salary": 0.8,
+          "pick_number": 289
+        },
+        {
+          "id": "LB-36",
+          "name": "Quay Walker",
+          "position": "LB",
+          "overall": 79,
+          "team_id": "IRN",
+          "salary": 0.9,
+          "pick_number": 300
+        },
+        {
+          "id": "K-01",
+          "name": "Brandon Aubrey",
+          "position": "K",
+          "overall": 87,
+          "team_id": "IRN",
+          "salary": 0.4,
+          "pick_number": 301
+        },
+        {
+          "id": "P-06",
+          "name": "Bryan Anger",
+          "position": "P",
+          "overall": 81,
+          "team_id": "IRN",
+          "salary": 0.3,
+          "pick_number": 312
+        },
+        {
+          "id": "LS-01",
+          "name": "Morgan Cox",
+          "position": "LS",
+          "overall": 75,
+          "team_id": "IRN",
+          "salary": 0.3,
+          "pick_number": 313
+        }
+      ]
+    },
+    {
+      "id": "LAK",
+      "city": "Lakeshore",
+      "name": "Loons",
+      "is_user": false,
+      "philosophy": "Premium positions first: prioritize quarterback, edge rusher, wide receiver and cornerback value - the positions that decide games.",
+      "payroll": 142.0,
+      "cap_room": 78.0,
+      "players": [
+        {
+          "id": "EDGE-02",
+          "name": "Micah Parsons",
+          "position": "EDGE",
+          "overall": 98,
+          "team_id": "LAK",
+          "salary": 11.7,
+          "pick_number": 6
+        },
+        {
+          "id": "WR-01",
+          "name": "Ja'Marr Chase",
+          "position": "WR",
+          "overall": 99,
+          "team_id": "LAK",
+          "salary": 11.1,
+          "pick_number": 7
+        },
+        {
+          "id": "QB-06",
+          "name": "Jared Goff",
+          "position": "QB",
+          "overall": 87,
+          "team_id": "LAK",
+          "salary": 11.5,
+          "pick_number": 18
+        },
+        {
+          "id": "OT-04",
+          "name": "Penei Sewell",
+          "position": "OT",
+          "overall": 96,
+          "team_id": "LAK",
+          "salary": 9.2,
+          "pick_number": 19
+        },
+        {
+          "id": "CB-04",
+          "name": "Sauce Gardner",
+          "position": "CB",
+          "overall": 94,
+          "team_id": "LAK",
+          "salary": 7.5,
+          "pick_number": 30
+        },
+        {
+          "id": "TE-01",
+          "name": "George Kittle",
+          "position": "TE",
+          "overall": 98,
+          "team_id": "LAK",
+          "salary": 6.6,
+          "pick_number": 31
+        },
+        {
+          "id": "DT-05",
+          "name": "Nnamdi Madubuike",
+          "position": "DT",
+          "overall": 93,
+          "team_id": "LAK",
+          "salary": 5.9,
+          "pick_number": 42
+        },
+        {
+          "id": "S-04",
+          "name": "Budda Baker",
+          "position": "S",
+          "overall": 92,
+          "team_id": "LAK",
+          "salary": 5.8,
+          "pick_number": 43
+        },
+        {
+          "id": "LB-03",
+          "name": "Bobby Wagner",
+          "position": "LB",
+          "overall": 91,
+          "team_id": "LAK",
+          "salary": 4.7,
+          "pick_number": 54
+        },
+        {
+          "id": "OG-03",
+          "name": "Joe Thuney",
+          "position": "OG",
+          "overall": 93,
+          "team_id": "LAK",
+          "salary": 4.4,
+          "pick_number": 55
+        },
+        {
+          "id": "RB-06",
+          "name": "Joe Mixon",
+          "position": "RB",
+          "overall": 91,
+          "team_id": "LAK",
+          "salary": 3.7,
+          "pick_number": 66
+        },
+        {
+          "id": "QB-07",
+          "name": "Jalen Hurts",
+          "position": "QB",
+          "overall": 86,
+          "team_id": "LAK",
+          "salary": 5.5,
+          "pick_number": 67
+        },
+        {
+          "id": "OT-08",
+          "name": "Christian Darrisaw",
+          "position": "OT",
+          "overall": 92,
+          "team_id": "LAK",
+          "salary": 3.8,
+          "pick_number": 78
+        },
+        {
+          "id": "EDGE-09",
+          "name": "Josh Hines-Allen",
+          "position": "EDGE",
+          "overall": 90,
+          "team_id": "LAK",
+          "salary": 3.9,
+          "pick_number": 79
+        },
+        {
+          "id": "WR-12",
+          "name": "Nico Collins",
+          "position": "WR",
+          "overall": 89,
+          "team_id": "LAK",
+          "salary": 3.2,
+          "pick_number": 90
+        },
+        {
+          "id": "C-02",
+          "name": "Erik McCoy",
+          "position": "C",
+          "overall": 89,
+          "team_id": "LAK",
+          "salary": 2.4,
+          "pick_number": 91
+        },
+        {
+          "id": "CB-12",
+          "name": "Devon Witherspoon",
+          "position": "CB",
+          "overall": 88,
+          "team_id": "LAK",
+          "salary": 2.5,
+          "pick_number": 102
+        },
+        {
+          "id": "WR-14",
+          "name": "Stefon Diggs",
+          "position": "WR",
+          "overall": 88,
+          "team_id": "LAK",
+          "salary": 2.6,
+          "pick_number": 103
+        },
+        {
+          "id": "EDGE-13",
+          "name": "DeMarcus Lawrence",
+          "position": "EDGE",
+          "overall": 87,
+          "team_id": "LAK",
+          "salary": 2.3,
+          "pick_number": 114
+        },
+        {
+          "id": "DT-10",
+          "name": "DeForest Buckner",
+          "position": "DT",
+          "overall": 88,
+          "team_id": "LAK",
+          "salary": 2.0,
+          "pick_number": 115
+        },
+        {
+          "id": "S-11",
+          "name": "Justin Reid",
+          "position": "S",
+          "overall": 87,
+          "team_id": "LAK",
+          "salary": 1.7,
+          "pick_number": 126
+        },
+        {
+          "id": "WR-19",
+          "name": "Cooper Kupp",
+          "position": "WR",
+          "overall": 86,
+          "team_id": "LAK",
+          "salary": 1.8,
+          "pick_number": 127
+        },
+        {
+          "id": "CB-18",
+          "name": "Marshon Lattimore",
+          "position": "CB",
+          "overall": 86,
+          "team_id": "LAK",
+          "salary": 1.5,
+          "pick_number": 138
+        },
+        {
+          "id": "QB-14",
+          "name": "Tua Tagovailoa",
+          "position": "QB",
+          "overall": 82,
+          "team_id": "LAK",
+          "salary": 1.8,
+          "pick_number": 139
+        },
+        {
+          "id": "OT-17",
+          "name": "Jake Matthews",
+          "position": "OT",
+          "overall": 86,
+          "team_id": "LAK",
+          "salary": 1.3,
+          "pick_number": 150
+        },
+        {
+          "id": "TE-07",
+          "name": "T.J. Hockenson",
+          "position": "TE",
+          "overall": 88,
+          "team_id": "LAK",
+          "salary": 1.1,
+          "pick_number": 151
+        },
+        {
+          "id": "LB-12",
+          "name": "Jack Campbell",
+          "position": "LB",
+          "overall": 84,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 162
+        },
+        {
+          "id": "WR-26",
+          "name": "Jaylen Waddle",
+          "position": "WR",
+          "overall": 85,
+          "team_id": "LAK",
+          "salary": 1.0,
+          "pick_number": 163
+        },
+        {
+          "id": "RB-12",
+          "name": "Nick Chubb",
+          "position": "RB",
+          "overall": 87,
+          "team_id": "LAK",
+          "salary": 0.8,
+          "pick_number": 174
+        },
+        {
+          "id": "OG-08",
+          "name": "Tyler Smith",
+          "position": "OG",
+          "overall": 88,
+          "team_id": "LAK",
+          "salary": 0.8,
+          "pick_number": 175
+        },
+        {
+          "id": "CB-24",
+          "name": "Darius Slay Jr.",
+          "position": "CB",
+          "overall": 84,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 186
+        },
+        {
+          "id": "DT-16",
+          "name": "Kobie Turner",
+          "position": "DT",
+          "overall": 85,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 187
+        },
+        {
+          "id": "LB-15",
+          "name": "Blake Cashman",
+          "position": "LB",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 198
+        },
+        {
+          "id": "OT-21",
+          "name": "Trent Brown",
+          "position": "OT",
+          "overall": 85,
+          "team_id": "LAK",
+          "salary": 1.0,
+          "pick_number": 199
+        },
+        {
+          "id": "S-16",
+          "name": "Brandon Jones",
+          "position": "S",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 210
+        },
+        {
+          "id": "CB-25",
+          "name": "L'Jarius Sneed",
+          "position": "CB",
+          "overall": 84,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 211
+        },
+        {
+          "id": "WR-34",
+          "name": "Jakobi Meyers",
+          "position": "WR",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 1.0,
+          "pick_number": 222
+        },
+        {
+          "id": "EDGE-24",
+          "name": "Jaelan Phillips",
+          "position": "EDGE",
+          "overall": 82,
+          "team_id": "LAK",
+          "salary": 1.0,
+          "pick_number": 223
+        },
+        {
+          "id": "LB-19",
+          "name": "Kaden Elliss",
+          "position": "LB",
+          "overall": 82,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 234
+        },
+        {
+          "id": "RB-18",
+          "name": "Alvin Kamara",
+          "position": "RB",
+          "overall": 84,
+          "team_id": "LAK",
+          "salary": 0.8,
+          "pick_number": 235
+        },
+        {
+          "id": "DT-19",
+          "name": "Alim McNeill",
+          "position": "DT",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 246
+        },
+        {
+          "id": "S-19",
+          "name": "Jeremy Chinn",
+          "position": "S",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 247
+        },
+        {
+          "id": "WR-42",
+          "name": "Christian Kirk",
+          "position": "WR",
+          "overall": 81,
+          "team_id": "LAK",
+          "salary": 1.0,
+          "pick_number": 258
+        },
+        {
+          "id": "TE-13",
+          "name": "Cole Kmet",
+          "position": "TE",
+          "overall": 82,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 259
+        },
+        {
+          "id": "CB-36",
+          "name": "Greg Newsome II",
+          "position": "CB",
+          "overall": 81,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 270
+        },
+        {
+          "id": "LB-25",
+          "name": "T.J. Edwards",
+          "position": "LB",
+          "overall": 81,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 271
+        },
+        {
+          "id": "C-07",
+          "name": "Tyler Biadasz",
+          "position": "C",
+          "overall": 81,
+          "team_id": "LAK",
+          "salary": 0.8,
+          "pick_number": 282
+        },
+        {
+          "id": "RB-21",
+          "name": "Ashton Jeanty",
+          "position": "RB",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 0.8,
+          "pick_number": 283
+        },
+        {
+          "id": "OG-18",
+          "name": "Mekhi Becton Sr.",
+          "position": "OG",
+          "overall": 81,
+          "team_id": "LAK",
+          "salary": 0.8,
+          "pick_number": 294
+        },
+        {
+          "id": "LB-32",
+          "name": "Alex Anzalone",
+          "position": "LB",
+          "overall": 79,
+          "team_id": "LAK",
+          "salary": 0.9,
+          "pick_number": 295
+        },
+        {
+          "id": "K-05",
+          "name": "Cameron Dicker",
+          "position": "K",
+          "overall": 79,
+          "team_id": "LAK",
+          "salary": 0.4,
+          "pick_number": 306
+        },
+        {
+          "id": "P-02",
+          "name": "Logan Cooke",
+          "position": "P",
+          "overall": 83,
+          "team_id": "LAK",
+          "salary": 0.3,
+          "pick_number": 307
+        },
+        {
+          "id": "LS-06",
+          "name": "Beau Brinkley",
+          "position": "LS",
+          "overall": 61,
+          "team_id": "LAK",
+          "salary": 0.3,
+          "pick_number": 318
+        }
+      ]
+    },
+    {
+      "id": "SUM",
+      "city": "Summit",
+      "name": "Sherpas",
+      "is_user": false,
+      "philosophy": "Best player available: take the highest-value player almost regardless of position, as long as the position isn't already full.",
+      "payroll": 141.8,
+      "cap_room": 78.2,
+      "players": [
+        {
+          "id": "EDGE-01",
+          "name": "Myles Garrett",
+          "position": "EDGE",
+          "overall": 99,
+          "team_id": "SUM",
+          "salary": 11.9,
+          "pick_number": 5
+        },
+        {
+          "id": "WR-02",
+          "name": "Justin Jefferson",
+          "position": "WR",
+          "overall": 99,
+          "team_id": "SUM",
+          "salary": 10.9,
+          "pick_number": 8
+        },
+        {
+          "id": "QB-05",
+          "name": "Matthew Stafford",
+          "position": "QB",
+          "overall": 88,
+          "team_id": "SUM",
+          "salary": 11.7,
+          "pick_number": 17
+        },
+        {
+          "id": "OT-05",
+          "name": "Tristan Wirfs",
+          "position": "OT",
+          "overall": 96,
+          "team_id": "SUM",
+          "salary": 9.1,
+          "pick_number": 20
+        },
+        {
+          "id": "CB-03",
+          "name": "Jalen Ramsey",
+          "position": "CB",
+          "overall": 94,
+          "team_id": "SUM",
+          "salary": 7.6,
+          "pick_number": 29
+        },
+        {
+          "id": "DT-03",
+          "name": "Derrick Brown",
+          "position": "DT",
+          "overall": 95,
+          "team_id": "SUM",
+          "salary": 6.9,
+          "pick_number": 32
+        },
+        {
+          "id": "RB-02",
+          "name": "Derrick Henry",
+          "position": "RB",
+          "overall": 98,
+          "team_id": "SUM",
+          "salary": 5.4,
+          "pick_number": 41
+        },
+        {
+          "id": "S-05",
+          "name": "Minkah Fitzpatrick",
+          "position": "S",
+          "overall": 92,
+          "team_id": "SUM",
+          "salary": 5.7,
+          "pick_number": 44
+        },
+        {
+          "id": "OG-02",
+          "name": "Chris Lindstrom",
+          "position": "OG",
+          "overall": 94,
+          "team_id": "SUM",
+          "salary": 4.5,
+          "pick_number": 53
+        },
+        {
+          "id": "TE-04",
+          "name": "Mark Andrews",
+          "position": "TE",
+          "overall": 91,
+          "team_id": "SUM",
+          "salary": 4.6,
+          "pick_number": 56
+        },
+        {
+          "id": "EDGE-07",
+          "name": "Trey Hendrickson",
+          "position": "EDGE",
+          "overall": 92,
+          "team_id": "SUM",
+          "salary": 4.8,
+          "pick_number": 65
+        },
+        {
+          "id": "LB-05",
+          "name": "Lavonte David",
+          "position": "LB",
+          "overall": 88,
+          "team_id": "SUM",
+          "salary": 3.8,
+          "pick_number": 68
+        },
+        {
+          "id": "QB-09",
+          "name": "Baker Mayfield",
+          "position": "QB",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 4.7,
+          "pick_number": 77
+        },
+        {
+          "id": "CB-07",
+          "name": "Marlon Humphrey",
+          "position": "CB",
+          "overall": 92,
+          "team_id": "SUM",
+          "salary": 3.5,
+          "pick_number": 80
+        },
+        {
+          "id": "WR-11",
+          "name": "DeVonta Smith",
+          "position": "WR",
+          "overall": 89,
+          "team_id": "SUM",
+          "salary": 3.2,
+          "pick_number": 89
+        },
+        {
+          "id": "OT-11",
+          "name": "Garett Bolles",
+          "position": "OT",
+          "overall": 89,
+          "team_id": "SUM",
+          "salary": 3.1,
+          "pick_number": 92
+        },
+        {
+          "id": "WR-13",
+          "name": "Puka Nacua",
+          "position": "WR",
+          "overall": 88,
+          "team_id": "SUM",
+          "salary": 2.7,
+          "pick_number": 101
+        },
+        {
+          "id": "DT-08",
+          "name": "Quinnen Williams",
+          "position": "DT",
+          "overall": 91,
+          "team_id": "SUM",
+          "salary": 2.3,
+          "pick_number": 104
+        },
+        {
+          "id": "CB-13",
+          "name": "Kenny Moore II",
+          "position": "CB",
+          "overall": 88,
+          "team_id": "SUM",
+          "salary": 2.1,
+          "pick_number": 113
+        },
+        {
+          "id": "C-05",
+          "name": "Zach Frazier",
+          "position": "C",
+          "overall": 84,
+          "team_id": "SUM",
+          "salary": 1.6,
+          "pick_number": 116
+        },
+        {
+          "id": "EDGE-15",
+          "name": "Brian Burns",
+          "position": "EDGE",
+          "overall": 86,
+          "team_id": "SUM",
+          "salary": 1.9,
+          "pick_number": 125
+        },
+        {
+          "id": "WR-20",
+          "name": "DJ Moore",
+          "position": "WR",
+          "overall": 86,
+          "team_id": "SUM",
+          "salary": 1.8,
+          "pick_number": 128
+        },
+        {
+          "id": "OT-15",
+          "name": "Zach Tom",
+          "position": "OT",
+          "overall": 87,
+          "team_id": "SUM",
+          "salary": 1.5,
+          "pick_number": 137
+        },
+        {
+          "id": "S-12",
+          "name": "Jabrill Peppers",
+          "position": "S",
+          "overall": 86,
+          "team_id": "SUM",
+          "salary": 1.3,
+          "pick_number": 140
+        },
+        {
+          "id": "QB-15",
+          "name": "C.J. Stroud",
+          "position": "QB",
+          "overall": 81,
+          "team_id": "SUM",
+          "salary": 1.6,
+          "pick_number": 149
+        },
+        {
+          "id": "RB-08",
+          "name": "James Cook III",
+          "position": "RB",
+          "overall": 89,
+          "team_id": "SUM",
+          "salary": 1.0,
+          "pick_number": 152
+        },
+        {
+          "id": "LB-11",
+          "name": "Drue Tranquill",
+          "position": "LB",
+          "overall": 84,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 161
+        },
+        {
+          "id": "WR-27",
+          "name": "Zay Flowers",
+          "position": "WR",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 1.0,
+          "pick_number": 164
+        },
+        {
+          "id": "CB-23",
+          "name": "Quinyon Mitchell",
+          "position": "CB",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 173
+        },
+        {
+          "id": "TE-10",
+          "name": "Evan Engram",
+          "position": "TE",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 176
+        },
+        {
+          "id": "DT-15",
+          "name": "Grover Stewart",
+          "position": "DT",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 185
+        },
+        {
+          "id": "LB-13",
+          "name": "Leo Chenal",
+          "position": "LB",
+          "overall": 84,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 188
+        },
+        {
+          "id": "OT-20",
+          "name": "Spencer Brown",
+          "position": "OT",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 1.0,
+          "pick_number": 197
+        },
+        {
+          "id": "EDGE-21",
+          "name": "Andrew Van Ginkel",
+          "position": "EDGE",
+          "overall": 83,
+          "team_id": "SUM",
+          "salary": 1.0,
+          "pick_number": 200
+        },
+        {
+          "id": "WR-31",
+          "name": "Ladd McConkey",
+          "position": "WR",
+          "overall": 84,
+          "team_id": "SUM",
+          "salary": 1.0,
+          "pick_number": 209
+        },
+        {
+          "id": "S-17",
+          "name": "Jalen Pitre",
+          "position": "S",
+          "overall": 83,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 212
+        },
+        {
+          "id": "OG-12",
+          "name": "Alijah Vera-Tucker",
+          "position": "OG",
+          "overall": 84,
+          "team_id": "SUM",
+          "salary": 0.8,
+          "pick_number": 221
+        },
+        {
+          "id": "CB-29",
+          "name": "Chidobe Awuzie",
+          "position": "CB",
+          "overall": 83,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 224
+        },
+        {
+          "id": "RB-17",
+          "name": "James Conner",
+          "position": "RB",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 0.8,
+          "pick_number": 233
+        },
+        {
+          "id": "LB-20",
+          "name": "Logan Wilson",
+          "position": "LB",
+          "overall": 82,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 236
+        },
+        {
+          "id": "CB-31",
+          "name": "D.J. Reed",
+          "position": "CB",
+          "overall": 83,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 245
+        },
+        {
+          "id": "DT-20",
+          "name": "Daron Payne",
+          "position": "DT",
+          "overall": 83,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 248
+        },
+        {
+          "id": "WR-41",
+          "name": "Calvin Ridley",
+          "position": "WR",
+          "overall": 81,
+          "team_id": "SUM",
+          "salary": 1.0,
+          "pick_number": 257
+        },
+        {
+          "id": "S-23",
+          "name": "DeShon Elliott",
+          "position": "S",
+          "overall": 82,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 260
+        },
+        {
+          "id": "OG-14",
+          "name": "Dominick Puni",
+          "position": "OG",
+          "overall": 83,
+          "team_id": "SUM",
+          "salary": 0.8,
+          "pick_number": 269
+        },
+        {
+          "id": "RB-19",
+          "name": "Breece Hall",
+          "position": "RB",
+          "overall": 84,
+          "team_id": "SUM",
+          "salary": 0.8,
+          "pick_number": 272
+        },
+        {
+          "id": "TE-18",
+          "name": "Isaiah Likely",
+          "position": "TE",
+          "overall": 80,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 281
+        },
+        {
+          "id": "LB-29",
+          "name": "Jordyn Brooks",
+          "position": "LB",
+          "overall": 80,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 284
+        },
+        {
+          "id": "C-11",
+          "name": "Connor McGovern",
+          "position": "C",
+          "overall": 78,
+          "team_id": "SUM",
+          "salary": 0.8,
+          "pick_number": 293
+        },
+        {
+          "id": "LB-33",
+          "name": "Cody Barton",
+          "position": "LB",
+          "overall": 79,
+          "team_id": "SUM",
+          "salary": 0.9,
+          "pick_number": 296
+        },
+        {
+          "id": "P-01",
+          "name": "AJ Cole",
+          "position": "P",
+          "overall": 85,
+          "team_id": "SUM",
+          "salary": 0.3,
+          "pick_number": 305
+        },
+        {
+          "id": "K-06",
+          "name": "Chase McLaughlin",
+          "position": "K",
+          "overall": 79,
+          "team_id": "SUM",
+          "salary": 0.4,
+          "pick_number": 308
+        },
+        {
+          "id": "LS-05",
+          "name": "Jon Weeks",
+          "position": "LS",
+          "overall": 65,
+          "team_id": "SUM",
+          "salary": 0.3,
+          "pick_number": 317
+        }
+      ]
+    },
+    {
+      "id": "DEL",
+      "city": "Delta Bay",
+      "name": "Gators",
+      "is_user": false,
+      "philosophy": "Need-first: fill the biggest roster gaps even if it means passing on a slightly higher-graded player at a position you've already addressed.",
+      "payroll": 141.6,
+      "cap_room": 78.4,
+      "players": [
+        {
+          "id": "QB-02",
+          "name": "Lamar Jackson",
+          "position": "QB",
+          "overall": 99,
+          "team_id": "DEL",
+          "salary": 14.0,
+          "pick_number": 2
+        },
+        {
+          "id": "EDGE-04",
+          "name": "T.J. Watt",
+          "position": "EDGE",
+          "overall": 96,
+          "team_id": "DEL",
+          "salary": 10.9,
+          "pick_number": 11
+        },
+        {
+          "id": "WR-03",
+          "name": "Amon-Ra St. Brown",
+          "position": "WR",
+          "overall": 96,
+          "team_id": "DEL",
+          "salary": 9.9,
+          "pick_number": 14
+        },
+        {
+          "id": "CB-01",
+          "name": "Patrick Surtain II",
+          "position": "CB",
+          "overall": 97,
+          "team_id": "DEL",
+          "salary": 8.3,
+          "pick_number": 23
+        },
+        {
+          "id": "OT-06",
+          "name": "Laremy Tunsil",
+          "position": "OT",
+          "overall": 94,
+          "team_id": "DEL",
+          "salary": 8.3,
+          "pick_number": 26
+        },
+        {
+          "id": "S-01",
+          "name": "Jessie Bates III",
+          "position": "S",
+          "overall": 95,
+          "team_id": "DEL",
+          "salary": 6.6,
+          "pick_number": 35
+        },
+        {
+          "id": "RB-01",
+          "name": "Saquon Barkley",
+          "position": "RB",
+          "overall": 99,
+          "team_id": "DEL",
+          "salary": 5.7,
+          "pick_number": 38
+        },
+        {
+          "id": "DT-06",
+          "name": "Vita Vea",
+          "position": "DT",
+          "overall": 93,
+          "team_id": "DEL",
+          "salary": 5.5,
+          "pick_number": 47
+        },
+        {
+          "id": "OG-01",
+          "name": "Quinn Meinerz",
+          "position": "OG",
+          "overall": 95,
+          "team_id": "DEL",
+          "salary": 4.7,
+          "pick_number": 50
+        },
+        {
+          "id": "TE-05",
+          "name": "Brock Bowers",
+          "position": "TE",
+          "overall": 90,
+          "team_id": "DEL",
+          "salary": 4.3,
+          "pick_number": 59
+        },
+        {
+          "id": "WR-08",
+          "name": "Mike Evans",
+          "position": "WR",
+          "overall": 93,
+          "team_id": "DEL",
+          "salary": 4.8,
+          "pick_number": 62
+        },
+        {
+          "id": "LB-06",
+          "name": "Zack Baun",
+          "position": "LB",
+          "overall": 88,
+          "team_id": "DEL",
+          "salary": 3.6,
+          "pick_number": 71
+        },
+        {
+          "id": "EDGE-08",
+          "name": "Danielle Hunter",
+          "position": "EDGE",
+          "overall": 91,
+          "team_id": "DEL",
+          "salary": 4.2,
+          "pick_number": 74
+        },
+        {
+          "id": "QB-11",
+          "name": "Brock Purdy",
+          "position": "QB",
+          "overall": 84,
+          "team_id": "DEL",
+          "salary": 4.3,
+          "pick_number": 83
+        },
+        {
+          "id": "CB-08",
+          "name": "Jaire Alexander",
+          "position": "CB",
+          "overall": 91,
+          "team_id": "DEL",
+          "salary": 3.2,
+          "pick_number": 86
+        },
+        {
+          "id": "C-03",
+          "name": "Tyler Linderbaum",
+          "position": "C",
+          "overall": 88,
+          "team_id": "DEL",
+          "salary": 2.3,
+          "pick_number": 95
+        },
+        {
+          "id": "OT-12",
+          "name": "Andrew Thomas",
+          "position": "OT",
+          "overall": 88,
+          "team_id": "DEL",
+          "salary": 2.8,
+          "pick_number": 98
+        },
+        {
+          "id": "WR-17",
+          "name": "Tee Higgins",
+          "position": "WR",
+          "overall": 87,
+          "team_id": "DEL",
+          "salary": 2.4,
+          "pick_number": 107
+        },
+        {
+          "id": "DT-09",
+          "name": "Jalen Carter",
+          "position": "DT",
+          "overall": 90,
+          "team_id": "DEL",
+          "salary": 2.1,
+          "pick_number": 110
+        },
+        {
+          "id": "S-10",
+          "name": "Harrison Smith",
+          "position": "S",
+          "overall": 88,
+          "team_id": "DEL",
+          "salary": 1.8,
+          "pick_number": 119
+        },
+        {
+          "id": "CB-15",
+          "name": "DaRon Bland",
+          "position": "CB",
+          "overall": 87,
+          "team_id": "DEL",
+          "salary": 1.9,
+          "pick_number": 122
+        },
+        {
+          "id": "WR-22",
+          "name": "Jaxon Smith-Njigba",
+          "position": "WR",
+          "overall": 86,
+          "team_id": "DEL",
+          "salary": 1.7,
+          "pick_number": 131
+        },
+        {
+          "id": "OT-14",
+          "name": "Taylor Decker",
+          "position": "OT",
+          "overall": 87,
+          "team_id": "DEL",
+          "salary": 1.6,
+          "pick_number": 134
+        },
+        {
+          "id": "EDGE-17",
+          "name": "Joey Bosa",
+          "position": "EDGE",
+          "overall": 85,
+          "team_id": "DEL",
+          "salary": 1.5,
+          "pick_number": 143
+        },
+        {
+          "id": "LB-08",
+          "name": "Bobby Okereke",
+          "position": "LB",
+          "overall": 86,
+          "team_id": "DEL",
+          "salary": 1.2,
+          "pick_number": 146
+        },
+        {
+          "id": "QB-16",
+          "name": "Geno Smith",
+          "position": "QB",
+          "overall": 80,
+          "team_id": "DEL",
+          "salary": 1.4,
+          "pick_number": 155
+        },
+        {
+          "id": "RB-10",
+          "name": "Kenneth Walker III",
+          "position": "RB",
+          "overall": 88,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 158
+        },
+        {
+          "id": "TE-09",
+          "name": "Sam LaPorta",
+          "position": "TE",
+          "overall": 86,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 167
+        },
+        {
+          "id": "CB-20",
+          "name": "Byron Murphy Jr.",
+          "position": "CB",
+          "overall": 85,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 170
+        },
+        {
+          "id": "WR-29",
+          "name": "Jerry Jeudy",
+          "position": "WR",
+          "overall": 84,
+          "team_id": "DEL",
+          "salary": 1.0,
+          "pick_number": 179
+        },
+        {
+          "id": "OG-09",
+          "name": "Sam Cosmi",
+          "position": "OG",
+          "overall": 87,
+          "team_id": "DEL",
+          "salary": 0.8,
+          "pick_number": 182
+        },
+        {
+          "id": "DT-17",
+          "name": "Milton Williams",
+          "position": "DT",
+          "overall": 85,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 191
+        },
+        {
+          "id": "S-14",
+          "name": "C.J. Gardner-Johnson",
+          "position": "S",
+          "overall": 84,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 194
+        },
+        {
+          "id": "LB-17",
+          "name": "Jeremiah Owusu-Koramoah",
+          "position": "LB",
+          "overall": 83,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 203
+        },
+        {
+          "id": "EDGE-23",
+          "name": "Von Miller",
+          "position": "EDGE",
+          "overall": 83,
+          "team_id": "DEL",
+          "salary": 1.0,
+          "pick_number": 206
+        },
+        {
+          "id": "OT-23",
+          "name": "Rob Havenstein",
+          "position": "OT",
+          "overall": 84,
+          "team_id": "DEL",
+          "salary": 1.0,
+          "pick_number": 215
+        },
+        {
+          "id": "CB-27",
+          "name": "Travis Hunter",
+          "position": "CB",
+          "overall": 84,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 218
+        },
+        {
+          "id": "RB-13",
+          "name": "Kyren Williams",
+          "position": "RB",
+          "overall": 86,
+          "team_id": "DEL",
+          "salary": 0.8,
+          "pick_number": 227
+        },
+        {
+          "id": "WR-36",
+          "name": "DeAndre Hopkins",
+          "position": "WR",
+          "overall": 82,
+          "team_id": "DEL",
+          "salary": 1.0,
+          "pick_number": 230
+        },
+        {
+          "id": "LB-23",
+          "name": "Robert Spillane",
+          "position": "LB",
+          "overall": 82,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 239
+        },
+        {
+          "id": "WR-38",
+          "name": "Khalil Shakir",
+          "position": "WR",
+          "overall": 82,
+          "team_id": "DEL",
+          "salary": 1.0,
+          "pick_number": 242
+        },
+        {
+          "id": "S-21",
+          "name": "Jimmie Ward",
+          "position": "S",
+          "overall": 83,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 251
+        },
+        {
+          "id": "CB-33",
+          "name": "Kyler Gordon",
+          "position": "CB",
+          "overall": 82,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 254
+        },
+        {
+          "id": "DT-24",
+          "name": "Grady Jarrett",
+          "position": "DT",
+          "overall": 82,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 263
+        },
+        {
+          "id": "TE-16",
+          "name": "Jonnu Smith",
+          "position": "TE",
+          "overall": 81,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 266
+        },
+        {
+          "id": "OG-15",
+          "name": "John Simpson",
+          "position": "OG",
+          "overall": 82,
+          "team_id": "DEL",
+          "salary": 0.8,
+          "pick_number": 275
+        },
+        {
+          "id": "LB-27",
+          "name": "Ernest Jones IV",
+          "position": "LB",
+          "overall": 80,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 278
+        },
+        {
+          "id": "RB-23",
+          "name": "Isiah Pacheco",
+          "position": "RB",
+          "overall": 83,
+          "team_id": "DEL",
+          "salary": 0.8,
+          "pick_number": 287
+        },
+        {
+          "id": "C-09",
+          "name": "Drew Dalman",
+          "position": "C",
+          "overall": 79,
+          "team_id": "DEL",
+          "salary": 0.8,
+          "pick_number": 290
+        },
+        {
+          "id": "LB-35",
+          "name": "Germaine Pratt",
+          "position": "LB",
+          "overall": 79,
+          "team_id": "DEL",
+          "salary": 0.9,
+          "pick_number": 299
+        },
+        {
+          "id": "K-02",
+          "name": "Chris Boswell",
+          "position": "K",
+          "overall": 85,
+          "team_id": "DEL",
+          "salary": 0.4,
+          "pick_number": 302
+        },
+        {
+          "id": "P-05",
+          "name": "Bradley Pinion",
+          "position": "P",
+          "overall": 81,
+          "team_id": "DEL",
+          "salary": 0.3,
+          "pick_number": 311
+        },
+        {
+          "id": "LS-02",
+          "name": "Thomas Hennessy",
+          "position": "LS",
+          "overall": 72,
+          "team_id": "DEL",
+          "salary": 0.3,
+          "pick_number": 314
+        }
+      ]
+    }
+  ],
+  "draft_log": [
+    {
+      "pick": 1,
+      "team_id": "IRN",
+      "player_id": "QB-01",
+      "name": "Josh Allen",
+      "position": "QB",
+      "salary": 14.0
+    },
+    {
+      "pick": 2,
+      "team_id": "DEL",
+      "player_id": "QB-02",
+      "name": "Lamar Jackson",
+      "position": "QB",
+      "salary": 14.0
+    },
+    {
+      "pick": 3,
+      "team_id": "HAR",
+      "player_id": "QB-03",
+      "name": "Joe Burrow",
+      "position": "QB",
+      "salary": 14.0
+    },
+    {
+      "pick": 4,
+      "team_id": "MES",
+      "player_id": "QB-04",
+      "name": "Patrick Mahomes",
+      "position": "QB",
+      "salary": 14.0
+    },
+    {
+      "pick": 5,
+      "team_id": "SUM",
+      "player_id": "EDGE-01",
+      "name": "Myles Garrett",
+      "position": "EDGE",
+      "salary": 11.9
+    },
+    {
+      "pick": 6,
+      "team_id": "LAK",
+      "player_id": "EDGE-02",
+      "name": "Micah Parsons",
+      "position": "EDGE",
+      "salary": 11.7
+    },
+    {
+      "pick": 7,
+      "team_id": "LAK",
+      "player_id": "WR-01",
+      "name": "Ja'Marr Chase",
+      "position": "WR",
+      "salary": 11.1
+    },
+    {
+      "pick": 8,
+      "team_id": "SUM",
+      "player_id": "WR-02",
+      "name": "Justin Jefferson",
+      "position": "WR",
+      "salary": 10.9
+    },
+    {
+      "pick": 9,
+      "team_id": "MES",
+      "player_id": "OT-01",
+      "name": "Lane Johnson",
+      "position": "OT",
+      "salary": 10.7
+    },
+    {
+      "pick": 10,
+      "team_id": "HAR",
+      "player_id": "EDGE-03",
+      "name": "Maxx Crosby",
+      "position": "EDGE",
+      "salary": 11.0
+    },
+    {
+      "pick": 11,
+      "team_id": "DEL",
+      "player_id": "EDGE-04",
+      "name": "T.J. Watt",
+      "position": "EDGE",
+      "salary": 10.9
+    },
+    {
+      "pick": 12,
+      "team_id": "IRN",
+      "player_id": "EDGE-05",
+      "name": "Nick Bosa",
+      "position": "EDGE",
+      "salary": 10.7
+    },
+    {
+      "pick": 13,
+      "team_id": "IRN",
+      "player_id": "OT-02",
+      "name": "Trent Williams",
+      "position": "OT",
+      "salary": 10.1
+    },
+    {
+      "pick": 14,
+      "team_id": "DEL",
+      "player_id": "WR-03",
+      "name": "Amon-Ra St. Brown",
+      "position": "WR",
+      "salary": 9.9
+    },
+    {
+      "pick": 15,
+      "team_id": "HAR",
+      "player_id": "OT-03",
+      "name": "Jordan Mailata",
+      "position": "OT",
+      "salary": 9.8
+    },
+    {
+      "pick": 16,
+      "team_id": "MES",
+      "player_id": "EDGE-06",
+      "name": "Aidan Hutchinson",
+      "position": "EDGE",
+      "salary": 10.1
+    },
+    {
+      "pick": 17,
+      "team_id": "SUM",
+      "player_id": "QB-05",
+      "name": "Matthew Stafford",
+      "position": "QB",
+      "salary": 11.7
+    },
+    {
+      "pick": 18,
+      "team_id": "LAK",
+      "player_id": "QB-06",
+      "name": "Jared Goff",
+      "position": "QB",
+      "salary": 11.5
+    },
+    {
+      "pick": 19,
+      "team_id": "LAK",
+      "player_id": "OT-04",
+      "name": "Penei Sewell",
+      "position": "OT",
+      "salary": 9.2
+    },
+    {
+      "pick": 20,
+      "team_id": "SUM",
+      "player_id": "OT-05",
+      "name": "Tristan Wirfs",
+      "position": "OT",
+      "salary": 9.1
+    },
+    {
+      "pick": 21,
+      "team_id": "MES",
+      "player_id": "WR-04",
+      "name": "CeeDee Lamb",
+      "position": "WR",
+      "salary": 8.9
+    },
+    {
+      "pick": 22,
+      "team_id": "HAR",
+      "player_id": "WR-05",
+      "name": "Tyreek Hill",
+      "position": "WR",
+      "salary": 8.8
+    },
+    {
+      "pick": 23,
+      "team_id": "DEL",
+      "player_id": "CB-01",
+      "name": "Patrick Surtain II",
+      "position": "CB",
+      "salary": 8.3
+    },
+    {
+      "pick": 24,
+      "team_id": "IRN",
+      "player_id": "WR-06",
+      "name": "Terry McLaurin",
+      "position": "WR",
+      "salary": 8.5
+    },
+    {
+      "pick": 25,
+      "team_id": "IRN",
+      "player_id": "CB-02",
+      "name": "Christian Gonzalez",
+      "position": "CB",
+      "salary": 8.0
+    },
+    {
+      "pick": 26,
+      "team_id": "DEL",
+      "player_id": "OT-06",
+      "name": "Laremy Tunsil",
+      "position": "OT",
+      "salary": 8.3
+    },
+    {
+      "pick": 27,
+      "team_id": "HAR",
+      "player_id": "DT-01",
+      "name": "Chris Jones",
+      "position": "DT",
+      "salary": 7.4
+    },
+    {
+      "pick": 28,
+      "team_id": "MES",
+      "player_id": "DT-02",
+      "name": "Dexter Lawrence II",
+      "position": "DT",
+      "salary": 7.3
+    },
+    {
+      "pick": 29,
+      "team_id": "SUM",
+      "player_id": "CB-03",
+      "name": "Jalen Ramsey",
+      "position": "CB",
+      "salary": 7.6
+    },
+    {
+      "pick": 30,
+      "team_id": "LAK",
+      "player_id": "CB-04",
+      "name": "Sauce Gardner",
+      "position": "CB",
+      "salary": 7.5
+    },
+    {
+      "pick": 31,
+      "team_id": "LAK",
+      "player_id": "TE-01",
+      "name": "George Kittle",
+      "position": "TE",
+      "salary": 6.6
+    },
+    {
+      "pick": 32,
+      "team_id": "SUM",
+      "player_id": "DT-03",
+      "name": "Derrick Brown",
+      "position": "DT",
+      "salary": 6.9
+    },
+    {
+      "pick": 33,
+      "team_id": "MES",
+      "player_id": "CB-05",
+      "name": "Trent McDuffie",
+      "position": "CB",
+      "salary": 7.1
+    },
+    {
+      "pick": 34,
+      "team_id": "HAR",
+      "player_id": "CB-06",
+      "name": "Derek Stingley Jr.",
+      "position": "CB",
+      "salary": 7.0
+    },
+    {
+      "pick": 35,
+      "team_id": "DEL",
+      "player_id": "S-01",
+      "name": "Jessie Bates III",
+      "position": "S",
+      "salary": 6.6
+    },
+    {
+      "pick": 36,
+      "team_id": "IRN",
+      "player_id": "LB-01",
+      "name": "Fred Warner",
+      "position": "LB",
+      "salary": 6.2
+    },
+    {
+      "pick": 37,
+      "team_id": "IRN",
+      "player_id": "DT-04",
+      "name": "Cam Heyward",
+      "position": "DT",
+      "salary": 6.4
+    },
+    {
+      "pick": 38,
+      "team_id": "DEL",
+      "player_id": "RB-01",
+      "name": "Saquon Barkley",
+      "position": "RB",
+      "salary": 5.7
+    },
+    {
+      "pick": 39,
+      "team_id": "HAR",
+      "player_id": "S-02",
+      "name": "Derwin James Jr.",
+      "position": "S",
+      "salary": 6.2
+    },
+    {
+      "pick": 40,
+      "team_id": "MES",
+      "player_id": "S-03",
+      "name": "Xavier McKinney",
+      "position": "S",
+      "salary": 6.1
+    },
+    {
+      "pick": 41,
+      "team_id": "SUM",
+      "player_id": "RB-02",
+      "name": "Derrick Henry",
+      "position": "RB",
+      "salary": 5.4
+    },
+    {
+      "pick": 42,
+      "team_id": "LAK",
+      "player_id": "DT-05",
+      "name": "Nnamdi Madubuike",
+      "position": "DT",
+      "salary": 5.9
+    },
+    {
+      "pick": 43,
+      "team_id": "LAK",
+      "player_id": "S-04",
+      "name": "Budda Baker",
+      "position": "S",
+      "salary": 5.8
+    },
+    {
+      "pick": 44,
+      "team_id": "SUM",
+      "player_id": "S-05",
+      "name": "Minkah Fitzpatrick",
+      "position": "S",
+      "salary": 5.7
+    },
+    {
+      "pick": 45,
+      "team_id": "MES",
+      "player_id": "LB-02",
+      "name": "Roquan Smith",
+      "position": "LB",
+      "salary": 5.4
+    },
+    {
+      "pick": 46,
+      "team_id": "HAR",
+      "player_id": "TE-02",
+      "name": "Travis Kelce",
+      "position": "TE",
+      "salary": 5.3
+    },
+    {
+      "pick": 47,
+      "team_id": "DEL",
+      "player_id": "DT-06",
+      "name": "Vita Vea",
+      "position": "DT",
+      "salary": 5.5
+    },
+    {
+      "pick": 48,
+      "team_id": "IRN",
+      "player_id": "S-06",
+      "name": "Antoine Winfield Jr.",
+      "position": "S",
+      "salary": 5.4
+    },
+    {
+      "pick": 49,
+      "team_id": "IRN",
+      "player_id": "RB-03",
+      "name": "Jahmyr Gibbs",
+      "position": "RB",
+      "salary": 4.8
+    },
+    {
+      "pick": 50,
+      "team_id": "DEL",
+      "player_id": "OG-01",
+      "name": "Quinn Meinerz",
+      "position": "OG",
+      "salary": 4.7
+    },
+    {
+      "pick": 51,
+      "team_id": "HAR",
+      "player_id": "RB-04",
+      "name": "Christian McCaffrey",
+      "position": "RB",
+      "salary": 4.6
+    },
+    {
+      "pick": 52,
+      "team_id": "MES",
+      "player_id": "TE-03",
+      "name": "Trey McBride",
+      "position": "TE",
+      "salary": 4.8
+    },
+    {
+      "pick": 53,
+      "team_id": "SUM",
+      "player_id": "OG-02",
+      "name": "Chris Lindstrom",
+      "position": "OG",
+      "salary": 4.5
+    },
+    {
+      "pick": 54,
+      "team_id": "LAK",
+      "player_id": "LB-03",
+      "name": "Bobby Wagner",
+      "position": "LB",
+      "salary": 4.7
+    },
+    {
+      "pick": 55,
+      "team_id": "LAK",
+      "player_id": "OG-03",
+      "name": "Joe Thuney",
+      "position": "OG",
+      "salary": 4.4
+    },
+    {
+      "pick": 56,
+      "team_id": "SUM",
+      "player_id": "TE-04",
+      "name": "Mark Andrews",
+      "position": "TE",
+      "salary": 4.6
+    },
+    {
+      "pick": 57,
+      "team_id": "MES",
+      "player_id": "RB-05",
+      "name": "Bijan Robinson",
+      "position": "RB",
+      "salary": 4.2
+    },
+    {
+      "pick": 58,
+      "team_id": "HAR",
+      "player_id": "LB-04",
+      "name": "Demario Davis",
+      "position": "LB",
+      "salary": 4.4
+    },
+    {
+      "pick": 59,
+      "team_id": "DEL",
+      "player_id": "TE-05",
+      "name": "Brock Bowers",
+      "position": "TE",
+      "salary": 4.3
+    },
+    {
+      "pick": 60,
+      "team_id": "IRN",
+      "player_id": "OG-04",
+      "name": "Quenton Nelson",
+      "position": "OG",
+      "salary": 4.1
+    },
+    {
+      "pick": 61,
+      "team_id": "IRN",
+      "player_id": "WR-07",
+      "name": "A.J. Brown",
+      "position": "WR",
+      "salary": 4.9
+    },
+    {
+      "pick": 62,
+      "team_id": "DEL",
+      "player_id": "WR-08",
+      "name": "Mike Evans",
+      "position": "WR",
+      "salary": 4.8
+    },
+    {
+      "pick": 63,
+      "team_id": "HAR",
+      "player_id": "C-01",
+      "name": "Creed Humphrey",
+      "position": "C",
+      "salary": 3.7
+    },
+    {
+      "pick": 64,
+      "team_id": "MES",
+      "player_id": "OG-05",
+      "name": "Kevin Zeitler",
+      "position": "OG",
+      "salary": 3.8
+    },
+    {
+      "pick": 65,
+      "team_id": "SUM",
+      "player_id": "EDGE-07",
+      "name": "Trey Hendrickson",
+      "position": "EDGE",
+      "salary": 4.8
+    },
+    {
+      "pick": 66,
+      "team_id": "LAK",
+      "player_id": "RB-06",
+      "name": "Joe Mixon",
+      "position": "RB",
+      "salary": 3.7
+    },
+    {
+      "pick": 67,
+      "team_id": "LAK",
+      "player_id": "QB-07",
+      "name": "Jalen Hurts",
+      "position": "QB",
+      "salary": 5.5
+    },
+    {
+      "pick": 68,
+      "team_id": "SUM",
+      "player_id": "LB-05",
+      "name": "Lavonte David",
+      "position": "LB",
+      "salary": 3.8
+    },
+    {
+      "pick": 69,
+      "team_id": "MES",
+      "player_id": "QB-08",
+      "name": "Justin Herbert",
+      "position": "QB",
+      "salary": 5.3
+    },
+    {
+      "pick": 70,
+      "team_id": "HAR",
+      "player_id": "OG-06",
+      "name": "Trey Smith",
+      "position": "OG",
+      "salary": 3.5
+    },
+    {
+      "pick": 71,
+      "team_id": "DEL",
+      "player_id": "LB-06",
+      "name": "Zack Baun",
+      "position": "LB",
+      "salary": 3.6
+    },
+    {
+      "pick": 72,
+      "team_id": "IRN",
+      "player_id": "TE-06",
+      "name": "David Njoku",
+      "position": "TE",
+      "salary": 3.6
+    },
+    {
+      "pick": 73,
+      "team_id": "IRN",
+      "player_id": "OT-07",
+      "name": "Rashawn Slater",
+      "position": "OT",
+      "salary": 4.1
+    },
+    {
+      "pick": 74,
+      "team_id": "DEL",
+      "player_id": "EDGE-08",
+      "name": "Danielle Hunter",
+      "position": "EDGE",
+      "salary": 4.2
+    },
+    {
+      "pick": 75,
+      "team_id": "HAR",
+      "player_id": "WR-09",
+      "name": "Drake London",
+      "position": "WR",
+      "salary": 4.0
+    },
+    {
+      "pick": 76,
+      "team_id": "MES",
+      "player_id": "WR-10",
+      "name": "Davante Adams",
+      "position": "WR",
+      "salary": 3.9
+    },
+    {
+      "pick": 77,
+      "team_id": "SUM",
+      "player_id": "QB-09",
+      "name": "Baker Mayfield",
+      "position": "QB",
+      "salary": 4.7
+    },
+    {
+      "pick": 78,
+      "team_id": "LAK",
+      "player_id": "OT-08",
+      "name": "Christian Darrisaw",
+      "position": "OT",
+      "salary": 3.8
+    },
+    {
+      "pick": 79,
+      "team_id": "LAK",
+      "player_id": "EDGE-09",
+      "name": "Josh Hines-Allen",
+      "position": "EDGE",
+      "salary": 3.9
+    },
+    {
+      "pick": 80,
+      "team_id": "SUM",
+      "player_id": "CB-07",
+      "name": "Marlon Humphrey",
+      "position": "CB",
+      "salary": 3.5
+    },
+    {
+      "pick": 81,
+      "team_id": "MES",
+      "player_id": "OT-09",
+      "name": "Dion Dawkins",
+      "position": "OT",
+      "salary": 3.6
+    },
+    {
+      "pick": 82,
+      "team_id": "HAR",
+      "player_id": "QB-10",
+      "name": "Jayden Daniels",
+      "position": "QB",
+      "salary": 4.4
+    },
+    {
+      "pick": 83,
+      "team_id": "DEL",
+      "player_id": "QB-11",
+      "name": "Brock Purdy",
+      "position": "QB",
+      "salary": 4.3
+    },
+    {
+      "pick": 84,
+      "team_id": "IRN",
+      "player_id": "QB-12",
+      "name": "Dak Prescott",
+      "position": "QB",
+      "salary": 4.2
+    },
+    {
+      "pick": 85,
+      "team_id": "IRN",
+      "player_id": "EDGE-10",
+      "name": "Will Anderson Jr.",
+      "position": "EDGE",
+      "salary": 3.6
+    },
+    {
+      "pick": 86,
+      "team_id": "DEL",
+      "player_id": "CB-08",
+      "name": "Jaire Alexander",
+      "position": "CB",
+      "salary": 3.2
+    },
+    {
+      "pick": 87,
+      "team_id": "HAR",
+      "player_id": "OT-10",
+      "name": "Ronnie Stanley",
+      "position": "OT",
+      "salary": 3.3
+    },
+    {
+      "pick": 88,
+      "team_id": "MES",
+      "player_id": "EDGE-11",
+      "name": "Alex Highsmith",
+      "position": "EDGE",
+      "salary": 3.4
+    },
+    {
+      "pick": 89,
+      "team_id": "SUM",
+      "player_id": "WR-11",
+      "name": "DeVonta Smith",
+      "position": "WR",
+      "salary": 3.2
+    },
+    {
+      "pick": 90,
+      "team_id": "LAK",
+      "player_id": "WR-12",
+      "name": "Nico Collins",
+      "position": "WR",
+      "salary": 3.2
+    },
+    {
+      "pick": 91,
+      "team_id": "LAK",
+      "player_id": "C-02",
+      "name": "Erik McCoy",
+      "position": "C",
+      "salary": 2.4
+    },
+    {
+      "pick": 92,
+      "team_id": "SUM",
+      "player_id": "OT-11",
+      "name": "Garett Bolles",
+      "position": "OT",
+      "salary": 3.1
+    },
+    {
+      "pick": 93,
+      "team_id": "MES",
+      "player_id": "CB-09",
+      "name": "Denzel Ward",
+      "position": "CB",
+      "salary": 2.9
+    },
+    {
+      "pick": 94,
+      "team_id": "HAR",
+      "player_id": "EDGE-12",
+      "name": "Greg Rousseau",
+      "position": "EDGE",
+      "salary": 3.1
+    },
+    {
+      "pick": 95,
+      "team_id": "DEL",
+      "player_id": "C-03",
+      "name": "Tyler Linderbaum",
+      "position": "C",
+      "salary": 2.3
+    },
+    {
+      "pick": 96,
+      "team_id": "IRN",
+      "player_id": "CB-10",
+      "name": "Jaylon Johnson",
+      "position": "CB",
+      "salary": 2.7
+    },
+    {
+      "pick": 97,
+      "team_id": "IRN",
+      "player_id": "DT-07",
+      "name": "Jeffery Simmons",
+      "position": "DT",
+      "salary": 2.6
+    },
+    {
+      "pick": 98,
+      "team_id": "DEL",
+      "player_id": "OT-12",
+      "name": "Andrew Thomas",
+      "position": "OT",
+      "salary": 2.8
+    },
+    {
+      "pick": 99,
+      "team_id": "HAR",
+      "player_id": "CB-11",
+      "name": "A.J. Terrell Jr.",
+      "position": "CB",
+      "salary": 2.6
+    },
+    {
+      "pick": 100,
+      "team_id": "MES",
+      "player_id": "C-04",
+      "name": "Elgton Jenkins",
+      "position": "C",
+      "salary": 2.1
+    },
+    {
+      "pick": 101,
+      "team_id": "SUM",
+      "player_id": "WR-13",
+      "name": "Puka Nacua",
+      "position": "WR",
+      "salary": 2.7
+    },
+    {
+      "pick": 102,
+      "team_id": "LAK",
+      "player_id": "CB-12",
+      "name": "Devon Witherspoon",
+      "position": "CB",
+      "salary": 2.5
+    },
+    {
+      "pick": 103,
+      "team_id": "LAK",
+      "player_id": "WR-14",
+      "name": "Stefon Diggs",
+      "position": "WR",
+      "salary": 2.6
+    },
+    {
+      "pick": 104,
+      "team_id": "SUM",
+      "player_id": "DT-08",
+      "name": "Quinnen Williams",
+      "position": "DT",
+      "salary": 2.3
+    },
+    {
+      "pick": 105,
+      "team_id": "MES",
+      "player_id": "WR-15",
+      "name": "Brandon Aiyuk",
+      "position": "WR",
+      "salary": 2.5
+    },
+    {
+      "pick": 106,
+      "team_id": "HAR",
+      "player_id": "WR-16",
+      "name": "Malik Nabers",
+      "position": "WR",
+      "salary": 2.5
+    },
+    {
+      "pick": 107,
+      "team_id": "DEL",
+      "player_id": "WR-17",
+      "name": "Tee Higgins",
+      "position": "WR",
+      "salary": 2.4
+    },
+    {
+      "pick": 108,
+      "team_id": "IRN",
+      "player_id": "S-07",
+      "name": "Kerby Joseph",
+      "position": "S",
+      "salary": 2.2
+    },
+    {
+      "pick": 109,
+      "team_id": "IRN",
+      "player_id": "WR-18",
+      "name": "Chris Olave",
+      "position": "WR",
+      "salary": 2.4
+    },
+    {
+      "pick": 110,
+      "team_id": "DEL",
+      "player_id": "DT-09",
+      "name": "Jalen Carter",
+      "position": "DT",
+      "salary": 2.1
+    },
+    {
+      "pick": 111,
+      "team_id": "HAR",
+      "player_id": "S-08",
+      "name": "Kyle Hamilton",
+      "position": "S",
+      "salary": 2.1
+    },
+    {
+      "pick": 112,
+      "team_id": "MES",
+      "player_id": "S-09",
+      "name": "Brian Branch",
+      "position": "S",
+      "salary": 2.1
+    },
+    {
+      "pick": 113,
+      "team_id": "SUM",
+      "player_id": "CB-13",
+      "name": "Kenny Moore II",
+      "position": "CB",
+      "salary": 2.1
+    },
+    {
+      "pick": 114,
+      "team_id": "LAK",
+      "player_id": "EDGE-13",
+      "name": "DeMarcus Lawrence",
+      "position": "EDGE",
+      "salary": 2.3
+    },
+    {
+      "pick": 115,
+      "team_id": "LAK",
+      "player_id": "DT-10",
+      "name": "DeForest Buckner",
+      "position": "DT",
+      "salary": 2.0
+    },
+    {
+      "pick": 116,
+      "team_id": "SUM",
+      "player_id": "C-05",
+      "name": "Zach Frazier",
+      "position": "C",
+      "salary": 1.6
+    },
+    {
+      "pick": 117,
+      "team_id": "MES",
+      "player_id": "EDGE-14",
+      "name": "Khalil Mack",
+      "position": "EDGE",
+      "salary": 2.2
+    },
+    {
+      "pick": 118,
+      "team_id": "HAR",
+      "player_id": "DT-11",
+      "name": "Jonathan Allen",
+      "position": "DT",
+      "salary": 1.9
+    },
+    {
+      "pick": 119,
+      "team_id": "DEL",
+      "player_id": "S-10",
+      "name": "Harrison Smith",
+      "position": "S",
+      "salary": 1.8
+    },
+    {
+      "pick": 120,
+      "team_id": "IRN",
+      "player_id": "CB-14",
+      "name": "Charvarius Ward Sr.",
+      "position": "CB",
+      "salary": 1.9
+    },
+    {
+      "pick": 121,
+      "team_id": "IRN",
+      "player_id": "C-06",
+      "name": "Ryan Kelly",
+      "position": "C",
+      "salary": 1.5
+    },
+    {
+      "pick": 122,
+      "team_id": "DEL",
+      "player_id": "CB-15",
+      "name": "DaRon Bland",
+      "position": "CB",
+      "salary": 1.9
+    },
+    {
+      "pick": 123,
+      "team_id": "HAR",
+      "player_id": "QB-13",
+      "name": "Jordan Love",
+      "position": "QB",
+      "salary": 2.3
+    },
+    {
+      "pick": 124,
+      "team_id": "MES",
+      "player_id": "DT-12",
+      "name": "Leonard Williams",
+      "position": "DT",
+      "salary": 1.7
+    },
+    {
+      "pick": 125,
+      "team_id": "SUM",
+      "player_id": "EDGE-15",
+      "name": "Brian Burns",
+      "position": "EDGE",
+      "salary": 1.9
+    },
+    {
+      "pick": 126,
+      "team_id": "LAK",
+      "player_id": "S-11",
+      "name": "Justin Reid",
+      "position": "S",
+      "salary": 1.7
+    },
+    {
+      "pick": 127,
+      "team_id": "LAK",
+      "player_id": "WR-19",
+      "name": "Cooper Kupp",
+      "position": "WR",
+      "salary": 1.8
+    },
+    {
+      "pick": 128,
+      "team_id": "SUM",
+      "player_id": "WR-20",
+      "name": "DJ Moore",
+      "position": "WR",
+      "salary": 1.8
+    },
+    {
+      "pick": 129,
+      "team_id": "MES",
+      "player_id": "WR-21",
+      "name": "Garrett Wilson",
+      "position": "WR",
+      "salary": 1.7
+    },
+    {
+      "pick": 130,
+      "team_id": "HAR",
+      "player_id": "EDGE-16",
+      "name": "Jared Verse",
+      "position": "EDGE",
+      "salary": 1.8
+    },
+    {
+      "pick": 131,
+      "team_id": "DEL",
+      "player_id": "WR-22",
+      "name": "Jaxon Smith-Njigba",
+      "position": "WR",
+      "salary": 1.7
+    },
+    {
+      "pick": 132,
+      "team_id": "IRN",
+      "player_id": "OT-13",
+      "name": "Kolton Miller",
+      "position": "OT",
+      "salary": 1.7
+    },
+    {
+      "pick": 133,
+      "team_id": "IRN",
+      "player_id": "LB-07",
+      "name": "Foyesade Oluokun",
+      "position": "LB",
+      "salary": 1.4
+    },
+    {
+      "pick": 134,
+      "team_id": "DEL",
+      "player_id": "OT-14",
+      "name": "Taylor Decker",
+      "position": "OT",
+      "salary": 1.6
+    },
+    {
+      "pick": 135,
+      "team_id": "HAR",
+      "player_id": "CB-16",
+      "name": "Jamel Dean",
+      "position": "CB",
+      "salary": 1.5
+    },
+    {
+      "pick": 136,
+      "team_id": "MES",
+      "player_id": "CB-17",
+      "name": "Jaycee Horn",
+      "position": "CB",
+      "salary": 1.5
+    },
+    {
+      "pick": 137,
+      "team_id": "SUM",
+      "player_id": "OT-15",
+      "name": "Zach Tom",
+      "position": "OT",
+      "salary": 1.5
+    },
+    {
+      "pick": 138,
+      "team_id": "LAK",
+      "player_id": "CB-18",
+      "name": "Marshon Lattimore",
+      "position": "CB",
+      "salary": 1.5
+    },
+    {
+      "pick": 139,
+      "team_id": "LAK",
+      "player_id": "QB-14",
+      "name": "Tua Tagovailoa",
+      "position": "QB",
+      "salary": 1.8
+    },
+    {
+      "pick": 140,
+      "team_id": "SUM",
+      "player_id": "S-12",
+      "name": "Jabrill Peppers",
+      "position": "S",
+      "salary": 1.3
+    },
+    {
+      "pick": 141,
+      "team_id": "MES",
+      "player_id": "RB-07",
+      "name": "Josh Jacobs",
+      "position": "RB",
+      "salary": 1.2
+    },
+    {
+      "pick": 142,
+      "team_id": "HAR",
+      "player_id": "WR-23",
+      "name": "Chris Godwin Jr.",
+      "position": "WR",
+      "salary": 1.4
+    },
+    {
+      "pick": 143,
+      "team_id": "DEL",
+      "player_id": "EDGE-17",
+      "name": "Joey Bosa",
+      "position": "EDGE",
+      "salary": 1.5
+    },
+    {
+      "pick": 144,
+      "team_id": "IRN",
+      "player_id": "EDGE-18",
+      "name": "Josh Sweat",
+      "position": "EDGE",
+      "salary": 1.5
+    },
+    {
+      "pick": 145,
+      "team_id": "IRN",
+      "player_id": "WR-24",
+      "name": "Courtland Sutton",
+      "position": "WR",
+      "salary": 1.4
+    },
+    {
+      "pick": 146,
+      "team_id": "DEL",
+      "player_id": "LB-08",
+      "name": "Bobby Okereke",
+      "position": "LB",
+      "salary": 1.2
+    },
+    {
+      "pick": 147,
+      "team_id": "HAR",
+      "player_id": "LB-09",
+      "name": "Dre Greenlaw",
+      "position": "LB",
+      "salary": 1.2
+    },
+    {
+      "pick": 148,
+      "team_id": "MES",
+      "player_id": "OT-16",
+      "name": "Brian O'Neill",
+      "position": "OT",
+      "salary": 1.3
+    },
+    {
+      "pick": 149,
+      "team_id": "SUM",
+      "player_id": "QB-15",
+      "name": "C.J. Stroud",
+      "position": "QB",
+      "salary": 1.6
+    },
+    {
+      "pick": 150,
+      "team_id": "LAK",
+      "player_id": "OT-17",
+      "name": "Jake Matthews",
+      "position": "OT",
+      "salary": 1.3
+    },
+    {
+      "pick": 151,
+      "team_id": "LAK",
+      "player_id": "TE-07",
+      "name": "T.J. Hockenson",
+      "position": "TE",
+      "salary": 1.1
+    },
+    {
+      "pick": 152,
+      "team_id": "SUM",
+      "player_id": "RB-08",
+      "name": "James Cook III",
+      "position": "RB",
+      "salary": 1.0
+    },
+    {
+      "pick": 153,
+      "team_id": "MES",
+      "player_id": "LB-10",
+      "name": "Devin Lloyd",
+      "position": "LB",
+      "salary": 1.1
+    },
+    {
+      "pick": 154,
+      "team_id": "HAR",
+      "player_id": "OT-18",
+      "name": "Taylor Moton",
+      "position": "OT",
+      "salary": 1.2
+    },
+    {
+      "pick": 155,
+      "team_id": "DEL",
+      "player_id": "QB-16",
+      "name": "Geno Smith",
+      "position": "QB",
+      "salary": 1.4
+    },
+    {
+      "pick": 156,
+      "team_id": "IRN",
+      "player_id": "RB-09",
+      "name": "Jonathan Taylor",
+      "position": "RB",
+      "salary": 1.0
+    },
+    {
+      "pick": 157,
+      "team_id": "IRN",
+      "player_id": "CB-19",
+      "name": "Riq Woolen",
+      "position": "CB",
+      "salary": 1.1
+    },
+    {
+      "pick": 158,
+      "team_id": "DEL",
+      "player_id": "RB-10",
+      "name": "Kenneth Walker III",
+      "position": "RB",
+      "salary": 0.9
+    },
+    {
+      "pick": 159,
+      "team_id": "HAR",
+      "player_id": "TE-08",
+      "name": "Dallas Goedert",
+      "position": "TE",
+      "salary": 1.0
+    },
+    {
+      "pick": 160,
+      "team_id": "MES",
+      "player_id": "WR-25",
+      "name": "DK Metcalf",
+      "position": "WR",
+      "salary": 1.1
+    },
+    {
+      "pick": 161,
+      "team_id": "SUM",
+      "player_id": "LB-11",
+      "name": "Drue Tranquill",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 162,
+      "team_id": "LAK",
+      "player_id": "LB-12",
+      "name": "Jack Campbell",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 163,
+      "team_id": "LAK",
+      "player_id": "WR-26",
+      "name": "Jaylen Waddle",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 164,
+      "team_id": "SUM",
+      "player_id": "WR-27",
+      "name": "Zay Flowers",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 165,
+      "team_id": "MES",
+      "player_id": "QB-17",
+      "name": "Bo Nix",
+      "position": "QB",
+      "salary": 1.2
+    },
+    {
+      "pick": 166,
+      "team_id": "HAR",
+      "player_id": "RB-11",
+      "name": "Bucky Irving",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 167,
+      "team_id": "DEL",
+      "player_id": "TE-09",
+      "name": "Sam LaPorta",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 168,
+      "team_id": "IRN",
+      "player_id": "QB-18",
+      "name": "Kyler Murray",
+      "position": "QB",
+      "salary": 1.2
+    },
+    {
+      "pick": 169,
+      "team_id": "IRN",
+      "player_id": "OG-07",
+      "name": "Landon Dickerson",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 170,
+      "team_id": "DEL",
+      "player_id": "CB-20",
+      "name": "Byron Murphy Jr.",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 171,
+      "team_id": "HAR",
+      "player_id": "CB-21",
+      "name": "Carlton Davis III",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 172,
+      "team_id": "MES",
+      "player_id": "CB-22",
+      "name": "Christian Benford",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 173,
+      "team_id": "SUM",
+      "player_id": "CB-23",
+      "name": "Quinyon Mitchell",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 174,
+      "team_id": "LAK",
+      "player_id": "RB-12",
+      "name": "Nick Chubb",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 175,
+      "team_id": "LAK",
+      "player_id": "OG-08",
+      "name": "Tyler Smith",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 176,
+      "team_id": "SUM",
+      "player_id": "TE-10",
+      "name": "Evan Engram",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 177,
+      "team_id": "MES",
+      "player_id": "DT-13",
+      "name": "Zach Allen",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 178,
+      "team_id": "HAR",
+      "player_id": "WR-28",
+      "name": "Brian Thomas Jr.",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 179,
+      "team_id": "DEL",
+      "player_id": "WR-29",
+      "name": "Jerry Jeudy",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 180,
+      "team_id": "IRN",
+      "player_id": "WR-30",
+      "name": "Jordan Addison",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 181,
+      "team_id": "IRN",
+      "player_id": "S-13",
+      "name": "Julian Love",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 182,
+      "team_id": "DEL",
+      "player_id": "OG-09",
+      "name": "Sam Cosmi",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 183,
+      "team_id": "HAR",
+      "player_id": "DT-14",
+      "name": "D.J. Reader",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 184,
+      "team_id": "MES",
+      "player_id": "TE-11",
+      "name": "Pat Freiermuth",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 185,
+      "team_id": "SUM",
+      "player_id": "DT-15",
+      "name": "Grover Stewart",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 186,
+      "team_id": "LAK",
+      "player_id": "CB-24",
+      "name": "Darius Slay Jr.",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 187,
+      "team_id": "LAK",
+      "player_id": "DT-16",
+      "name": "Kobie Turner",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 188,
+      "team_id": "SUM",
+      "player_id": "LB-13",
+      "name": "Leo Chenal",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 189,
+      "team_id": "MES",
+      "player_id": "LB-14",
+      "name": "Matt Milano",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 190,
+      "team_id": "HAR",
+      "player_id": "EDGE-19",
+      "name": "George Karlaftis",
+      "position": "EDGE",
+      "salary": 1.0
+    },
+    {
+      "pick": 191,
+      "team_id": "DEL",
+      "player_id": "DT-17",
+      "name": "Milton Williams",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 192,
+      "team_id": "IRN",
+      "player_id": "EDGE-20",
+      "name": "Nik Bonitto",
+      "position": "EDGE",
+      "salary": 1.0
+    },
+    {
+      "pick": 193,
+      "team_id": "IRN",
+      "player_id": "DT-18",
+      "name": "Zach Sieler",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 194,
+      "team_id": "DEL",
+      "player_id": "S-14",
+      "name": "C.J. Gardner-Johnson",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 195,
+      "team_id": "HAR",
+      "player_id": "S-15",
+      "name": "Talanoa Hufanga",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 196,
+      "team_id": "MES",
+      "player_id": "OT-19",
+      "name": "Bernhard Raimann",
+      "position": "OT",
+      "salary": 1.0
+    },
+    {
+      "pick": 197,
+      "team_id": "SUM",
+      "player_id": "OT-20",
+      "name": "Spencer Brown",
+      "position": "OT",
+      "salary": 1.0
+    },
+    {
+      "pick": 198,
+      "team_id": "LAK",
+      "player_id": "LB-15",
+      "name": "Blake Cashman",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 199,
+      "team_id": "LAK",
+      "player_id": "OT-21",
+      "name": "Trent Brown",
+      "position": "OT",
+      "salary": 1.0
+    },
+    {
+      "pick": 200,
+      "team_id": "SUM",
+      "player_id": "EDGE-21",
+      "name": "Andrew Van Ginkel",
+      "position": "EDGE",
+      "salary": 1.0
+    },
+    {
+      "pick": 201,
+      "team_id": "MES",
+      "player_id": "EDGE-22",
+      "name": "Jonathan Greenard",
+      "position": "EDGE",
+      "salary": 1.0
+    },
+    {
+      "pick": 202,
+      "team_id": "HAR",
+      "player_id": "LB-16",
+      "name": "Daiyan Henley",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 203,
+      "team_id": "DEL",
+      "player_id": "LB-17",
+      "name": "Jeremiah Owusu-Koramoah",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 204,
+      "team_id": "IRN",
+      "player_id": "TE-12",
+      "name": "Hunter Henry",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 205,
+      "team_id": "IRN",
+      "player_id": "LB-18",
+      "name": "Nick Bolton",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 206,
+      "team_id": "DEL",
+      "player_id": "EDGE-23",
+      "name": "Von Miller",
+      "position": "EDGE",
+      "salary": 1.0
+    },
+    {
+      "pick": 207,
+      "team_id": "HAR",
+      "player_id": "OG-10",
+      "name": "Joel Bitonio",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 208,
+      "team_id": "MES",
+      "player_id": "OG-11",
+      "name": "Kevin Dotson",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 209,
+      "team_id": "SUM",
+      "player_id": "WR-31",
+      "name": "Ladd McConkey",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 210,
+      "team_id": "LAK",
+      "player_id": "S-16",
+      "name": "Brandon Jones",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 211,
+      "team_id": "LAK",
+      "player_id": "CB-25",
+      "name": "L'Jarius Sneed",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 212,
+      "team_id": "SUM",
+      "player_id": "S-17",
+      "name": "Jalen Pitre",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 213,
+      "team_id": "MES",
+      "player_id": "S-18",
+      "name": "Jaquan Brisker",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 214,
+      "team_id": "HAR",
+      "player_id": "OT-22",
+      "name": "Paris Johnson Jr.",
+      "position": "OT",
+      "salary": 1.0
+    },
+    {
+      "pick": 215,
+      "team_id": "DEL",
+      "player_id": "OT-23",
+      "name": "Rob Havenstein",
+      "position": "OT",
+      "salary": 1.0
+    },
+    {
+      "pick": 216,
+      "team_id": "IRN",
+      "player_id": "CB-26",
+      "name": "Taron Johnson",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 217,
+      "team_id": "IRN",
+      "player_id": "WR-32",
+      "name": "Deebo Samuel Sr.",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 218,
+      "team_id": "DEL",
+      "player_id": "CB-27",
+      "name": "Travis Hunter",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 219,
+      "team_id": "HAR",
+      "player_id": "CB-28",
+      "name": "Trevon Diggs",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 220,
+      "team_id": "MES",
+      "player_id": "WR-33",
+      "name": "George Pickens",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 221,
+      "team_id": "SUM",
+      "player_id": "OG-12",
+      "name": "Alijah Vera-Tucker",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 222,
+      "team_id": "LAK",
+      "player_id": "WR-34",
+      "name": "Jakobi Meyers",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 223,
+      "team_id": "LAK",
+      "player_id": "EDGE-24",
+      "name": "Jaelan Phillips",
+      "position": "EDGE",
+      "salary": 1.0
+    },
+    {
+      "pick": 224,
+      "team_id": "SUM",
+      "player_id": "CB-29",
+      "name": "Chidobe Awuzie",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 225,
+      "team_id": "MES",
+      "player_id": "CB-30",
+      "name": "Cooper DeJean",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 226,
+      "team_id": "HAR",
+      "player_id": "WR-35",
+      "name": "Rashee Rice",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 227,
+      "team_id": "DEL",
+      "player_id": "RB-13",
+      "name": "Kyren Williams",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 228,
+      "team_id": "IRN",
+      "player_id": "OT-24",
+      "name": "Braden Smith",
+      "position": "OT",
+      "salary": 1.0
+    },
+    {
+      "pick": 229,
+      "team_id": "IRN",
+      "player_id": "RB-14",
+      "name": "Tony Pollard",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 230,
+      "team_id": "DEL",
+      "player_id": "WR-36",
+      "name": "DeAndre Hopkins",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 231,
+      "team_id": "HAR",
+      "player_id": "RB-15",
+      "name": "Aaron Jones Sr.",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 232,
+      "team_id": "MES",
+      "player_id": "RB-16",
+      "name": "Chuba Hubbard",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 233,
+      "team_id": "SUM",
+      "player_id": "RB-17",
+      "name": "James Conner",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 234,
+      "team_id": "LAK",
+      "player_id": "LB-19",
+      "name": "Kaden Elliss",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 235,
+      "team_id": "LAK",
+      "player_id": "RB-18",
+      "name": "Alvin Kamara",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 236,
+      "team_id": "SUM",
+      "player_id": "LB-20",
+      "name": "Logan Wilson",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 237,
+      "team_id": "MES",
+      "player_id": "LB-21",
+      "name": "Patrick Queen",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 238,
+      "team_id": "HAR",
+      "player_id": "LB-22",
+      "name": "Quincy Williams",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 239,
+      "team_id": "DEL",
+      "player_id": "LB-23",
+      "name": "Robert Spillane",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 240,
+      "team_id": "IRN",
+      "player_id": "LB-24",
+      "name": "Shaq Thompson",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 241,
+      "team_id": "IRN",
+      "player_id": "WR-37",
+      "name": "Jameson Williams",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 242,
+      "team_id": "DEL",
+      "player_id": "WR-38",
+      "name": "Khalil Shakir",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 243,
+      "team_id": "HAR",
+      "player_id": "WR-39",
+      "name": "Michael Pittman Jr.",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 244,
+      "team_id": "MES",
+      "player_id": "WR-40",
+      "name": "Tank Dell",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 245,
+      "team_id": "SUM",
+      "player_id": "CB-31",
+      "name": "D.J. Reed",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 246,
+      "team_id": "LAK",
+      "player_id": "DT-19",
+      "name": "Alim McNeill",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 247,
+      "team_id": "LAK",
+      "player_id": "S-19",
+      "name": "Jeremy Chinn",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 248,
+      "team_id": "SUM",
+      "player_id": "DT-20",
+      "name": "Daron Payne",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 249,
+      "team_id": "MES",
+      "player_id": "DT-21",
+      "name": "Kenny Clark",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 250,
+      "team_id": "HAR",
+      "player_id": "S-20",
+      "name": "Jevon Holland",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 251,
+      "team_id": "DEL",
+      "player_id": "S-21",
+      "name": "Jimmie Ward",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 252,
+      "team_id": "IRN",
+      "player_id": "CB-32",
+      "name": "Deommodore Lenoir",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 253,
+      "team_id": "IRN",
+      "player_id": "DT-22",
+      "name": "Braden Fiske",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 254,
+      "team_id": "DEL",
+      "player_id": "CB-33",
+      "name": "Kyler Gordon",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 255,
+      "team_id": "HAR",
+      "player_id": "CB-34",
+      "name": "Paulson Adebo",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 256,
+      "team_id": "MES",
+      "player_id": "S-22",
+      "name": "Camryn Bynum",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 257,
+      "team_id": "SUM",
+      "player_id": "WR-41",
+      "name": "Calvin Ridley",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 258,
+      "team_id": "LAK",
+      "player_id": "WR-42",
+      "name": "Christian Kirk",
+      "position": "WR",
+      "salary": 1.0
+    },
+    {
+      "pick": 259,
+      "team_id": "LAK",
+      "player_id": "TE-13",
+      "name": "Cole Kmet",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 260,
+      "team_id": "SUM",
+      "player_id": "S-23",
+      "name": "DeShon Elliott",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 261,
+      "team_id": "MES",
+      "player_id": "TE-14",
+      "name": "Darren Waller",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 262,
+      "team_id": "HAR",
+      "player_id": "DT-23",
+      "name": "Calais Campbell",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 263,
+      "team_id": "DEL",
+      "player_id": "DT-24",
+      "name": "Grady Jarrett",
+      "position": "DT",
+      "salary": 0.9
+    },
+    {
+      "pick": 264,
+      "team_id": "IRN",
+      "player_id": "S-24",
+      "name": "Josh Metellus",
+      "position": "S",
+      "salary": 0.9
+    },
+    {
+      "pick": 265,
+      "team_id": "IRN",
+      "player_id": "TE-15",
+      "name": "Jake Ferguson",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 266,
+      "team_id": "DEL",
+      "player_id": "TE-16",
+      "name": "Jonnu Smith",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 267,
+      "team_id": "HAR",
+      "player_id": "OG-13",
+      "name": "Damien Lewis",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 268,
+      "team_id": "MES",
+      "player_id": "CB-35",
+      "name": "Cam Taylor-Britt",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 269,
+      "team_id": "SUM",
+      "player_id": "OG-14",
+      "name": "Dominick Puni",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 270,
+      "team_id": "LAK",
+      "player_id": "CB-36",
+      "name": "Greg Newsome II",
+      "position": "CB",
+      "salary": 0.9
+    },
+    {
+      "pick": 271,
+      "team_id": "LAK",
+      "player_id": "LB-25",
+      "name": "T.J. Edwards",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 272,
+      "team_id": "SUM",
+      "player_id": "RB-19",
+      "name": "Breece Hall",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 273,
+      "team_id": "MES",
+      "player_id": "RB-20",
+      "name": "David Montgomery",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 274,
+      "team_id": "HAR",
+      "player_id": "TE-17",
+      "name": "Dalton Schultz",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 275,
+      "team_id": "DEL",
+      "player_id": "OG-15",
+      "name": "John Simpson",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 276,
+      "team_id": "IRN",
+      "player_id": "OG-16",
+      "name": "Mike Onwenu",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 277,
+      "team_id": "IRN",
+      "player_id": "LB-26",
+      "name": "Azeez Al-Shaair",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 278,
+      "team_id": "DEL",
+      "player_id": "LB-27",
+      "name": "Ernest Jones IV",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 279,
+      "team_id": "HAR",
+      "player_id": "LB-28",
+      "name": "Frankie Luvu",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 280,
+      "team_id": "MES",
+      "player_id": "OG-17",
+      "name": "Robert Hunt",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 281,
+      "team_id": "SUM",
+      "player_id": "TE-18",
+      "name": "Isaiah Likely",
+      "position": "TE",
+      "salary": 0.9
+    },
+    {
+      "pick": 282,
+      "team_id": "LAK",
+      "player_id": "C-07",
+      "name": "Tyler Biadasz",
+      "position": "C",
+      "salary": 0.8
+    },
+    {
+      "pick": 283,
+      "team_id": "LAK",
+      "player_id": "RB-21",
+      "name": "Ashton Jeanty",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 284,
+      "team_id": "SUM",
+      "player_id": "LB-29",
+      "name": "Jordyn Brooks",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 285,
+      "team_id": "MES",
+      "player_id": "LB-30",
+      "name": "Tremaine Edmunds",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 286,
+      "team_id": "HAR",
+      "player_id": "RB-22",
+      "name": "De'Von Achane",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 287,
+      "team_id": "DEL",
+      "player_id": "RB-23",
+      "name": "Isiah Pacheco",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 288,
+      "team_id": "IRN",
+      "player_id": "C-08",
+      "name": "Hjalte Froholdt",
+      "position": "C",
+      "salary": 0.8
+    },
+    {
+      "pick": 289,
+      "team_id": "IRN",
+      "player_id": "RB-24",
+      "name": "J.K. Dobbins",
+      "position": "RB",
+      "salary": 0.8
+    },
+    {
+      "pick": 290,
+      "team_id": "DEL",
+      "player_id": "C-09",
+      "name": "Drew Dalman",
+      "position": "C",
+      "salary": 0.8
+    },
+    {
+      "pick": 291,
+      "team_id": "HAR",
+      "player_id": "C-10",
+      "name": "Joe Tippmann",
+      "position": "C",
+      "salary": 0.8
+    },
+    {
+      "pick": 292,
+      "team_id": "MES",
+      "player_id": "LB-31",
+      "name": "Zaire Franklin",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 293,
+      "team_id": "SUM",
+      "player_id": "C-11",
+      "name": "Connor McGovern",
+      "position": "C",
+      "salary": 0.8
+    },
+    {
+      "pick": 294,
+      "team_id": "LAK",
+      "player_id": "OG-18",
+      "name": "Mekhi Becton Sr.",
+      "position": "OG",
+      "salary": 0.8
+    },
+    {
+      "pick": 295,
+      "team_id": "LAK",
+      "player_id": "LB-32",
+      "name": "Alex Anzalone",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 296,
+      "team_id": "SUM",
+      "player_id": "LB-33",
+      "name": "Cody Barton",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 297,
+      "team_id": "MES",
+      "player_id": "C-12",
+      "name": "Ted Karras",
+      "position": "C",
+      "salary": 0.8
+    },
+    {
+      "pick": 298,
+      "team_id": "HAR",
+      "player_id": "LB-34",
+      "name": "Edgerrin Cooper",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 299,
+      "team_id": "DEL",
+      "player_id": "LB-35",
+      "name": "Germaine Pratt",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 300,
+      "team_id": "IRN",
+      "player_id": "LB-36",
+      "name": "Quay Walker",
+      "position": "LB",
+      "salary": 0.9
+    },
+    {
+      "pick": 301,
+      "team_id": "IRN",
+      "player_id": "K-01",
+      "name": "Brandon Aubrey",
+      "position": "K",
+      "salary": 0.4
+    },
+    {
+      "pick": 302,
+      "team_id": "DEL",
+      "player_id": "K-02",
+      "name": "Chris Boswell",
+      "position": "K",
+      "salary": 0.4
+    },
+    {
+      "pick": 303,
+      "team_id": "HAR",
+      "player_id": "K-03",
+      "name": "Harrison Butker",
+      "position": "K",
+      "salary": 0.4
+    },
+    {
+      "pick": 304,
+      "team_id": "MES",
+      "player_id": "K-04",
+      "name": "Ka'imi Fairbairn",
+      "position": "K",
+      "salary": 0.4
+    },
+    {
+      "pick": 305,
+      "team_id": "SUM",
+      "player_id": "P-01",
+      "name": "AJ Cole",
+      "position": "P",
+      "salary": 0.3
+    },
+    {
+      "pick": 306,
+      "team_id": "LAK",
+      "player_id": "K-05",
+      "name": "Cameron Dicker",
+      "position": "K",
+      "salary": 0.4
+    },
+    {
+      "pick": 307,
+      "team_id": "LAK",
+      "player_id": "P-02",
+      "name": "Logan Cooke",
+      "position": "P",
+      "salary": 0.3
+    },
+    {
+      "pick": 308,
+      "team_id": "SUM",
+      "player_id": "K-06",
+      "name": "Chase McLaughlin",
+      "position": "K",
+      "salary": 0.4
+    },
+    {
+      "pick": 309,
+      "team_id": "MES",
+      "player_id": "P-03",
+      "name": "Michael Dickson",
+      "position": "P",
+      "salary": 0.3
+    },
+    {
+      "pick": 310,
+      "team_id": "HAR",
+      "player_id": "P-04",
+      "name": "Corey Bojorquez",
+      "position": "P",
+      "salary": 0.3
+    },
+    {
+      "pick": 311,
+      "team_id": "DEL",
+      "player_id": "P-05",
+      "name": "Bradley Pinion",
+      "position": "P",
+      "salary": 0.3
+    },
+    {
+      "pick": 312,
+      "team_id": "IRN",
+      "player_id": "P-06",
+      "name": "Bryan Anger",
+      "position": "P",
+      "salary": 0.3
+    },
+    {
+      "pick": 313,
+      "team_id": "IRN",
+      "player_id": "LS-01",
+      "name": "Morgan Cox",
+      "position": "LS",
+      "salary": 0.3
+    },
+    {
+      "pick": 314,
+      "team_id": "DEL",
+      "player_id": "LS-02",
+      "name": "Thomas Hennessy",
+      "position": "LS",
+      "salary": 0.3
+    },
+    {
+      "pick": 315,
+      "team_id": "HAR",
+      "player_id": "LS-03",
+      "name": "Tyler Ott",
+      "position": "LS",
+      "salary": 0.3
+    },
+    {
+      "pick": 316,
+      "team_id": "MES",
+      "player_id": "LS-04",
+      "name": "Rick Lovato",
+      "position": "LS",
+      "salary": 0.3
+    },
+    {
+      "pick": 317,
+      "team_id": "SUM",
+      "player_id": "LS-05",
+      "name": "Jon Weeks",
+      "position": "LS",
+      "salary": 0.3
+    },
+    {
+      "pick": 318,
+      "team_id": "LAK",
+      "player_id": "LS-06",
+      "name": "Beau Brinkley",
+      "position": "LS",
+      "salary": 0.3
+    }
+  ]
+}
