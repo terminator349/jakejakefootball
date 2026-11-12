@@ -80,3 +80,31 @@ pytest tests/test_league_db.py     # uses scratch databases, never data/league.d
 Done when: an MCP client lists the four tools and gets the same JSON as the
 plain Python functions, both in-process and over stdio; the tools read
 rosters and contracts from SQLite; and the agent's answer still matches the data.
+
+## 1.2: rule checks
+
+`agents/rules.py` holds the league rules as plain Python. A trade is legal only
+if, afterwards, every roster is between 46 and 53 players, no payroll is over
+the $255M hard cap, and the week is no later than the week-9 deadline. It must
+also be a real trade: two different teams, each sending players it actually has.
+
+- `check_trade(trade, week)` lists every rule the trade would break, each with
+  a reason the owner can read ("HAR's payroll would be $257.31M, $2.31M over the
+  $255.0M hard cap."), plus each team's roster size, payroll and cap space
+  after the trade. It changes nothing.
+- `make_trade(trade, week)` runs the same checks and moves the players in
+  `data/league.db` only if they all pass; otherwise it raises `IllegalMove` and
+  the league is unchanged. It is plain Python for now: the Trade Desk (2.1) and
+  the owner's approvals (G4) will call it.
+
+The League Office server serves `check_trade` as a fifth read-only tool. The
+Analytics agent still gets only the four data tools; `check_trade` is meant for
+Cap & Contracts (1.3). The current week is passed in until the save file holds
+it (G1).
+
+```powershell
+pytest tests/test_rules.py    # scratch databases, never data/league.db
+```
+
+Done when: every illegal trade is refused with the rule it broke, a legal one
+changes the rosters, and a refused one changes nothing.

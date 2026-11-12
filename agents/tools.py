@@ -11,6 +11,7 @@ changes, because it still just sees tools. They read the league from SQLite
 
 import json
 
+from agents import rules
 from agents.league_db import load_league
 
 
@@ -112,3 +113,20 @@ def get_league_rules() -> str:
     """Get the league's rules: hard salary cap ($M), minimum/maximum roster size, games
     per season, trade deadline week, and how many players start at each position."""
     return json.dumps(load_league()["rules"])
+
+
+def check_trade(team_a: str, a_sends: list[str], team_b: str, b_sends: list[str], week: int) -> str:
+    """Check whether a trade between two teams is legal under the league rules, without
+    making it. Returns "legal" (true/false), every rule the trade would break with a
+    plain-English reason (roster below the minimum or above the maximum size, payroll over
+    the hard cap, trade after the deadline week, or players who are not on the team that
+    sends them), and each team's roster size, payroll and cap space ($M) after the trade.
+
+    Args:
+        team_a: three-letter id of the first team, e.g. "HAR".
+        a_sends: player ids team_a gives up, e.g. ["HAR-31"]. May be empty.
+        team_b: three-letter id of the other team, e.g. "MES".
+        b_sends: player ids team_b gives up. May be empty, but not both sides.
+        week: the current week of the season (1-17).
+    """
+    return json.dumps(rules.check_trade(rules.Trade(team_a, a_sends, team_b, b_sends), week))

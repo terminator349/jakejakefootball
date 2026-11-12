@@ -19,6 +19,10 @@ from agents.tools import list_teams
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
+# The League Office tools Analytics needs. check_trade is for the Cap & Contracts
+# agent (task 1.3); leaving it out keeps Analytics' tool list short.
+ANALYTICS_TOOLS = ["list_teams", "get_roster", "compare_to_league", "get_league_rules"]
+
 # DeepSeek V4.1 Flash through OpenRouter ($0.15 / $0.60 per million tokens).
 # OpenRouter reads OPENROUTER_API_KEY from the environment.
 SPECIALIST_MODEL = "deepseek/deepseek-v4.1-flash-1017"
@@ -43,7 +47,7 @@ def league_office_tools() -> MCPTools:
     """The League Office server's tools. Connect with `async with` before running the agent."""
     server = StdioServerParameters(command=sys.executable, args=["-m", "servers.league_office"],
                                    cwd=str(PROJECT_ROOT))
-    return MCPTools(server_params=server, transport="stdio")
+    return MCPTools(server_params=server, transport="stdio", include_tools=ANALYTICS_TOOLS)
 
 
 class RosterReport(BaseModel):

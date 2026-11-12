@@ -4,7 +4,7 @@ The build plan from the Front Office Build Schedule (Google Sheets), one row per
 task. Fourteen weeks, from the week of Oct 26, 2026 to the week of Jan 25, 2027.
 Task numbers match the chart; the README and code use the same numbers.
 
-Status as of Nov 11, 2026 (week 3).
+Status as of Nov 12, 2026 (week 3).
 
 **Change on Nov 11: the project is now an interactive game.** The original
 tasks keep their numbers and meaning, so earlier progress reports stay correct.
@@ -58,7 +58,7 @@ GM briefing
 | ---- | -------------- | ----------------------------------- |
 | W1   | Oct 26 - Nov 1 | 0.1, 0.2 (done)                     |
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
-| W3   | Nov 9 - Nov 15 | 1.2, G1, 3.1                        |
+| W3   | Nov 9 - Nov 15 | 1.2 (done), G1, 3.1                 |
 | W4   | Nov 16 - 22    | 3.1, G2, 1.3                        |
 | W5   | Nov 23 - 29    | 1.3, 1.4, G3                        |
 | W6   | Nov 30 - Dec 6 | 1.5, 2.1                            |
@@ -97,7 +97,7 @@ tools, and the Analytics agent reads the league only through it. Rosters and
 contracts live in SQLite (`data/league.db`, built from the `data/league.json`
 seed by `agents/league_db.py`), and the tools give the same results as before.
 
-### 1.2 Rule checks: roster size, hard cap, trade deadline (W3)
+### 1.2 Rule checks: roster size, hard cap, trade deadline (W3) - Done
 The League Office rejects illegal moves: rosters outside the min/max size, any
 move that puts a team over the hard cap, and trades after the deadline week.
 The game relies on these checks: every move the owner approves goes through
