@@ -12,6 +12,7 @@ from pathlib import Path
 from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 
+from agents import league_db, rules, saves
 from agents.tools import check_trade, compare_to_league, get_roster, list_teams
 from servers.league_office import league_office
 
@@ -57,15 +58,20 @@ def test_results_match_the_plain_python_tools():
     assert call("list_teams") == json.loads(list_teams())
     assert call("get_roster", {"team_id": "HAR", "position": "CB"}) == json.loads(get_roster("HAR", "CB"))
     assert call("compare_to_league", {"team_id": "HAR"}) == json.loads(compare_to_league("HAR"))
-    trade = {"team_a": "HAR", "a_sends": ["HAR-01"], "team_b": "MES", "b_sends": ["MES-01"], "week": 3}
+    trade = {"team_a": "HAR", "a_sends": ["HAR-01"], "team_b": "MES", "b_sends": ["MES-01"]}
     assert call("check_trade", trade) == json.loads(check_trade(**trade))
 
 
-def test_check_trade_shows_the_rule_a_trade_breaks():
-    result = call("check_trade", {"team_a": "HAR", "a_sends": ["HAR-01"], "team_b": "MES",
-                                  "b_sends": ["MES-01"], "week": 10})
-    assert result["legal"] is False
+def test_check_trade_shows_the_rule_a_trade_breaks(scratch_db):
+    """The week comes from the league database, not from the caller."""
+    db = league_db.connect()
+    with db:
+        db.execute("UPDATE game SET current_week = 10")
+    db.close()
+    result = call("check_trade", {"team_a": "HAR", "a_sends": ["HAR-01"], "team_b": "MES", "b_sends": ["MES-01"]})
+    assert (result["legal"], result["week"]) == (False, 10)
     assert "trade_deadline" in {v["rule"] for v in result["violations"]}
+    assert "week" not in next(t for t in list_tools() if t.name == "check_trade").input_schema["properties"]
 
 
 def test_bad_arguments_come_back_as_error_json():
@@ -78,3 +84,15 @@ def test_runs_over_stdio():
     rules = call("get_league_rules", server=server)
     assert rules["cap_type"] == "hard"
     assert len(list_tools(server)) == 5
+
+
+def test_serves_a_save_over_stdio(tmp_path, monkeypatch):
+    """The game starts the server with --db pointing at the loaded save."""
+    monkeypatch.setattr(saves, "SAVES_DIR", tmp_path)
+    save = saves.new_game("served", season_seed=5)
+    rules.make_trade(rules.Trade("HAR", ["HAR-46"], "SUM", ["SUM-45"]), db_file=save)
+
+    server = StdioServerParameters(command=sys.executable, args=["-m", "servers.league_office", "--db", str(save)],
+                                   cwd=PROJECT_ROOT)
+    safeties = call("get_roster", {"team_id": "HAR", "position": "S"}, server=server)["players"]
+    assert "SUM-45" in {p["id"] for p in safeties}

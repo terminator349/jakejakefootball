@@ -8,11 +8,9 @@ Plain Python owns the rules, not a model. A trade is legal only if, after it:
 
 check_trade() reports every rule a trade would break without changing anything.
 make_trade() runs the same checks and, only if they all pass, moves the players
-in the database (data/league.db, never the seed). Both read the rules from the
-database, so they always judge the league as it stands.
-
-The current week is passed in for now; once the save file holds it (task G1),
-the game supplies it from there.
+and writes the trade to the move log, in one transaction. Both read the rules
+and the current week from the league database (a save, or data/league.db), so
+they always judge the league as it stands.
 """
 
 import json
@@ -93,20 +91,19 @@ def _team_after(db: sqlite3.Connection, team: str, sends: list[str], receives: l
             "payroll": round(payroll - salaries(sends) + salaries(receives), 2)}
 
 
-def _check(db: sqlite3.Connection, trade: Trade, week: int) -> tuple[list[Violation], dict]:
+def _check(db: sqlite3.Connection, trade: Trade) -> tuple[int, list[Violation], dict]:
     rules = _rules(db)
+    week = db.execute("SELECT current_week FROM game").fetchone()[0]
     violations = []
 
     deadline = rules["trade_deadline_week"]
-    if week < 1:
-        violations.append(Violation("invalid_trade", f"Week {week} is not a week of the season; weeks start at 1."))
-    elif week > deadline:
+    if week > deadline:
         violations.append(Violation("trade_deadline",
                                     f"Trades closed after week {deadline}, the trade deadline; it is week {week}."))
 
     violations += _check_players(db, trade)
     if any(v.rule == "invalid_trade" for v in violations):
-        return violations, {}  # sizes and payrolls mean nothing for a trade that cannot happen
+        return week, violations, {}  # sizes and payrolls mean nothing for a trade that cannot happen
 
     cap, low, high = rules["salary_cap"], rules["roster_min"], rules["roster_max"]
     after = {}
@@ -125,7 +122,7 @@ def _check(db: sqlite3.Connection, trade: Trade, week: int) -> tuple[list[Violat
             violations.append(Violation("hard_cap", f"{team}'s payroll would be ${result['payroll']:.2f}M, "
                                                     f"${-result['cap_space']:.2f}M over the ${cap:.1f}M hard cap.",
                                         team))
-    return violations, after
+    return week, violations, after
 
 
 def _report(trade: Trade, week: int, violations: list[Violation], after: dict) -> dict:
@@ -133,33 +130,53 @@ def _report(trade: Trade, week: int, violations: list[Violation], after: dict) -
             "violations": [asdict(v) for v in violations], "teams_after": after}
 
 
-def check_trade(trade: Trade, week: int, db_file: Path | None = None) -> dict:
-    """Every rule the trade would break, and each team's roster size, payroll and cap
-    space if it went through. Changes nothing."""
+def check_trade(trade: Trade, db_file: Path | None = None) -> dict:
+    """Every rule the trade would break this week, and each team's roster size, payroll
+    and cap space if it went through. Changes nothing."""
     trade = trade.normalized()
     db = connect(db_file)
     try:
-        return _report(trade, week, *_check(db, trade, week))
+        return _report(trade, *_check(db, trade))
     finally:
         db.close()
 
 
-def make_trade(trade: Trade, week: int, db_file: Path | None = None) -> dict:
-    """Check the trade and, if it is legal, move the players. Raises IllegalMove (with
-    every broken rule) and changes nothing if it is not."""
+def make_trade(trade: Trade, db_file: Path | None = None) -> dict:
+    """Check the trade and, if it is legal, move the players and log the move. Raises
+    IllegalMove (with every broken rule) and changes nothing if it is not. The report
+    includes the move's id in the log."""
     trade = trade.normalized()
     db = connect(db_file)
     try:
         # Hold the write lock from the checks to the update, so no other move can
         # change the rosters in between and make a checked trade illegal.
         db.execute("BEGIN IMMEDIATE")
-        violations, after = _check(db, trade, week)
+        week, violations, after = _check(db, trade)
         if violations:
             db.rollback()
             raise IllegalMove(violations)
-        db.executemany("UPDATE players SET team_id = ? WHERE id = ?",
-                       [(trade.team_b, p) for p in trade.a_sends] + [(trade.team_a, p) for p in trade.b_sends])
+        moved = ([(p, trade.team_a, trade.team_b) for p in trade.a_sends]
+                 + [(p, trade.team_b, trade.team_a) for p in trade.b_sends])
+        db.executemany("UPDATE players SET team_id = ? WHERE id = ?", [(to, p) for p, _, to in moved])
+        move_id = db.execute("INSERT INTO moves (week, kind) VALUES (?, 'trade')", (week,)).lastrowid
+        db.executemany("INSERT INTO move_players VALUES (?, ?, ?, ?)", [(move_id, *m) for m in moved])
         db.commit()
-        return _report(trade, week, [], after)
+        return {**_report(trade, week, [], after), "move_id": move_id}
+    finally:
+        db.close()
+
+
+def move_log(db_file: Path | None = None) -> list[dict]:
+    """Every move made this season, oldest first, with the players each one moved."""
+    db = connect(db_file)
+    try:
+        moves = {row["id"]: {**dict(row), "players": []}
+                 for row in db.execute("SELECT * FROM moves ORDER BY id")}
+        for row in db.execute("SELECT mp.*, p.name FROM move_players mp JOIN players p ON p.id = mp.player_id "
+                              "ORDER BY mp.move_id, mp.rowid"):
+            moves[row["move_id"]]["players"].append(
+                {"player_id": row["player_id"], "name": row["name"],
+                 "from_team_id": row["from_team_id"], "to_team_id": row["to_team_id"]})
+        return list(moves.values())
     finally:
         db.close()

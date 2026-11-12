@@ -58,7 +58,7 @@ GM briefing
 | ---- | -------------- | ----------------------------------- |
 | W1   | Oct 26 - Nov 1 | 0.1, 0.2 (done)                     |
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
-| W3   | Nov 9 - Nov 15 | 1.2 (done), G1, 3.1                 |
+| W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                 |
 | W4   | Nov 16 - 22    | 3.1, G2, 1.3                        |
 | W5   | Nov 23 - 29    | 1.3, 1.4, G3                        |
 | W6   | Nov 30 - Dec 6 | 1.5, 2.1                            |
@@ -103,7 +103,7 @@ move that puts a team over the hard cap, and trades after the deadline week.
 The game relies on these checks: every move the owner approves goes through
 them, and a rejected move shows the rule it broke.
 
-### G1 Game state and save files (W3)
+### G1 Game state and save files (W3) - Done
 New SQLite tables for the current week, the 17-week schedule (each rival three
 or four times), game results, standings and a log of every move. "New game"
 copies the `league.json` seed into a fresh save; "Load game" continues one.

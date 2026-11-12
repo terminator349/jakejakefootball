@@ -1,23 +1,38 @@
-"""The league's SQLite database: teams, rosters and contracts.
+"""The league's SQLite database: teams, rosters, contracts and the season.
 
-data/league.json is the generated start of the season; data/league.db is the
-league as it stands, built from that seed. From task 1.2 on, moves change the
-database, never the seed.
+data/league.json is the generated start of the season. Every league database is
+built from it: each save file (agents/saves.py) is one, and data/league.db is
+the default league that run.py and the tools use when no game is loaded. Moves
+change a database, never the seed.
 
-    python -m agents.league_db    # rebuild league.db from league.json (undoes all moves)
+Since task G1 a database also holds the game: the current week, the 17-week
+schedule with results, and a log of every move. Standings are a view over the
+results.
 
-connect() builds the database the first time it is needed.
+    python -m agents.league_db    # rebuild data/league.db from league.json (undoes all moves)
+
+connect() builds the database the first time it is needed, and rebuilds
+data/league.db (never a save) if an older version of this code made it.
 """
 
 import json
 import os
 import sqlite3
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 SEED_FILE = DATA_DIR / "league.json"
-DB_FILE = DATA_DIR / "league.db"
+DEFAULT_DB_FILE = DATA_DIR / "league.db"
+DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points this at its save
+
+# Raised whenever the schema changes, so an old database is never read as a new one.
+# 0 (SQLite's default): tasks 1.1 - 1.2. 1: task G1 adds the game tables.
+SCHEMA_VERSION = 1
+
+# The season seed for data/league.db. A new game picks its own (agents/saves.py).
+DEFAULT_SEASON_SEED = 2026
 
 SCHEMA = """
 CREATE TABLE settings (
@@ -59,14 +74,67 @@ CREATE TABLE contracts (
     years_left INTEGER NOT NULL CHECK (years_left >= 0)
 );
 CREATE INDEX players_by_team ON players (team_id, position);
+
+-- The game (task G1). One row.
+CREATE TABLE game (
+    id           INTEGER PRIMARY KEY CHECK (id = 1),
+    current_week INTEGER NOT NULL CHECK (current_week >= 1),  -- season_games + 1 once the season is over
+    seed         INTEGER NOT NULL,                            -- the schedule and simulator draw from this
+    created_at   TEXT NOT NULL
+);
+CREATE TABLE games (
+    id           INTEGER PRIMARY KEY,
+    week         INTEGER NOT NULL CHECK (week >= 1),
+    home_team_id TEXT NOT NULL REFERENCES teams(id),
+    away_team_id TEXT NOT NULL REFERENCES teams(id),
+    home_score   INTEGER CHECK (home_score >= 0),             -- NULL until the game is played
+    away_score   INTEGER CHECK (away_score >= 0),
+    CHECK (home_team_id <> away_team_id),
+    CHECK ((home_score IS NULL) = (away_score IS NULL))
+);
+CREATE INDEX games_by_week ON games (week);
+CREATE TABLE moves (
+    id   INTEGER PRIMARY KEY,
+    week INTEGER NOT NULL CHECK (week >= 1),
+    kind TEXT NOT NULL CHECK (kind IN ('trade'))
+);
+CREATE TABLE move_players (
+    move_id      INTEGER NOT NULL REFERENCES moves(id),
+    player_id    TEXT NOT NULL REFERENCES players(id),
+    from_team_id TEXT NOT NULL REFERENCES teams(id),
+    to_team_id   TEXT NOT NULL REFERENCES teams(id),
+    PRIMARY KEY (move_id, player_id)
+);
+CREATE VIEW standings AS
+WITH sides AS (
+    SELECT home_team_id AS team_id, home_score AS pf, away_score AS pa FROM games WHERE home_score IS NOT NULL
+    UNION ALL
+    SELECT away_team_id, away_score, home_score FROM games WHERE home_score IS NOT NULL
+)
+SELECT t.id                       AS team_id,
+       COALESCE(SUM(s.pf > s.pa), 0) AS wins,
+       COALESCE(SUM(s.pf < s.pa), 0) AS losses,
+       COALESCE(SUM(s.pf = s.pa), 0) AS ties,
+       COALESCE(SUM(s.pf), 0)        AS points_for,
+       COALESCE(SUM(s.pa), 0)        AS points_against
+FROM teams t LEFT JOIN sides s ON s.team_id = t.id
+GROUP BY t.id;
 """
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
 
 
-def build(db_file: Path | None = None, seed_file: Path | None = None) -> None:
-    """Create the database from the seed, replacing any database already there."""
+class OutdatedDatabase(Exception):
+    """The database was made by an older version of this code."""
+
+
+def build(db_file: Path | None = None, seed_file: Path | None = None, season_seed: int | None = None) -> None:
+    """Create the database from the seed, at week 1 with a fresh schedule, replacing
+    any database already there."""
+    from agents.season import make_schedule  # season imports this module
+
+
     # Paths are read at call time, so tests can point DB_FILE at a scratch database.
     db_file, seed_file = db_file or DB_FILE, seed_file or SEED_FILE
     if not seed_file.exists():
@@ -90,8 +158,22 @@ def build(db_file: Path | None = None, seed_file: Path | None = None) -> None:
         db.executemany("INSERT INTO ratings VALUES (?, ?, ?)",
                        [(p["id"], k, v) for p in seed["players"] for k, v in p["ratings"].items()])
         db.executemany("INSERT INTO contracts VALUES (:id, :salary, :contract_years)", seed["players"])
+
+        season_seed = DEFAULT_SEASON_SEED if season_seed is None else season_seed
+        db.execute("INSERT INTO game VALUES (1, 1, ?, ?)",
+                   (season_seed, datetime.now(timezone.utc).isoformat(timespec="seconds")))
+        schedule = make_schedule([t["id"] for t in seed["teams"]], seed["rules"]["season_games"], season_seed)
+        db.executemany("INSERT INTO games (week, home_team_id, away_team_id) VALUES (?, ?, ?)", schedule)
+        db.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
     db.close()
     os.replace(tmp_file, db_file)
+
+
+def _schema_version(db_file: Path) -> int:
+    with sqlite3.connect(db_file) as db:
+        version = db.execute("PRAGMA user_version").fetchone()[0]
+    db.close()
+    return version
 
 
 def connect(db_file: Path | None = None) -> sqlite3.Connection:
@@ -99,6 +181,13 @@ def connect(db_file: Path | None = None) -> sqlite3.Connection:
     if not db_file.exists():
         with _build_lock:
             if not db_file.exists():  # another thread may have built it while we waited
+                build(db_file)
+    if _schema_version(db_file) != SCHEMA_VERSION:
+        if db_file.resolve() != DEFAULT_DB_FILE.resolve():
+            raise OutdatedDatabase(f"{db_file} was made by an older version of Front Office "
+                                   "and cannot be loaded. Start a new game.")
+        with _build_lock:  # data/league.db is only the default league, so rebuild it
+            if _schema_version(db_file) != SCHEMA_VERSION:
                 build(db_file)
     db = sqlite3.connect(db_file)
     db.row_factory = sqlite3.Row
@@ -136,5 +225,5 @@ def load_league(db_file: Path | None = None) -> dict:
 
 
 if __name__ == "__main__":
-    build()
-    print(f"Built {DB_FILE} from {SEED_FILE}")
+    build(DEFAULT_DB_FILE)
+    print(f"Built {DEFAULT_DB_FILE} from {SEED_FILE}")
