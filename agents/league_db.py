@@ -7,12 +7,14 @@ change a database, never the seed.
 
 Since task G1 a database also holds the game: the current week, the 17-week
 schedule with results, and a log of every move. Standings are a view over the
-results.
+results. Since task 3.1 it also keeps every simulated snap and each player's
+stats per game.
 
     python -m agents.league_db    # rebuild data/league.db from league.json (undoes all moves)
 
-connect() builds the database the first time it is needed, and rebuilds
-data/league.db (never a save) if an older version of this code made it.
+connect() builds the database the first time it is needed and upgrades an older
+one where it can (MIGRATIONS). Otherwise it rebuilds data/league.db, but never
+a save.
 """
 
 import json
@@ -29,7 +31,8 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 
 # Raised whenever the schema changes, so an old database is never read as a new one.
 # 0 (SQLite's default): tasks 1.1 - 1.2. 1: task G1 adds the game tables.
-SCHEMA_VERSION = 1
+# 2: task 3.1 adds play logs and player game stats.
+SCHEMA_VERSION = 2
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -121,6 +124,41 @@ FROM teams t LEFT JOIN sides s ON s.team_id = t.id
 GROUP BY t.id;
 """
 
+GAME_LOG_SCHEMA = """
+-- Simulated games (task 3.1): every snap, and each player's stats per game.
+CREATE TABLE plays (
+    game_id         INTEGER NOT NULL REFERENCES games(id),
+    n               INTEGER NOT NULL,              -- snap number in the game
+    drive           INTEGER NOT NULL,
+    quarter         INTEGER NOT NULL,              -- 5 = overtime
+    clock           INTEGER NOT NULL,              -- seconds left in the quarter at the snap
+    offense_team_id TEXT NOT NULL REFERENCES teams(id),
+    down            INTEGER NOT NULL,
+    distance        INTEGER NOT NULL,
+    yardline        INTEGER NOT NULL,              -- from the offense's own goal line
+    call            TEXT NOT NULL,
+    defense_call    TEXT,
+    result          TEXT NOT NULL,
+    yards           INTEGER NOT NULL,
+    text            TEXT NOT NULL,
+    home_score      INTEGER NOT NULL,              -- after the play
+    away_score      INTEGER NOT NULL,
+    PRIMARY KEY (game_id, n)
+);
+CREATE TABLE player_game_stats (
+    game_id   INTEGER NOT NULL REFERENCES games(id),
+    player_id TEXT NOT NULL REFERENCES players(id),
+    team_id   TEXT NOT NULL REFERENCES teams(id),  -- the player's team in that game
+    stat      TEXT NOT NULL,                       -- e.g. pass_yds, rush_att, def_sacks
+    value     INTEGER NOT NULL,
+    PRIMARY KEY (game_id, player_id, stat)
+);
+"""
+
+# How to bring an older database up to date, by the version it is at. A version not
+# listed here can't be upgraded: data/league.db is rebuilt, and a save is refused.
+MIGRATIONS = {1: GAME_LOG_SCHEMA}
+
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
 
@@ -145,7 +183,7 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA)
+        db.executescript(SCHEMA + GAME_LOG_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}
@@ -176,12 +214,23 @@ def _schema_version(db_file: Path) -> int:
     return version
 
 
+def _migrate(db_file: Path) -> None:
+    """Apply each upgrade in turn, each in its own transaction, until the database is current."""
+    while (version := _schema_version(db_file)) in MIGRATIONS:
+        with sqlite3.connect(db_file) as db:
+            db.executescript(f"BEGIN; {MIGRATIONS[version]} PRAGMA user_version = {version + 1}; COMMIT;")
+        db.close()
+
+
 def connect(db_file: Path | None = None) -> sqlite3.Connection:
     db_file = db_file or DB_FILE
     if not db_file.exists():
         with _build_lock:
             if not db_file.exists():  # another thread may have built it while we waited
                 build(db_file)
+    if _schema_version(db_file) in MIGRATIONS:
+        with _build_lock:
+            _migrate(db_file)
     if _schema_version(db_file) != SCHEMA_VERSION:
         if db_file.resolve() != DEFAULT_DB_FILE.resolve():
             raise OutdatedDatabase(f"{db_file} was made by an older version of Front Office "

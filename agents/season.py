@@ -2,19 +2,22 @@
 
 Each league database (a save, or data/league.db) holds one season. The
 schedule is made from the season's seed when the database is built, so the
-same seed always gives the same schedule. Results are written one game at a
-time (by the simulator, task 3.1), and the week only moves on once every game
-in it has a result. Standings are worked out from the results when asked for,
+same seed always gives the same schedule. play_week() plays the current week's
+games snap by snap with the simulator (task 3.1, agents/simulator.py) and saves
+each game's score, play log and player stats; record_result() writes a score
+by hand. The week only moves on once every game in it has a result. Standings are worked out from the results when asked for,
 so they can never disagree with them.
 
 Weeks run from 1 to the league's season_games (17). After the last week's games
 the current week is season_games + 1, meaning the regular season is over.
 """
 
+import json
 import random
 from pathlib import Path
 
 from agents.league_db import connect
+from agents.simulator import Game, Lineup, build_lineup
 
 
 def _round_robin(teams: list[str]) -> list[list[tuple[str, str]]]:
@@ -205,3 +208,111 @@ def standings(db_file: Path | None = None) -> list[dict]:
     for rank, row in enumerate(rows, start=1):
         row["rank"] = rank
     return rows
+
+
+# ---- Simulated games (task 3.1) --------------------------------------------
+
+def _lineup(db, team_id: str) -> Lineup:
+    ratings: dict[str, dict] = {}
+    for row in db.execute("SELECT r.* FROM ratings r JOIN players p ON p.id = r.player_id WHERE p.team_id = ? "
+                          "ORDER BY r.rowid", (team_id,)):
+        ratings.setdefault(row["player_id"], {})[row["rating"]] = row["value"]
+    players = [{**dict(row), "ratings": ratings[row["id"]]}
+               for row in db.execute("SELECT id, name, position, overall FROM players WHERE team_id = ? "
+                                     "ORDER BY rowid", (team_id,))]
+    starters = {row["position"]: row["starters"] for row in db.execute("SELECT * FROM positions ORDER BY sort_order")}
+    return build_lineup(team_id, players, starters)
+
+
+def _play(db, game) -> dict:
+    """Simulate one game with the rosters as they stand and save everything it produced."""
+    seed = db.execute("SELECT seed FROM game").fetchone()[0]
+    result = Game(_lineup(db, game["home_team_id"]), _lineup(db, game["away_team_id"]),
+                  seed=f"{seed}-{game['id']}").play()
+    home, away = result.score[game["home_team_id"]], result.score[game["away_team_id"]]
+    db.execute("UPDATE games SET home_score = ?, away_score = ? WHERE id = ?", (home, away, game["id"]))
+    db.executemany("INSERT INTO plays VALUES (:game_id, :n, :drive, :quarter, :clock, :offense, :down, :distance, "
+                   ":yardline, :call, :defense_call, :result, :yards, :text, :home_score, :away_score)",
+                   [{**play, "game_id": game["id"]} for play in result.plays])
+    db.executemany("INSERT INTO player_game_stats VALUES (?, ?, ?, ?, ?)",
+                   [(game["id"], line["player_id"], line["team_id"], stat, value)
+                    for line in result.player_stats() for stat, value in line.items()
+                    if stat not in ("player_id", "team_id")])
+    return {"game_id": game["id"], "week": game["week"], "home_team_id": game["home_team_id"],
+            "away_team_id": game["away_team_id"], "home_score": home, "away_score": away,
+            "plays": len(result.plays)}
+
+
+def play_game(game_id: int, db_file: Path | None = None) -> dict:
+    """Simulate one unplayed game in the current week and save its score, play log and stats."""
+    db = connect(db_file)
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        game = db.execute("SELECT * FROM games WHERE id = ?", (game_id,)).fetchone()
+        if game is None:
+            raise ValueError(f"There is no game {game_id}.")
+        week = _current_week(db)
+        if game["week"] != week:
+            raise ValueError(f"Game {game_id} is in week {game['week']}; it is week {week}.")
+        if game["home_score"] is not None:
+            raise ValueError(f"Game {game_id} has already been played.")
+        played = _play(db, game)
+        db.commit()
+        return played
+    except BaseException:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+def play_week(db_file: Path | None = None) -> list[dict]:
+    """Simulate every unplayed game in the current week. Does not move to the next week."""
+    db = connect(db_file)
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        if _current_week(db) > _season_games(db):
+            raise ValueError("The regular season is over.")
+        games = db.execute("SELECT * FROM games WHERE week = ? AND home_score IS NULL ORDER BY id",
+                           (_current_week(db),)).fetchall()
+        played = [_play(db, game) for game in games]
+        db.commit()
+        return played
+    except BaseException:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+TEAM_TOTALS = ("pass_cmp", "pass_att", "pass_yds", "pass_td", "int_thrown", "sacked", "rush_att", "rush_yds",
+               "rush_td", "fumbles_lost", "fg_made", "fg_att", "punts")
+
+
+def box_score(game_id: int, db_file: Path | None = None) -> dict:
+    """A played game: score, team totals, each player's stats and the play-by-play."""
+    db = connect(db_file)
+    try:
+        game = db.execute("SELECT * FROM games WHERE id = ?", (game_id,)).fetchone()
+        if game is None:
+            raise ValueError(f"There is no game {game_id}.")
+        lines: dict[str, dict] = {}
+        for row in db.execute("SELECT s.*, p.name, p.position FROM player_game_stats s "
+                              "JOIN players p ON p.id = s.player_id WHERE s.game_id = ? ORDER BY s.rowid", (game_id,)):
+            line = lines.setdefault(row["player_id"], {"player_id": row["player_id"], "name": row["name"],
+                                                       "position": row["position"], "team_id": row["team_id"]})
+            line[row["stat"]] = row["value"]
+        plays = [dict(row) for row in db.execute("SELECT * FROM plays WHERE game_id = ? ORDER BY n", (game_id,))]
+    finally:
+        db.close()
+
+    teams = {}
+    for team_id in (game["home_team_id"], game["away_team_id"]):
+        totals = {stat: sum(line.get(stat, 0) for line in lines.values() if line["team_id"] == team_id)
+                  for stat in TEAM_TOTALS}
+        totals["total_yds"] = totals["pass_yds"] + totals["rush_yds"]
+        totals["turnovers"] = totals["int_thrown"] + totals["fumbles_lost"]
+        totals["first_downs"] = sum(1 for p in plays if p["offense_team_id"] == team_id and "First down" in p["text"])
+        teams[team_id] = totals
+    return {"game": dict(game), "simulated": bool(plays), "teams": teams, "players": list(lines.values()),
+            "plays": plays}

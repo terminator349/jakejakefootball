@@ -7,12 +7,11 @@ use: the league tools, the rule checks, saves and the season, the League Office
 MCP server (started over stdio, as the agents start it) and the Analytics agent.
 It only listens on this computer.
 
-The "random scores" button is a stand-in until the season simulator (3.1) exists.
+"Sim this week" plays the week's games with the season simulator (3.1).
 """
 
 import json
 import os
-import random
 import sys
 import time
 from pathlib import Path
@@ -135,15 +134,13 @@ async def record_result(request, body):
     return {"ok": True}
 
 
-async def random_results(request, body):
-    """Fill this week's unplayed games with random football scores (until the simulator, 3.1)."""
-    week = season.current_week()
-    rng = random.Random(f"{league_db.DB_FILE.name}-{week}")
-    points = [0, 3, 6, 7, 10, 13, 14, 16, 17, 20, 21, 23, 24, 27, 28, 30, 31, 34, 35, 38]
-    for game in season.games(week):
-        if game["home_score"] is None:
-            season.record_result(game["id"], rng.choice(points), rng.choice(points))
-    return {"ok": True}
+async def sim_week(request, body):
+    """Play this week's unplayed games snap by snap (task 3.1)."""
+    return {"played": season.play_week()}
+
+
+async def box_score(request, body):
+    return season.box_score(int(request.query_params.get("id", "0")))
 
 
 async def advance(request, body):
@@ -249,7 +246,8 @@ app = Starlette(routes=[
     Route("/api/season", api(season_view)),
     Route("/api/schedule", api(schedule)),
     Route("/api/season/result", api(record_result), methods=["POST"]),
-    Route("/api/season/random", api(random_results), methods=["POST"]),
+    Route("/api/season/sim", api(sim_week), methods=["POST"]),
+    Route("/api/game", api(box_score)),
     Route("/api/season/advance", api(advance), methods=["POST"]),
     Route("/api/trade/check", api(check_trade), methods=["POST"]),
     Route("/api/trade/make", api(make_trade), methods=["POST"]),

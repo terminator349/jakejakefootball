@@ -44,9 +44,9 @@ A page for trying out everything built so far, running the real code:
 python -m ui.server      # then open http://127.0.0.1:8765
 ```
 
-- **Game & saves**: start, load and list saves; enter scores or fill a week with
-  random ones (a stand-in for the simulator, 3.1); advance the week; standings
-  and the full schedule.
+- **Game & saves**: start, load and list saves; sim the week with the 3.1
+  simulator or type scores by hand; advance the week; standings and the full
+  schedule. Click a result for its box score and play-by-play.
 - **League**: teams, payroll and cap space; any roster; each team's biggest gaps
   from `compare_to_league`; the rules.
 - **Trades**: pick players on both sides, check the trade against the 1.2 rules
@@ -159,8 +159,9 @@ Standings are an SQL view over the results, so they can't drift from them.
   new team) in the same transaction that makes it; `move_log()` reads the log.
   `check_trade` and `make_trade` take the current week from the save.
 - **Old databases**: each database records its schema version. An old
-  `data/league.db` is rebuilt automatically; an old save is refused with a
-  message, never rebuilt.
+  `data/league.db` is rebuilt automatically. A save one version behind is
+  upgraded in place (G1 saves gain the 3.1 tables); anything older is refused
+  with a message, never rebuilt.
 
 ```powershell
 python -m servers.league_office --db saves/herons.db   # serve a saved game
@@ -170,3 +171,37 @@ pytest tests/test_season.py tests/test_saves.py
 Done when: a new game starts at week 1 with a fair 17-week schedule, results
 and standings agree, every trade is logged, and a loaded game continues where
 it stopped.
+
+## 3.1: the season simulator (first stage: "Sim it")
+
+`agents/simulator.py` plays a game one snap at a time, in plain Python with no
+model calls. `Game.step()` runs one snap: the offense picks a play (inside or
+outside run, short or deep pass, play action, screen, punt, field goal, kneel)
+and the defense a call (base, blitz, cover 2, deep zone, run stuff). The
+result comes from the starters' unit strengths (run blocking against run
+defense, deep passing against deep coverage, pass rush against pass blocking),
+how the two calls match up, and a seeded random number generator. Big
+mismatches have diminishing returns, so a weak unit hurts but isn't hopeless.
+
+- **Play callers**: teams the owner isn't coaching use plain-Python tendencies
+  by down, distance, score and clock, leaning toward what works against that
+  defense. Every offense throws more against our secondary than anyone else's.
+  `step()` also takes a person's calls, ready for G8.
+- **Repeatable**: separate random streams for calls and for what happens on the
+  field. The same season seed plays the same season.
+- **Saving games** (`agents/season.py`): `play_week()` plays the current week's
+  unplayed games with the rosters as they stand, and saves each score, every
+  snap (`plays` table) and every player's stats (`player_game_stats`).
+  `box_score(game_id)` returns team totals, player lines and the play-by-play.
+- **Tuned** over hundreds of seeded games, per team per game: about 21 points
+  and 65 scrimmage plays, 64% completions, 7.1 yards a pass, 4.3 a carry, 1.9
+  sacks and 4.4 punts. Home teams win 52%, and under 1% of games end tied. The
+  Herons win about a third of their games, and the Odom trade from 1.2 lifts
+  that by about six points.
+
+```powershell
+pytest tests/test_simulator.py
+```
+
+Still to come in 3.1: "Watch it" (drive by drive) in W5, and smarter late-game
+calls (spikes, the hurry-up when far behind) as part of it.

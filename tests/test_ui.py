@@ -32,8 +32,11 @@ def test_play_a_week(client):
     season = client.get("/api/season").json()
     assert len(season["games"]) == 3
     assert client.post("/api/season/advance", json={}).status_code == 400  # games not played yet
-    client.post("/api/season/random", json={})
+    played = client.post("/api/season/sim", json={}).json()["played"]
+    assert len(played) == 3
     assert client.post("/api/season/advance", json={}).json() == {"week": 2}
+    box = client.get(f"/api/game?id={played[0]['game_id']}").json()
+    assert box["simulated"] and box["plays"][-1]["home_score"] == played[0]["home_score"]
     standings = client.get("/api/season").json()["standings"]
     assert sum(r["wins"] + r["losses"] + r["ties"] for r in standings) == 6
 

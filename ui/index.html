@@ -91,6 +91,16 @@ details.call summary { cursor: pointer; font: 13px var(--mono); }
 #toast.good { display: block; background: var(--good-bg); color: var(--good); border: 1px solid var(--good); }
 #toast.bad { display: block; background: var(--bad-bg); color: var(--bad); border: 1px solid var(--bad); }
 .empty { color: var(--muted); font-style: italic; padding: 8px 0; }
+.scoreline { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 4px 0 10px; }
+.pbp { max-height: 460px; overflow: auto; font-size: 13px; }
+.pbp .q { position: sticky; top: 0; background: var(--panel); font-weight: 600; padding: 6px 0 4px; border-bottom: 1px solid var(--line); }
+.pbp .play { display: grid; grid-template-columns: 52px 92px 1fr 64px; gap: 8px; padding: 3px 0; border-bottom: 1px solid var(--line); }
+.pbp .play.td { background: var(--good-bg); } .pbp .play.to { background: var(--bad-bg); }
+.pbp .sit { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.leaders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.leaders div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.leaders b { display: block; font-size: 12px; color: var(--muted); font-weight: 500; }
+span[data-box] { cursor: pointer; text-decoration: underline dotted; }
 </style>
 </head>
 <body>
@@ -131,18 +141,22 @@ details.call summary { cursor: pointer; font: 13px var(--mono); }
         <h2 id="week-title">This week</h2>
         <div id="week-games"></div>
         <div class="row">
-          <button class="btn" id="random-scores">Random scores</button>
-          <button class="btn primary" id="advance">Advance week</button>
+          <button class="btn primary" id="sim-week">Sim this week</button>
+          <button class="btn" id="advance">Advance week</button>
         </div>
-        <p class="note">Random scores stand in for the season simulator (task 3.1). The week only moves on once every game has a result.</p>
+        <p class="note">Sim plays every game snap by snap from the players' ratings (task 3.1). You can also type a score by hand. The week only moves on once every game has a result.</p>
       </div>
       <div class="card">
         <h2>Standings <span class="sub">from the results</span></h2>
         <div id="standings"></div>
       </div>
       <div class="card">
-        <h2>Schedule <span class="sub">seeded, 17 weeks</span></h2>
+        <h2>Schedule <span class="sub">seeded, 17 weeks · click a result</span></h2>
         <div class="scroll" id="schedule"></div>
+      </div>
+      <div class="card" style="grid-column: 1 / -1" id="box-card" hidden>
+        <h2 id="box-title">Box score</h2>
+        <div id="box"></div>
       </div>
     </div>
   </section>
@@ -300,8 +314,9 @@ async function loadSeason() {
     ${g.home_score === null ? `<input type="number" min="0" class="score" id="as-${g.id}" placeholder="${g.away_team_id}">
        <input type="number" min="0" class="score" id="hs-${g.id}" placeholder="${g.home_team_id}">
        <button class="btn sm" data-result="${g.id}">Save</button>`
-      : `<span class="final">${g.away_team_id} ${g.away_score} - ${g.home_score} ${g.home_team_id}</span>`}</div>`).join("");
-  $("#random-scores").disabled = $("#advance").disabled = s.season_over;
+      : `<span class="final">${g.away_team_id} ${g.away_score} - ${g.home_score} ${g.home_team_id}</span>
+         <button class="btn sm" data-box="${g.id}">Box score</button>`}</div>`).join("");
+  $("#sim-week").disabled = $("#advance").disabled = s.season_over;
   const our = st.our_team;
   $("#standings").innerHTML = `<table><tr><th>#</th><th>Team</th><th class="num">W</th><th class="num">L</th><th class="num">T</th><th class="num">Pct</th><th class="num">PF</th><th class="num">PA</th><th class="num">Diff</th></tr>
     ${s.standings.map(r => `<tr class="${r.team_id === our ? "ours" : ""}"><td>${r.rank}</td><td>${esc(r.city)} ${esc(r.name)}</td>
@@ -315,13 +330,52 @@ async function loadSchedule() {
   games.forEach(g => (byWeek[g.week] ??= []).push(g));
   const cell = g => {
     const label = `${g.away_team_id} @ ${g.home_team_id}`;
-    const txt = g.home_score === null ? label : `${g.away_team_id} ${g.away_score}-${g.home_score} ${g.home_team_id}`;
+    const txt = g.home_score === null ? label : `<span data-box="${g.id}">${g.away_team_id} ${g.away_score}-${g.home_score} ${g.home_team_id}</span>`;
     return (g.home_team_id === our || g.away_team_id === our) ? `<b>${txt}</b>` : txt;
   };
   $("#schedule").innerHTML = `<div class="week-grid">${Object.keys(byWeek).map(w => {
     const cls = Number(w) === now ? "now" : "";
     return `<div class="${cls}">Week ${w}</div>${byWeek[w].map(g => `<div class="${cls}">${cell(g)}</div>`).join("")}`;
   }).join("")}</div>`;
+}
+
+const clockText = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+const QUARTERS = { 1: "1st quarter", 2: "2nd quarter", 3: "3rd quarter", 4: "4th quarter", 5: "Overtime" };
+const ORD = ["", "1st", "2nd", "3rd", "4th"];
+async function showBox(id) {
+  const b = await call(`/api/game?id=${id}`), g = b.game, h = g.home_team_id, a = g.away_team_id;
+  $("#box-card").hidden = false;
+  $("#box-title").innerHTML = `Box score <span class="sub">week ${g.week}${b.simulated ? "" : " · score entered by hand"}</span>`;
+  const row = (label, f) => `<tr><td>${label}</td><td class="num">${f(b.teams[a])}</td><td class="num">${f(b.teams[h])}</td></tr>`;
+  const lead = (stat, fmt) => {
+    const best = team => b.players.filter(p => p.team_id === team && p[stat]).sort((x, y) => y[stat] - x[stat])[0];
+    return [a, h].map(t => { const p = best(t); return p ? `${t} ${esc(p.name)}: ${fmt(p)}` : `${t}: none`; }).join("<br>");
+  };
+  const playClass = p => p.result === "touchdown" ? "td" : ["interception", "fumble", "turnover_on_downs", "safety"].includes(p.result) ? "to" : "";
+  let quarter = 0, pbp = "";
+  for (const p of b.plays) {
+    if (p.quarter !== quarter) { quarter = p.quarter; pbp += `<div class="q">${QUARTERS[quarter]}</div>`; }
+    const spot = p.yardline === 50 ? "50" : p.yardline < 50 ? `own ${p.yardline}` : `opp ${100 - p.yardline}`;
+    const togo = p.distance >= 100 - p.yardline ? "goal" : p.distance;
+    pbp += `<div class="play ${playClass(p)}"><span class="sit">${clockText(p.clock)}</span><span class="sit">${p.offense_team_id} · ${ORD[p.down]} & ${togo}<br>${spot}</span>
+      <span>${esc(p.text)} <span class="pos">${p.call.replace(/_/g, " ")}${p.defense_call ? " vs " + p.defense_call.replace(/_/g, " ") : ""}</span></span>
+      <span class="sit num">${a} ${p.away_score}-${p.home_score}</span></div>`;
+  }
+  $("#box").innerHTML = `<div class="scoreline">${a} ${g.away_score} &nbsp;at&nbsp; ${h} ${g.home_score}</div>
+    ${b.simulated ? `<div class="grid">
+      <table><tr><th>Team</th><th class="num">${a}</th><th class="num">${h}</th></tr>
+        ${row("Total yards", t => t.total_yds)}${row("Passing", t => `${t.pass_cmp}/${t.pass_att}, ${t.pass_yds}`)}
+        ${row("Rushing", t => `${t.rush_att}-${t.rush_yds}`)}${row("First downs", t => t.first_downs)}
+        ${row("Sacked", t => t.sacked)}${row("Turnovers", t => t.turnovers)}${row("Field goals", t => `${t.fg_made}/${t.fg_att}`)}${row("Punts", t => t.punts)}</table>
+      <div class="leaders">
+        <div><b>Passing</b>${lead("pass_yds", p => `${p.pass_cmp}/${p.pass_att}, ${p.pass_yds} yds, ${p.pass_td || 0} TD, ${p.int_thrown || 0} INT`)}</div>
+        <div><b>Rushing</b>${lead("rush_yds", p => `${p.rush_att} for ${p.rush_yds} yds, ${p.rush_td || 0} TD`)}</div>
+        <div><b>Receiving</b>${lead("rec_yds", p => `${p.rec} for ${p.rec_yds} yds, ${p.rec_td || 0} TD`)}</div>
+        <div><b>Sacks</b>${lead("def_sacks", p => `${p.def_sacks}`)}<b style="margin-top:6px">Interceptions</b>${lead("def_int", p => `${p.def_int}`)}</div>
+      </div></div>
+      <h2 style="margin-top:14px">Play by play <span class="sub">${b.plays.length} plays · green: touchdowns · red: turnovers</span></h2>
+      <div class="pbp">${pbp}</div>` : `<p class="empty">This score was entered by hand, so there's no play-by-play.</p>`}`;
+  $("#box-card").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ---- league -----------------------------------------------------------
@@ -489,6 +543,7 @@ $("#tabs").addEventListener("click", e => {
 document.addEventListener("click", async e => {
   const t = e.target;
   try {
+    if (t.closest("[data-box]")) { await showBox(t.closest("[data-box]").dataset.box); return; }
     if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); toast(`Loaded ${t.dataset.load}.`); await refreshAll(); }
     else if (t.dataset.result) {
       const id = t.dataset.result, hs = $(`#hs-${id}`).value, as = $(`#as-${id}`).value;
@@ -522,7 +577,14 @@ $("#rebuild-default").onclick = async () => {
   if (!confirm("Rebuild data/league.db from the seed? Its trades and results are lost. Saves are not touched.")) return;
   try { await call("/api/league/rebuild", {}); toast("Default league rebuilt."); await refreshAll(); } catch (e) { fail(e); }
 };
-$("#random-scores").onclick = async () => { try { await call("/api/season/random", {}); await Promise.all([loadSeason(), loadSchedule(), loadSaves()]); } catch (e) { fail(e); } };
+$("#sim-week").onclick = async () => {
+  const btn = $("#sim-week"); btn.disabled = true;
+  try {
+    const { played } = await call("/api/season/sim", {});
+    toast(played.length ? played.map(g => `${g.away_team_id} ${g.away_score}-${g.home_score} ${g.home_team_id}`).join(" · ") : "Every game this week already has a result.");
+    await Promise.all([loadSeason(), loadSchedule(), loadSaves()]);
+  } catch (e) { fail(e); } finally { btn.disabled = state.status?.season_over; }
+};
 $("#advance").onclick = async () => { try { const r = await call("/api/season/advance", {}); toast(`Now week ${r.week}.`); await refreshAll(); } catch (e) { fail(e); } };
 $("#check-trade").onclick = async () => { try { showTrade(await call("/api/trade/check", tradeBody()), false); } catch (e) { fail(e); } };
 $("#make-trade").onclick = async () => {

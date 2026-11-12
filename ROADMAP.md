@@ -141,6 +141,9 @@ with the better-rated team winning more often.
 Built in stages: "Sim it" (a game in one step) by W4 so G2 is playable, then
 "Watch it" (drive by drive, from the play log) in W5.
 
+Progress, Nov 12: "Sim it" is done and tuned (see the README). Next: "Watch
+it", and better late-game play calling.
+
 ### G2 Web game loop (W4)
 The week above as a web page, grown from the test bench in `ui/`: roster,
 standings, schedule and cap, play the week, save and quit. Fully playable with
