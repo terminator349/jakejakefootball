@@ -7,7 +7,8 @@ results and moves on to the next week. Everything is saved as it happens, so
 quitting at any point and loading the save later carries on from there.
 
 The notes are facts read from the league, not model output. The GM's own
-briefing replaces them in task G3.
+briefing (task G3, agents/briefing.py) is written from the same facts; the notes
+stand in for it while it's written, without an API key, or if it doesn't check out.
 """
 
 import json

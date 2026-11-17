@@ -141,9 +141,10 @@ def test_agent_sees_the_league_office_tools():
 
 
 def test_agent_has_loop_guards():
-    """A run once looped on get_roster 65 times; these settings prevent that."""
+    """A run once looped on get_roster 65 times; these settings prevent that. The limit
+    leaves room for 3-5 League Office calls plus loading a skill and running its script."""
     agent = build_analytics_agent(league_office_tools())
-    assert agent.tool_call_limit is not None and agent.tool_call_limit <= 10
+    assert agent.tool_call_limit is not None and agent.tool_call_limit <= 18
     assert agent.parser_model is not None
 
 

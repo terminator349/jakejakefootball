@@ -97,6 +97,9 @@ def test_ask_the_front_office_in_the_game(client, monkeypatch):
     client.post("/api/saves/new", json={"name": "asking", "seed": "1"})
     assert client.get("/api/hub").json()["api_key_set"] is False  # the page says why it can't ask
     assert "OPENROUTER_API_KEY" in client.post("/api/hub/ask", json={"question": "Where?"}).json()["error"]
+    # The GM's briefing (G3): none written yet, and it needs the key too.
+    assert client.get("/api/hub").json()["briefing"] is None
+    assert "OPENROUTER_API_KEY" in client.post("/api/hub/briefing", json={}).json()["error"]
     assert "Agents" in client.get("/bench").text and "function frontOfficeHtml" in client.get("/static/common.js").text
 
 

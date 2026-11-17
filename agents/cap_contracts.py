@@ -16,6 +16,7 @@ from agno.tools.mcp import MCPTools
 from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
 
+from agents import skills
 from agents.analytics import TOOL_CALL_LIMIT, specialist_model
 from agents.tools import list_teams
 
@@ -81,6 +82,8 @@ def build_cap_contracts_agent(league_office: MCPTools, debug: bool = False) -> A
              "salary cap, and what salary would have to go back to make it fit.",
         model=specialist_model(),
         tools=[league_office],
+        # The league's cap rules and a script for the arithmetic, loaded when needed (task 1.5).
+        skills=skills.load("salary-cap-rules"),
         tool_call_limit=TOOL_CALL_LIMIT,
         instructions=[
             "You are the salary cap and contracts director of an American football front office.",
@@ -96,6 +99,10 @@ def build_cap_contracts_agent(league_office: MCPTools, debug: bool = False) -> A
             "For a proposed trade (players moving between two teams), call check_trade instead: it "
             "reports every rule the trade would break (cap, roster size, trade deadline) under the "
             "league as it stands, without making the trade.",
+            "For a move the League Office's tools can't test directly - several salaries out and in, a "
+            "player from outside the league, or a 'what if' - load the salary-cap-rules skill and run its "
+            "cap_check.py with the exact figures, rather than doing the sums yourself. This league has no dead "
+            "money, bonuses or restructures.",
             "Cite the exact payroll, cap space and salary figures in $M, as the tools give them, as "
             "your evidence.",
             "Tool results do not change during a run: call each tool at most once per team or move, "

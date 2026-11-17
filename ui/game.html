@@ -31,6 +31,11 @@ ul.notes { margin: 0; padding-left: 18px; } ul.notes li { margin: 5px 0; }
 .soon button { text-align: left; display: flex; justify-content: space-between; gap: 10px; }
 .soon .when { color: var(--muted); font-size: 12px; }
 .soon.inline { flex-direction: row; flex-wrap: wrap; margin-top: 12px; }
+.briefing h3 { font-size: 16px; margin: 2px 0 8px; }
+.briefing p { margin: 0 0 8px; }
+.briefing .watch { color: var(--muted); }
+details.notes-toggle { margin-top: 8px; font-size: 13px; }
+details.notes-toggle summary { cursor: pointer; color: var(--muted); }
 .ask-examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
 .ask-examples button { font-size: 12px; }
 .gm-answer { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -199,6 +204,39 @@ const SOON = [
   ["Review proposed moves", "G4: approve or veto each one"],
 ];
 
+// ---- The GM's weekly briefing (G3) -----------------------------------------------
+// Written once a week from the league's facts and kept in the save; the plain notes
+// stand in while it's being written, without a key, or if its numbers didn't check out.
+const brief = { week: null, writing: false, failed: null };
+const notesList = () => `<ul class="notes">${H.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>`;
+function briefingCard() {
+  const b = H.briefing;
+  if (b) return `<div class="card briefing"><h2>Your GM's briefing <span class="sub">week ${b.week}</span></h2>
+    <h3>${esc(b.headline)}</h3>${b.paragraphs.map(t => `<p>${esc(t)}</p>`).join("")}
+    <p class="watch"><b>Watching:</b> ${esc(b.watch)}</p>
+    <p class="note">Every number in it is checked against the league's data.</p>
+    <details class="notes-toggle"><summary>The notes behind it</summary>${notesList()}</details></div>`;
+  let status;
+  if (!H.api_key_set) status = "Your GM's briefing needs OPENROUTER_API_KEY in .env (then restart the server). Until then, the notes:";
+  else if (brief.failed && brief.week === H.week) status = `${esc(brief.failed)} <button class="link" data-act="brief-retry">Try again</button>`;
+  else status = `<span class="spin"></span> Your GM is writing this week's briefing. The notes, meanwhile:`;
+  return `<div class="card"><h2>Your GM's briefing <span class="sub">week ${H.week}</span></h2>
+    <p class="note">${status}</p>${notesList()}</div>`;
+}
+async function writeBriefing(force = false) {
+  if (!H.api_key_set || H.briefing || brief.writing || (brief.week === H.week && !force)) return;
+  Object.assign(brief, { week: H.week, writing: true, failed: null });
+  const week = H.week;
+  try {
+    const b = await call("/api/hub/briefing", {});
+    if (H && H.week === week) H.briefing = b;
+  } catch (e) { brief.failed = e?.error || String(e); }
+  finally {
+    brief.writing = false;
+    if (H && H.week === week && currentTab() === "week" && !gameDay && !live && !H.week_played) await weekView();
+  }
+}
+
 // ---- Ask the front office (1.4): the owner asks the GM, the GM asks its specialists ----
 const ASK_EXAMPLES = [
   "Where is our roster weakest, and can we afford a player who fixes it?",
@@ -264,13 +302,12 @@ async function weekView() {
       </div>
       <p class="note"><b>Sim it</b> plays the week and goes to the results. <b>Watch it</b> plays the week, then lets you follow our game drive by drive before you see any other score. <b>Call it</b> puts you on the sideline: the game sims until a key moment (a 4th down, the red zone, the two-minute drill, overtime) and hands you the call, or you call every snap.</p>
     </div>
-    <div class="card"><h2>Front office notes <span class="sub">from the league data</span></h2>
-      <ul class="notes">${H.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>
-      <p class="note">Your GM's weekly briefing replaces these notes with G3.</p></div>
+    ${briefingCard()}
     <div class="card"><h2>Around the league <span class="sub">week ${H.week}</span></h2>
       <div class="games">${others.map(g => `<div><span>${g.away_team_id} at ${g.home_team_id}</span><span class="note">${g.home_score === null ? "not played" : `${g.away_score}-${g.home_score}`}</span></div>`).join("")}</div></div>
     ${askCard()}
   </div>`;
+  writeBriefing();
 }
 function resultsView(el, season) {
   const tw = H.this_week, o = tw.opponent;
@@ -525,6 +562,7 @@ document.addEventListener("click", async e => {
     else if (t.dataset.pos !== undefined) { rosterPos = t.dataset.pos; await rosterView(); }
     else if (t.dataset.askExample !== undefined) { ask.question = t.textContent; $("#ask-q").value = ask.question; }
     else if (t.dataset.act === "ask") await askGM();
+    else if (t.dataset.act === "brief-retry") { brief.failed = null; await weekView(); await writeBriefing(true); }
     else if (t.dataset.act === "sim") await playWeek(false);
     else if (t.dataset.act === "watch") await playWeek(true);
     else if (t.dataset.call) await liveAction("/api/live/call", { game_id: live.game_id, call: t.dataset.call });

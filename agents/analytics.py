@@ -15,6 +15,7 @@ from agno.tools.mcp import MCPTools
 from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
 
+from agents import skills
 from agents.tools import list_teams
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -27,8 +28,9 @@ ANALYTICS_TOOLS = ["list_teams", "get_roster", "compare_to_league", "get_league_
 # OpenRouter reads OPENROUTER_API_KEY from the environment.
 SPECIALIST_MODEL = "deepseek/deepseek-v4.1-flash-1017"
 
-# Hard stop for runaway loops. A good answer needs about 3-5 tool calls.
-TOOL_CALL_LIMIT = 10
+# Hard stop for runaway loops. A good answer needs about 3-8 League Office calls, plus 3-6
+# when it loads skills and runs their scripts (task 1.5).
+TOOL_CALL_LIMIT = 18
 
 PARSER_PROMPT = (
     "The user message is a roster report written by the analytics director of an American football "
@@ -84,6 +86,9 @@ def build_analytics_agent(league_office: MCPTools, debug: bool = False) -> Agent
         role="Finds roster weaknesses, compares players and values them using ratings and contracts.",
         model=specialist_model(),
         tools=[league_office],
+        # Know-how loaded when a question calls for it (task 1.5): what players are worth,
+        # and how much a player would move the simulator's units.
+        skills=skills.load("player-valuation", "roster-impact"),
         tool_call_limit=TOOL_CALL_LIMIT,
         instructions=[
             "You are the analytics director of an American football front office.",
@@ -96,6 +101,10 @@ def build_analytics_agent(league_office: MCPTools, debug: bool = False) -> Agent
             "The salary cap is hard: going over it is illegal, not just taxed. Any player we add must fit in "
             "our cap space, or we must send salary back, so treat a team at or near the cap as a real "
             "roster-building constraint, not a minor detail.",
+            "When you recommend or compare players to fix a weakness, use your skills: price each one with "
+            "player-valuation's value_player.py (pass the rating the job needs as --key, e.g. --key coverage=88), and measure how much he "
+            "would move the weak unit against the starter he'd replace with roster-impact's unit_impact.py. Cite "
+            "the scripts' numbers.",
             "End your answer with our exact payroll and cap space in $M, as list_teams gives them.",
             "Tool results do not change during a run: call each tool at most once per team and position, "
             "then write your answer.",

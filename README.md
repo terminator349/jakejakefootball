@@ -46,16 +46,18 @@ python data/generate_league.py
 python -m ui.server      # then open http://127.0.0.1:8765
 ```
 
-No API key is needed to play. Asking the front office needs `OPENROUTER_API_KEY`
-in `.env`; the other agents join the game as they are built.
+No API key is needed to play. The GM's briefing and asking the front office
+need `OPENROUTER_API_KEY` in `.env`; the other agents join the game as they are
+built.
 
 1. **Start a game.** Give it a name (and a seed if you want a season you can
    repeat). Each game is its own save in `saves/`, saved as you play. Continue
    or load a game from the same screen.
-2. **Each week** shows the matchup, both records, and front-office notes read
-   from the league: last week's result, our weakest and strongest spots, the
-   trade deadline and the cap. The GM's own briefing replaces the notes in G3.
-   **Ask the front office** puts any question to your GM, who asks Analytics,
+2. **Each week** shows the matchup, both records, and **your GM's briefing**
+   (G3, below): our record and standing, last week's result and standouts, the
+   other results, our biggest weakness and who plays there, the cap, the trade
+   deadline and this week's opponent. Without a key, or while the GM writes it,
+   plain notes read from the league stand in. **Ask the front office** puts any question to your GM, who asks Analytics,
    Cap & Contracts or Draft and answers you with a recommendation, the numbers
    behind it and what each specialist said (1.4, below). Orders and proposed
    moves show what they wait on (G4).
@@ -370,6 +372,111 @@ pytest tests/test_gm.py                           # team and Draft desk checks, 
 Done when: the GM routes a question to the right specialists, passes one's
 findings to the next, and answers the owner with their numbers, in the game
 and on the bench.
+
+## G3: the GM's weekly briefing
+
+At the start of each week the GM writes the owner a short briefing
+(`agents/briefing.py`): a headline, two to four short paragraphs and one line
+on what it's watching.
+
+- **Plain Python owns the numbers.** `facts()` reads everything the briefing may
+  say from the league: the record and standing (from week 2), last week's score,
+  yards, turnovers and our standout lines from the box score, the other results,
+  the biggest weakness with its rank, rating, league average and the starters
+  there, the biggest strength, payroll and cap space, roster size, the trade
+  deadline and this week's opponent.
+- **The GM only writes.** One model call with the facts as JSON and no tools
+  (DeepSeek V4.1 Flash, about 15-25 seconds and a tenth of a cent).
+- **Every number is checked.** `unknown_numbers()` lists any number in the
+  briefing that isn't in the facts (so "won by 7" fails when the facts only
+  have the score). A draft that fails goes back to the GM with those numbers
+  named; after three tries, or with no key, the owner gets the plain notes, and
+  the page says why.
+- **Written once a week.** A briefing that checks out is kept in the save
+  (`briefings` table, schema version 4; older saves are upgraded), so the owner
+  reads the same one every time they open the week. The week screen asks for it
+  when it isn't there yet and shows the notes until it arrives.
+
+```powershell
+pytest tests/test_briefing.py      # facts, the number check, rewrites and storage, no API key needed
+```
+
+Done when: each week opens with a briefing whose every number comes from the
+league data, and the game is still playable without a key.
+
+## 1.5: skills
+
+`skills/` holds the front office's know-how as Agent Skills: each one is a
+folder with a `SKILL.md` (a name, a description and the instructions), helper
+scripts and reference notes. An agent given a skill sees only its name and
+description until a question calls for it. Then it loads the instructions and
+runs the scripts with Agno's skill tools (`get_skill_instructions`,
+`get_skill_reference`, `get_skill_script`). `agents/skills.py` loads them, and
+Agno checks each folder against the format as it does.
+
+```
+skills/
+  salary-cap-rules/   the hard cap, roster limits, the deadline, no dead money
+    scripts/cap_check.py          a signing or a many-for-many trade against every rule
+    references/worked-examples.md
+  player-valuation/   market value from the league's own salaries, surplus, age
+    scripts/value_player.py       market value, verdict, and value for the job (--key)
+  roster-impact/      how ratings feed the simulator's units
+    scripts/unit_impact.py        how much one swap moves each unit, from build_lineup itself
+    references/units.md
+  front-office-memo/  the house style for anything the owner reads
+    scripts/check_memo.py         numbers not in the facts, and style problems
+    references/examples.md        a good briefing, a bad one, a good answer
+```
+
+| Who               | Skills                                                 |
+|-------------------|--------------------------------------------------------|
+| Analytics         | player-valuation, roster-impact                        |
+| Cap & Contracts   | salary-cap-rules                                       |
+| The GM            | front-office-memo, always on (in its instructions)     |
+| The briefing      | front-office-memo, always on, and its checks           |
+
+- **The scripts use the league's own code**, not a copy of the rules:
+  `cap_check.py` uses the League Office's `cap_math` and the rules in
+  `data/league.json`, and `unit_impact.py` builds two lineups with the
+  simulator's `build_lineup`, the same but for one starter. Their numbers are
+  the engine's.
+- **roster-impact is a fourth skill**, beyond the plan's three. Every veteran
+  in this league is paid about fairly for his overall, so value alone can't
+  tell two safeties apart. The difference is in the ratings the job uses: a
+  coverage safety needs coverage. `value_player.py --key coverage=85` prices a
+  player on that rating, and `unit_impact.py` shows how far he'd move the weak
+  unit.
+- **The memo skill is always on** for the GM and the briefing, since everything
+  they write goes to the owner: its "House style", "Answering the owner" and
+  "The weekly briefing" sections are part of their instructions
+  (`skills.section()`). The briefing also checks its measurable rules
+  (`agents/memo.py`): a headline of at most 12 words, two to four paragraphs of
+  at most three sentences each, and no hype words. A draft that breaks them goes
+  back with the problems named. Numbers stay the hard rule: if the style still
+  isn't right after three tries, the owner gets the first draft whose numbers
+  checked.
+- **Analytics can make up to 18 tool calls** (it was 10): loading two skills and
+  running their scripts on a few candidates takes 5-8 calls on top of the
+  League Office's.
+
+Tried live, a safety question went to Analytics: it priced the targets with
+`value_player.py`, measured each against our weaker starter with
+`unit_impact.py`, and the GM's answer cited the result ("+9.00 deep
+coverage"). Cap & Contracts then checked the salary. The question took about
+70 seconds and cost under a cent. A briefing written under the house style
+passed both checks on its first try.
+
+```powershell
+python skills/salary-cap-rules/scripts/cap_check.py trade --payroll 249.48 --roster 48 --out 4.1 2.98 --in 9.87 --week 3
+python skills/player-valuation/scripts/value_player.py --position S --overall 70 --salary 4.1 --age 34 --key coverage=52
+python skills/roster-impact/scripts/unit_impact.py --position S --current coverage=52,tackling=78,speed=81 --candidate coverage=83,tackling=71,speed=80
+pytest tests/test_skills.py        # every skill, script and assignment, no API key needed
+```
+
+Done when: each specialist loads its skills and runs their scripts when a
+question calls for it, and everything written to the owner follows the house
+style.
 
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 
