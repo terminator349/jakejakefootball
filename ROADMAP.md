@@ -182,10 +182,22 @@ buttons and a play-by-play log. Rival games are always simmed with the same
 engine. Key-moment calling is the target; calling every snap comes after it,
 time permitting.
 
-### 1.3 Cap & Contracts agent (W4 - W5)
+### 1.3 Cap & Contracts agent (W4 - W5) - Done
 A specialist agent that reads payroll and contracts and says whether a move fits
 under the cap, and what salary would have to go back to make it fit. In the
 game, it checks every move before the GM brings it to the owner.
+`check_cap_fit` and `validate_cap_compliance` join the League Office's tools
+(still read-only), and `agents/cap_contracts.py` answers with a structured
+`CapReport`, the same DeepSeek V4.1 Flash + parser-model pattern as Analytics.
+The hard cap is $255M per team.
+
+The standalone draft simulator's own $220M cap was retired in the same step:
+`draft/roster_rules.SALARY_CAP` now reads the main league's $255M rule, and
+the Draft GM agent (`draft/agent.py`) carries the same `check_cap_fit`/
+`validate_cap_compliance` tools as Cap & Contracts - `draft/tools.py` binds
+them to the draft's in-memory teams, but both call the same
+`agents.tools.cap_math`, so there is one cap rule and one cap tool
+implementation for the whole project.
 
 ### 1.4 GM team: first agent-to-agent link (W5)
 A General Manager agent leads Analytics and Cap & Contracts as an Agno team,
