@@ -1,7 +1,7 @@
 """Checks for the league's SQLite database. No API key needed.
 
-Each test builds its own scratch database from the seed, so none of them touch
-data/league.db.
+Each test builds its own scratch database from the seed (the scratch_db fixture
+in conftest.py), so none of them touch data/league.db.
 """
 
 import json
@@ -11,14 +11,6 @@ import pytest
 
 from agents import league_db
 from agents.tools import get_roster, list_teams
-
-
-@pytest.fixture
-def scratch_db(tmp_path, monkeypatch):
-    db_file = tmp_path / "league.db"
-    monkeypatch.setattr(league_db, "DB_FILE", db_file)
-    league_db.build()
-    return db_file
 
 
 def test_database_holds_exactly_the_seed(scratch_db):
