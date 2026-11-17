@@ -6,43 +6,46 @@ last week's results, the biggest weakness, the cap and this week's opponent.
 Plain Python owns the numbers. `facts()` reads everything the briefing may say
 from the league; the GM only turns those facts into a few plain paragraphs, and
 `unknown_numbers()` checks that every number it wrote is one of them. A draft
-with a number that isn't in the facts goes back to the GM once, with the numbers
-named; if it still doesn't check out, or there's no API key, the owner gets the
+with a number that isn't in the facts goes back to the GM, with the numbers
+named; if no draft checks out, or there's no API key, the owner gets the
 plain-Python notes instead (`game_loop.overview()["notes"]`).
+
+How it's written comes from the front-office-memo skill (task 1.5): its house
+style and briefing sections are the GM's instructions, and a draft that breaks
+the style's measurable rules (headline length, paragraphs, sentences, hype
+words; `agents/memo.py`) goes back too. Style is a softer rule than numbers: if
+the last try still breaks it, the owner gets the first draft whose numbers check.
 
 A briefing is written once per week and kept in the save (`briefings`), so the
 owner reads the same one every time they open the week.
 """
 
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 
 from agno.agent import Agent
 from pydantic import BaseModel, Field
 
-from agents import game_loop, league_db, season, tools
+from agents import game_loop, league_db, memo, season, skills, tools
 from agents.analytics import specialist_model
 
-# One draft and one rewrite with the bad numbers named. DeepSeek's structured output
+# A draft and up to two rewrites with the problems named. DeepSeek's structured output
 # sometimes runs on into whitespace; a run that returns no Briefing counts as a try.
 ATTEMPTS = 3
 
 INSTRUCTIONS = [
     "You are the general manager of the Harbor City Herons (team id HAR), writing the owner's briefing "
-    "at the start of the week. The owner is busy: be short, plain and specific, and don't hype.",
+    "at the start of the week.",
     "You get the week's facts as JSON. Use only those facts. Every number you write - scores, records, "
     "ranks, ratings, yards, dollars, weeks - must appear in the facts exactly as given. Don't work out new "
     "numbers (no differences, totals, averages or percentages) and don't round them differently. If "
     "something isn't in the facts, leave it out.",
-    "Cover, in this order: our record and standing; last week's result with one or two standout players "
-    "from our game; the other results around the league; our biggest weakness, with its rank and its rating "
-    "against the league average, and who plays there; the cap space and the trade deadline; and this week's "
-    "opponent. In week 1 there is no last week: say the season starts, and skip those parts.",
-    "Say 'we' and 'our' only for the Herons. Name other teams by city.",
-    "`headline` is one line of at most 12 words. `paragraphs` are two to four short paragraphs of one to "
-    "three sentences each. `watch` is one sentence on what you're watching this week.",
+    # The front-office-memo skill's rules, always on (task 1.5).
+    "The house style:\n" + skills.section("front-office-memo", "House style"),
+    "The weekly briefing:\n" + skills.section("front-office-memo", "The weekly briefing"),
+    "`headline` is the headline, `paragraphs` the two to four paragraphs, and `watch` the one sentence on "
+    "what you're watching.",
 ]
 
 
@@ -150,23 +153,23 @@ def facts(db_file: Path | None = None) -> dict:
     return out
 
 
-# ---- Checking the numbers -------------------------------------------------------------
-
-NUMBER = re.compile(r"\d+(?:\.\d+)?")
-
-
-def _numbers(text: str) -> list[str]:
-    """Every number in the text, in order, written one way whatever the commas or
-    trailing zeros: "1,200" and "1200" match, as do "5.50" and "5.5"."""
-    return [n.rstrip("0").rstrip(".") if "." in n else n.lstrip("0") or "0"
-            for n in NUMBER.findall(text.replace(",", ""))]
-
+# ---- Checking a draft -----------------------------------------------------------------
 
 def unknown_numbers(briefing: Briefing, known: dict) -> list[str]:
     """Numbers in the briefing that aren't in the facts, in the order they first appear."""
-    allowed = set(_numbers(json.dumps(known)))
-    text = " ".join([briefing.headline, *briefing.paragraphs, briefing.watch])
-    return list(dict.fromkeys(n for n in _numbers(text) if n not in allowed))
+    return memo.unknown_numbers(" ".join([briefing.headline, *briefing.paragraphs, briefing.watch]), known)
+
+
+def style_problems(briefing: Briefing) -> list[str]:
+    """Where the briefing breaks the house style's measurable rules. The watch line is
+    held to one sentence, without hype."""
+    problems = [p for p in memo.style_problems(briefing.headline, briefing.paragraphs)
+                if not p.startswith("hype")]
+    if len(memo.sentences(briefing.watch)) > 1:
+        problems.append("the watch line has more than one sentence")
+    if hype := memo.hype_words(" ".join([briefing.headline, *briefing.paragraphs, briefing.watch])):
+        problems.append(f"hype words: {', '.join(hype)}")
+    return problems
 
 
 # ---- Writing it ---------------------------------------------------------------------
@@ -178,11 +181,13 @@ def build_briefing_agent(debug: bool = False) -> Agent:
 
 
 async def write(known: dict, agent: Agent | None = None) -> tuple[Briefing | None, list[dict]]:
-    """The GM's briefing from the facts, or None if no draft checks out. Also returns each
-    attempt's usage and any numbers it got wrong, for the record."""
+    """The GM's briefing from the facts, or None if no draft's numbers check out. Also
+    returns each attempt's usage and anything it got wrong, for the record."""
     agent = agent or build_briefing_agent()
-    prompt = f"This week's facts:\n{json.dumps(known, indent=2)}"
+    facts_text = f"This week's facts:\n{json.dumps(known, indent=2)}"
+    prompt = facts_text
     attempts = []
+    fallback = None  # the first draft whose numbers check, if the style never does
     for _ in range(ATTEMPTS):
         run = await agent.arun(prompt)
         metrics = run.metrics
@@ -193,12 +198,19 @@ async def write(known: dict, agent: Agent | None = None) -> tuple[Briefing | Non
             attempt["problem"] = "no briefing came back"
             continue
         wrong = unknown_numbers(run.content, known)
-        if not wrong:
+        if wrong:
+            attempt["problem"] = f"numbers not in the facts: {', '.join(wrong)}"
+            prompt = (f"{facts_text}\n\nYour last draft used numbers that are not in the facts: "
+                      f"{', '.join(wrong)}. Write it again using only numbers that appear in the facts.")
+            continue
+        style = style_problems(run.content)
+        if not style:
             return run.content, attempts
-        attempt["problem"] = f"numbers not in the facts: {', '.join(wrong)}"
-        prompt = (f"This week's facts:\n{json.dumps(known, indent=2)}\n\nYour last draft used numbers that are "
-                  f"not in the facts: {', '.join(wrong)}. Write it again using only numbers that appear in the facts.")
-    return None, attempts
+        attempt["problem"] = f"style: {'; '.join(style)}"
+        fallback = fallback or run.content
+        prompt = (f"{facts_text}\n\nYour last draft's numbers were right, but it broke the house style: "
+                  f"{'; '.join(style)}. Write it again, fixing that and keeping every number as the facts give it.")
+    return fallback, attempts
 
 
 # ---- Keeping it in the save -------------------------------------------------------------

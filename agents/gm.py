@@ -24,7 +24,7 @@ from agno.agent import Agent
 from agno.team import Team, TeamMode
 from pydantic import BaseModel, Field
 
-from agents import analytics, cap_contracts, draft_desk
+from agents import analytics, cap_contracts, draft_desk, skills
 from agents.analytics import specialist_model
 from agents.tools import list_teams
 
@@ -106,6 +106,9 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
             "Then answer the owner directly in plain words, say what you recommend, and list the specialists' "
             "key numbers as evidence. Say 'we' and 'our' only for the Herons; name every other team, and keep "
             "each team's players and numbers with that team.",
+            # The front-office-memo skill (task 1.5), always on: the GM only ever writes to the owner.
+            "The house style for anything the owner reads:\n" + skills.section("front-office-memo", "House style"),
+            "How to answer the owner:\n" + skills.section("front-office-memo", "Answering the owner"),
         ],
         tool_call_limit=DELEGATION_LIMIT,
         # Later specialists see what earlier ones said, so a cap check can use the

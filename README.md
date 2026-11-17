@@ -404,6 +404,80 @@ pytest tests/test_briefing.py      # facts, the number check, rewrites and stora
 Done when: each week opens with a briefing whose every number comes from the
 league data, and the game is still playable without a key.
 
+## 1.5: skills
+
+`skills/` holds the front office's know-how as Agent Skills: each one is a
+folder with a `SKILL.md` (a name, a description and the instructions), helper
+scripts and reference notes. An agent given a skill sees only its name and
+description until a question calls for it. Then it loads the instructions and
+runs the scripts with Agno's skill tools (`get_skill_instructions`,
+`get_skill_reference`, `get_skill_script`). `agents/skills.py` loads them, and
+Agno checks each folder against the format as it does.
+
+```
+skills/
+  salary-cap-rules/   the hard cap, roster limits, the deadline, no dead money
+    scripts/cap_check.py          a signing or a many-for-many trade against every rule
+    references/worked-examples.md
+  player-valuation/   market value from the league's own salaries, surplus, age
+    scripts/value_player.py       market value, verdict, and value for the job (--key)
+  roster-impact/      how ratings feed the simulator's units
+    scripts/unit_impact.py        how much one swap moves each unit, from build_lineup itself
+    references/units.md
+  front-office-memo/  the house style for anything the owner reads
+    scripts/check_memo.py         numbers not in the facts, and style problems
+    references/examples.md        a good briefing, a bad one, a good answer
+```
+
+| Who               | Skills                                                 |
+|-------------------|--------------------------------------------------------|
+| Analytics         | player-valuation, roster-impact                        |
+| Cap & Contracts   | salary-cap-rules                                       |
+| The GM            | front-office-memo, always on (in its instructions)     |
+| The briefing      | front-office-memo, always on, and its checks           |
+
+- **The scripts use the league's own code**, not a copy of the rules:
+  `cap_check.py` uses the League Office's `cap_math` and the rules in
+  `data/league.json`, and `unit_impact.py` builds two lineups with the
+  simulator's `build_lineup`, the same but for one starter. Their numbers are
+  the engine's.
+- **roster-impact is a fourth skill**, beyond the plan's three. Every veteran
+  in this league is paid about fairly for his overall, so value alone can't
+  tell two safeties apart. The difference is in the ratings the job uses: a
+  coverage safety needs coverage. `value_player.py --key coverage=85` prices a
+  player on that rating, and `unit_impact.py` shows how far he'd move the weak
+  unit.
+- **The memo skill is always on** for the GM and the briefing, since everything
+  they write goes to the owner: its "House style", "Answering the owner" and
+  "The weekly briefing" sections are part of their instructions
+  (`skills.section()`). The briefing also checks its measurable rules
+  (`agents/memo.py`): a headline of at most 12 words, two to four paragraphs of
+  at most three sentences each, and no hype words. A draft that breaks them goes
+  back with the problems named. Numbers stay the hard rule: if the style still
+  isn't right after three tries, the owner gets the first draft whose numbers
+  checked.
+- **Analytics can make up to 18 tool calls** (it was 10): loading two skills and
+  running their scripts on a few candidates takes 5-8 calls on top of the
+  League Office's.
+
+Tried live, a safety question went to Analytics: it priced the targets with
+`value_player.py`, measured each against our weaker starter with
+`unit_impact.py`, and the GM's answer cited the result ("+9.00 deep
+coverage"). Cap & Contracts then checked the salary. The question took about
+70 seconds and cost under a cent. A briefing written under the house style
+passed both checks on its first try.
+
+```powershell
+python skills/salary-cap-rules/scripts/cap_check.py trade --payroll 249.48 --roster 48 --out 4.1 2.98 --in 9.87 --week 3
+python skills/player-valuation/scripts/value_player.py --position S --overall 70 --salary 4.1 --age 34 --key coverage=52
+python skills/roster-impact/scripts/unit_impact.py --position S --current coverage=52,tackling=78,speed=81 --candidate coverage=83,tackling=71,speed=80
+pytest tests/test_skills.py        # every skill, script and assignment, no API key needed
+```
+
+Done when: each specialist loads its skills and runs their scripts when a
+question calls for it, and everything written to the owner follows the house
+style.
+
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 
 A separate, self-contained draft simulator - it doesn't read or write

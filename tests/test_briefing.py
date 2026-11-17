@@ -76,10 +76,10 @@ class StandIn:
 
 
 def test_a_bad_number_goes_back_to_the_gm():
-    gm = StandIn(draft("We lost by 7."), draft("We lost 17-24."))
+    gm = StandIn(draft("We lost by 7.", "We are 2-1."), draft("We lost 17-24.", "We are 2-1."))
     known = {"last_week": {"score": "17-24"}, "record": "2-1"}
     written, attempts = asyncio.run(briefing.write(known, gm))
-    assert written.paragraphs == ["We lost 17-24."]
+    assert written.paragraphs == ["We lost 17-24.", "We are 2-1."]
     assert "not in the facts: 7" in gm.prompts[1] and attempts[0]["problem"].endswith(": 7")
 
 
@@ -91,7 +91,7 @@ def test_no_briefing_when_nothing_checks_out():
 
 
 def test_written_once_a_week_and_kept(scratch_db):
-    gm = StandIn(draft("We are 0-0 as the season starts.", headline="Week 1"))
+    gm = StandIn(draft("We are 0-0 as the season starts.", "Safety coverage ranks last.", headline="Week 1"))
     first = asyncio.run(briefing.this_week(gm))
     assert (first["week"], first["headline"]) == (1, "Week 1") and first["cost"] == pytest.approx(0.0001)
     assert asyncio.run(briefing.this_week(StandIn())) == first  # the GM isn't asked again
@@ -103,6 +103,40 @@ def test_a_briefing_that_fails_isnt_kept(scratch_db):
     with pytest.raises(ValueError, match="didn't check out"):
         asyncio.run(briefing.this_week(gm))
     assert briefing.stored(1) is None
+
+
+# ---- The house style (front-office-memo, task 1.5) ---------------------------------------
+
+def test_the_instructions_come_from_the_memo_skill():
+    text = " ".join(briefing.INSTRUCTIONS)
+    assert "Bottom line first" in text and "at most 12 words" in text and "Watching" in text
+
+
+def test_style_problems_are_named():
+    assert briefing.style_problems(draft("We are 2-1.", "Safety coverage ranks last.")) == []
+    bad = draft("We are 2-1. We won. We scored. We celebrated.", headline="A " * 13,
+                watch="A huge week. Then another.")
+    assert briefing.style_problems(bad) == ["the headline has 13 words; at most 12",
+                                            "1 paragraphs; write 2 to 4",
+                                            "paragraph 1 has 4 sentences; at most 3",
+                                            "the watch line has more than one sentence", "hype words: huge"]
+
+
+def test_a_style_problem_goes_back_to_the_gm():
+    gm = StandIn(draft("We are 2-1 after a massive win."), draft("We are 2-1.", "Safety coverage ranks last."))
+    written, attempts = asyncio.run(briefing.write({"record": "2-1"}, gm))
+    assert written.paragraphs == ["We are 2-1.", "Safety coverage ranks last."]
+    assert "broke the house style" in gm.prompts[1] and "hype words: massive" in gm.prompts[1]
+    assert attempts[0]["problem"].startswith("style:")
+
+
+def test_style_alone_never_costs_the_owner_a_briefing():
+    """Numbers are the hard rule: if the style never comes right, the first draft whose
+    numbers check goes out, not the notes."""
+    first, later = draft("We are 2-1. Massive."), draft("We are 2-1, huge.")
+    gm = StandIn(draft("We lost by 7.", "We are 2-1."), first, later)
+    written, attempts = asyncio.run(briefing.write({"record": "2-1"}, gm))
+    assert written is first and len(attempts) == briefing.ATTEMPTS
 
 
 def test_g8_saves_get_the_briefings_table(tmp_path):
