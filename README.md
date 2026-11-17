@@ -17,13 +17,15 @@ space and a weak secondary.
 agents/     agent + team definitions, and the plain-Python tools they call
 servers/    MCP servers (League Office, Trade Desk, Simulator) - from 1.1
 skills/     markdown know-how + helper scripts - from 1.5
-data/       league.json (generated season start) and league.db (SQLite, the default league)
+data/       league.json (generated season start), league.db (SQLite, the default league), draft_results.json
 saves/      one SQLite database per saved game (git-ignored) - from G1
+draft/      standalone draft simulator - players, rules, valuation, engine, CPU agent
 tests/      checks that run without an API key
 ui/         a local web page for trying out everything built so far
 private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
-run.py      entry point
+run.py      entry point (Analytics agent)
+draft_day.py entry point (draft simulator)
 ```
 
 ## Setup (0.1)
@@ -205,3 +207,30 @@ pytest tests/test_simulator.py
 
 Still to come in 3.1: "Watch it" (drive by drive) in W5, and smarter late-game
 calls (spikes, the hurry-up when far behind) as part of it.
+
+## Draft Day: a 6-team, 53-round snake draft (standalone)
+
+A separate, self-contained draft simulator - it doesn't read or write
+`data/league.json`/`league.db` and isn't used by the Analytics agent above
+(its own roster size and $220M cap are independent numbers, not the main
+league's 48-player/$255M rules). It builds a fresh 53-man roster for each of
+6 teams by drafting from a pool of ~385 real NFL players, rated with their
+actual Madden NFL 26 overall rating (pulled from playerratingspro.com in
+November 2026 - see `draft/players.py`). Long snapper is the one exception:
+Madden doesn't publish LS ratings, so those eight are a rough estimate.
+
+```powershell
+python draft_day.py                 # choose your team interactively
+python draft_day.py --team HAR       # control Harbor City directly
+python draft_day.py --watch          # just watch all 6 CPU GMs draft
+python draft_day.py --no-llm         # CPU picks use heuristic scoring only, no API calls
+pytest tests/test_draft.py           # engine checks, no API key needed
+```
+
+- **Random order, snake format**: a fresh random draft order each run; the order reverses every round.
+- **Roster shape**: `draft/roster_rules.ROSTER_TEMPLATE` sets exactly how many of each position fill the 53 spots - a position closes the moment a team hits its target, which is what "positions of need" means here.
+- **Value and need**: `draft/valuation.py` scores every available player by estimated market value ($M, shown on the board) tilted toward whichever open position the team needs most urgently.
+- **Salary cap**: drafted players get a rookie-scale salary from `draft/roster_rules.rookie_salary` (higher picks cost more, decaying by pick number); a $220M hard cap applies, and no team can draft a player it can't afford.
+- **CPU GMs**: the 5 teams you don't control are each drafted by the same kind of OpenRouter/DeepSeek agent as Analytics (`draft/agent.py`), given a shortlist of the best value/need players and a randomly assigned front-office philosophy (best-player-available, need-first, trenches-first, or premium-positions-first) so the six teams draft differently. Pass `--no-llm` to skip the API and use the underlying heuristic directly instead.
+- **You draft too**: on your team's turn, `board`, `board <POS>`, `needs`, `best`, and `pick <id>` from the command line.
+- Results are written to `data/draft_results.json` (draft order, every team's final roster and payroll, and the full pick-by-pick log).
