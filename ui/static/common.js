@@ -79,6 +79,32 @@ function boxScoreHtml(b, ourTeam) {
     <div class="pbp">${pbp}</div>`;
 }
 
+// ---- The scoreboard and the field (Watch it and Call it) -------------------
+// The home team drives left to right; each end zone is 10 of the 120 yards drawn.
+function boardHtml(away, home, awayScore, homeScore, poss, status, sub) {
+  return `<div class="board">
+    <div class="side ${poss === away ? "poss" : ""}"><span class="pts">${awayScore}</span><span class="abbr">${away}</span></div>
+    <div class="mid"><b>${status}</b><span>${sub}</span></div>
+    <div class="side home ${poss === home ? "poss" : ""}"><span class="abbr">${home}</span><span class="pts">${homeScore}</span></div>
+  </div>`;
+}
+function fieldHtml(home, away, ball = null) {
+  // ball: { poss, yardline, distance, driveTeam, driveStart } or null when the game is over
+  const abs = (team, y) => team === home ? y : 100 - y;
+  const x = yard => `${(10 + yard) / 120 * 100}%`;
+  const other = t => t === home ? away : home;
+  let field = `<div class="ez" style="left:0">${esc(home)}</div><div class="ez" style="right:0">${esc(away)}</div>`;
+  for (let yd = 10; yd <= 90; yd += 10) field += `<div class="yl" style="left:${x(yd)}"><span>${yd <= 50 ? yd : 100 - yd}</span></div>`;
+  if (ball) {
+    const at = abs(ball.poss, ball.yardline), from = abs(ball.driveTeam, ball.driveStart);
+    field += `<div class="run" style="left:${x(Math.min(at, from))};width:${Math.abs(at - from) / 120 * 100}%"></div>`;
+    if (ball.distance < 100 - ball.yardline) field += `<div class="togo" style="left:${x(abs(ball.poss, ball.yardline + ball.distance))}"></div>`;
+    field += `<div class="ball" style="left:${x(at)}" title="${ball.poss} ball"></div>`;
+  }
+  const label = ball ? `Ball at ${spotOf(ball.poss, other(ball.poss), ball.yardline)}` : "Game over";
+  return `<div class="field" role="img" aria-label="${label}">${field}</div>`;
+}
+
 // ---- Watch it: drive-by-drive playback of a simulated game ----------------
 // new WatchView(element, boxScore, { ourTeam, onEnd }) renders into the element and
 // owns its buttons. onEnd runs once, the first time the last play is shown.
@@ -111,8 +137,6 @@ class WatchView {
   render() {
     const { b, idx } = this, g = b.game, h = g.home_team_id, a = g.away_team_id, P = b.plays, n = P.length;
     const other = t => t === h ? a : h;
-    const abs = (team, y) => team === h ? y : 100 - y;           // the home team drives left to right
-    const x = yard => `${(10 + yard) / 120 * 100}%`;              // 10-yard end zones at each side
     const done = idx >= n, last = idx ? P[idx - 1] : null, next = done ? null : P[idx];
     const score = last ? [last.away_score, last.home_score] : [0, 0];
     const drive = next && b.drives.find(d => d.first_play <= next.n && next.n <= d.last_play);
@@ -124,25 +148,14 @@ class WatchView {
       status = `${next.quarter === 5 ? "OT" : "Q" + next.quarter} ${clockText(next.clock)}`;
       sub = `${poss} ball · ${ORD[next.down]} & ${togoText(next)} at ${spotOf(poss, other(poss), next.yardline)}`;
     }
-    let field = `<div class="ez" style="left:0">${esc(h)}</div><div class="ez" style="right:0">${esc(a)}</div>`;
-    for (let yd = 10; yd <= 90; yd += 10) field += `<div class="yl" style="left:${x(yd)}"><span>${yd <= 50 ? yd : 100 - yd}</span></div>`;
-    if (next) {
-      const ball = abs(poss, next.yardline), from = abs(drive.team, drive.start_yardline);
-      field += `<div class="run" style="left:${x(Math.min(ball, from))};width:${Math.abs(ball - from) / 120 * 100}%"></div>`;
-      if (next.distance < 100 - next.yardline) field += `<div class="togo" style="left:${x(abs(poss, next.yardline + next.distance))}"></div>`;
-      field += `<div class="ball" style="left:${x(ball)}" title="${poss} ball"></div>`;
-    }
+    const ball = next && { poss, yardline: next.yardline, distance: next.distance, driveTeam: drive.team, driveStart: drive.start_yardline };
     const lastText = last ? `<span class="sit">${last.offense_team_id} · ${last.quarter === 5 ? "OT" : "Q" + last.quarter} ${clockText(last.clock)}</span> ${esc(last.text)}`
       : `<span class="sit">Kickoff.</span> ${esc(poss)} receives.`;
     const thisDrive = drive ? P.slice(drive.first_play - 1, idx) : [];
     const finished = b.drives.filter(d => d.last_play <= idx);
     this.el.innerHTML = `
-      <div class="board">
-        <div class="side ${poss === a ? "poss" : ""}"><span class="pts">${score[0]}</span><span class="abbr">${a}</span></div>
-        <div class="mid"><b>${status}</b><span>${sub}</span></div>
-        <div class="side home ${poss === h ? "poss" : ""}"><span class="abbr">${h}</span><span class="pts">${score[1]}</span></div>
-      </div>
-      <div class="field" role="img" aria-label="${next ? `Ball at ${spotOf(poss, other(poss), next.yardline)}` : "Game over"}">${field}</div>
+      ${boardHtml(a, h, score[0], score[1], poss, status, sub)}
+      ${fieldHtml(h, a, ball)}
       <div class="lastplay ${last ? playClassOf(last) : ""}">${lastText}</div>
       <div class="row">
         <button class="btn" data-w="play" ${done ? "disabled" : ""}>Next play</button>

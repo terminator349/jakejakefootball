@@ -12,7 +12,7 @@ briefing replaces them in task G3.
 
 import json
 
-from agents import season, tools
+from agents import live, season, tools
 
 POSITION_NAMES = {"QB": "quarterback", "RB": "running back", "WR": "receiver", "TE": "tight end",
                   "OL": "offensive line", "DL": "defensive line", "LB": "linebacker", "CB": "cornerback",
@@ -113,6 +113,7 @@ def overview() -> dict:
                  "cap_space": team["cap_space"], "salary_cap": rules["salary_cap"], "roster_size": len(roster),
                  "roster_max": rules["roster_max"]},
         "this_week": this_week, "last_week": last, "notes": notes,
+        "live": None if over else live.current(),  # our game, if the owner is calling it (G8)
     }
 
 
@@ -120,6 +121,8 @@ def play_week() -> dict:
     """Play the rest of this week's games (ours included) and say which one is ours.
     The scores are saved at once, so watching our game afterwards is a replay."""
     our = json.loads(tools.list_teams())["our_team"]
+    if live.current():
+        raise ValueError("Our game is being called. Finish it, or sim the rest of it, first.")
     played = season.play_week()
     ours = _our_game(season.games(season.current_week()), our)
     return {"played": played, "our_game_id": ours["id"] if ours else None}

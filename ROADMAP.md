@@ -72,10 +72,10 @@ GM briefing
 | W1   | Oct 26 - Nov 1 | 0.1, 0.2 (done)                     |
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
 | W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                 |
-| W4   | Nov 16 - 22    | 3.1 (done), G2 (done), 1.3, G7      |
+| W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7         |
 | W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3, G7               |
-| W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8                        |
-| W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8                    |
+| W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8 (done early)           |
+| W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8 (done early)       |
 | W8   | Dec 14 - 20    | 2.2, G5                             |
 | W9   | Dec 21 - 27    | 2.3                                 |
 | W10  | Dec 28 - Jan 3 | 3.2, G6                             |
@@ -172,7 +172,7 @@ if the roster stays at or under the maximum and the payroll under the hard cap,
 on a rookie contract set by draft position. Each pick goes into the move log
 (G1), and the save keeps the prospect pool and the draft order.
 
-### G8 Call the plays (W6 - W7, added Nov 12)
+### G8 Call the plays (W6 - W7, added Nov 12) - Done
 Before each Herons game the owner chooses how to play it: **Sim it**, **Watch
 it** drive by drive, or **Call it**. Calling comes in two levels: *key moments*
 (the game sims until a 4th down, the red zone, the two-minute drill or
@@ -181,6 +181,13 @@ the score, clock, down and distance, the ball on a field strip, the play-call
 buttons and a play-by-play log. Rival games are always simmed with the same
 engine. Key-moment calling is the target; calling every snap comes after it,
 time permitting.
+
+Done Nov 17, both levels, ahead of W6. A game being called is saved as its
+seed plus the owner's calls and rebuilt by replaying them, so it survives Save &
+quit and a restart. Offensive calls show how our players match up for each
+play; defensive calls show what each one stops and the opponent's best
+matchups. The owner can switch levels or sim the rest at any time. Coaching's
+suggested call (2.1) is still to come.
 
 ### 1.3 Cap & Contracts agent (W4 - W5) - Done
 A specialist agent that reads payroll and contracts and says whether a move fits

@@ -29,7 +29,7 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import game_loop, league_db, rules, saves, season, tools
+from agents import game_loop, league_db, live, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -260,6 +260,40 @@ async def hub_schedule(request, body):
     return {"games": game_loop.our_schedule()}
 
 
+async def live_start(request, body):
+    _needs_a_save()
+    return live.start(body.get("level", "key"))
+
+
+async def live_state(request, body):
+    _needs_a_save()
+    return live.state(int(request.query_params.get("id", "0")))
+
+
+async def live_call(request, body):
+    _needs_a_save()
+    return live.call(int(body.get("game_id", 0)), body.get("call", ""), body.get("level"))
+
+
+async def live_level(request, body):
+    _needs_a_save()
+    return live.set_level(int(body.get("game_id", 0)), body.get("level", ""))
+
+
+async def live_sim(request, body):
+    _needs_a_save()
+    return live.sim_rest(int(body.get("game_id", 0)))
+
+
+class FreshStaticFiles(StaticFiles):
+    """ui/static/, checked with the server on every load, so an updated page never runs old code."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 async def game_page(request):
     return FileResponse(UI_DIR / "game.html")
 
@@ -271,11 +305,16 @@ async def bench_page(request):
 app = Starlette(routes=[
     Route("/", game_page),
     Route("/bench", bench_page),
-    Mount("/static", StaticFiles(directory=UI_DIR / "static"), name="static"),
+    Mount("/static", FreshStaticFiles(directory=UI_DIR / "static"), name="static"),
     Route("/api/hub", api(hub)),
     Route("/api/hub/play", api(hub_play), methods=["POST"]),
     Route("/api/hub/advance", api(hub_advance), methods=["POST"]),
     Route("/api/hub/schedule", api(hub_schedule)),
+    Route("/api/live", api(live_state)),
+    Route("/api/live/start", api(live_start), methods=["POST"]),
+    Route("/api/live/call", api(live_call), methods=["POST"]),
+    Route("/api/live/level", api(live_level), methods=["POST"]),
+    Route("/api/live/sim", api(live_sim), methods=["POST"]),
     Route("/api/status", api(status)),
     Route("/api/saves", api(list_saves)),
     Route("/api/saves/new", api(new_game), methods=["POST"]),

@@ -52,6 +52,21 @@ dialog .card { border: 0; }
 dialog .close { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 16px;
   background: var(--panel); border-bottom: 1px solid var(--line); z-index: 2; }
 .link { background: none; border: 0; color: var(--accent); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+.situation { color: var(--muted); font-size: 13px; margin: 2px 0 6px; }
+.situation b { color: var(--ink); }
+.callgroup { font-size: 12px; color: var(--muted); margin: 12px 0 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.callgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.callbtn { display: flex; flex-direction: column; align-items: stretch; gap: 3px; text-align: left; padding: 8px 10px; }
+.callbtn .top { display: flex; align-items: center; gap: 6px; }
+.callbtn .lab { font-weight: 600; }
+.callbtn kbd { font: 10px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: auto; }
+.callbtn .hint { font-size: 11px; color: var(--muted); }
+.callbtn .edge { font: 600 11px var(--mono); margin-right: 4px; }
+.edge.good { color: var(--good); } .edge.bad { color: var(--bad); } .edge.even { color: var(--muted); }
+.since { font-size: 13px; max-height: 240px; overflow: auto; }
+.since div { padding: 3px 0; border-bottom: 1px solid var(--line); }
+.since .td { color: var(--good); } .since .to { color: var(--bad); }
+.threats { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
 @media (max-width: 760px) { .versus .team b { font-size: 20px; } .title { margin: 16px auto; } }
 </style>
 </head>
@@ -181,6 +196,8 @@ const SOON = [
 async function weekView() {
   const el = $("#tab-week");
   if (gameDay) return;                       // the game-day view is on screen
+  if (liveFinal) return liveView(liveFinal);  // a called game that just ended
+  if (H.live) return liveView(await call(`/api/live?id=${H.live.game_id}`));
   if (H.season_over) return seasonOverView(el);
   const season = await call("/api/season");
   if (H.week_played) return resultsView(el, season);
@@ -192,9 +209,11 @@ async function weekView() {
       <div class="row">
         <button class="btn primary" data-act="sim">Sim it</button>
         <button class="btn" data-act="watch">Watch it</button>
-        <button class="btn" disabled title="Arrives with G8">Call it</button>
+        <button class="btn" data-act="call">Call it</button>
+        <select id="call-level" title="How much of the game you call">
+          <option value="key">at key moments</option><option value="every">every snap</option></select>
       </div>
-      <p class="note"><b>Sim it</b> plays the week and goes to the results. <b>Watch it</b> plays the week, then lets you follow our game drive by drive before you see any other score. Calling the plays yourself arrives with G8.</p>
+      <p class="note"><b>Sim it</b> plays the week and goes to the results. <b>Watch it</b> plays the week, then lets you follow our game drive by drive before you see any other score. <b>Call it</b> puts you on the sideline: the game sims until a key moment (a 4th down, the red zone, the two-minute drill, overtime) and hands you the call, or you call every snap.</p>
     </div>
     <div class="card"><h2>Front office notes <span class="sub">from the league data</span></h2>
       <ul class="notes">${H.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>
@@ -256,6 +275,94 @@ async function playWeek(watch) {
     } });
   } catch (e) { fail(e); btns.forEach(b => b.disabled = false); }
 }
+
+// ---- Call it (G8): the owner calls the plays ----------------------------------------
+let live = null, liveFinal = null, liveBusy = false;
+const DRIVE_ENDS = ["touchdown", "field_goal", "field_goal_missed", "punt", "interception", "fumble", "turnover_on_downs", "safety"];
+const halfOf = q => q <= 2 ? 1 : q <= 4 ? 2 : 3;
+const signed = e => { const r = Math.round(e); return r > 0 ? `+${r}` : r < 0 ? `${r}` : "even"; };
+const edgeHtml = e => `<span class="edge ${e >= 2 ? "good" : e <= -2 ? "bad" : "even"}" title="Our players against theirs for this play, in rating points">${signed(e)}</span>`;
+const momentOf = s => s.quarter === 5 ? "overtime" : s.down === 4 && s.side === "offense" ? "4th down"
+  : s.yardline >= 80 ? "red zone" : s.clock <= 120 && [2, 4].includes(s.quarter) ? "two-minute drill" : "";
+
+function liveView(v) {
+  live = v;
+  if (v.over) { liveFinal = v; H.live = null; }
+  const el = $("#tab-week"), h = v.home, a = v.away, s = v.situation, P = v.plays, last = P[P.length - 1];
+  let status, sub, ball = null, panel;
+  if (v.over) {
+    status = last?.quarter === 5 ? "Final (OT)" : "Final";
+    const ours = v.score[v.team], theirs = v.score[v.team === h ? a : h];
+    sub = ours > theirs ? "You won" : ours < theirs ? "You lost" : "A tie";
+    panel = `<p>${sub} ${ours}-${theirs}. The rest of the week has been played.</p>
+      <div class="row"><button class="btn primary" data-act="results">See the week's results</button></div>`;
+  } else {
+    status = `${s.quarter === 5 ? "OT" : "Q" + s.quarter} ${clockText(s.clock)}`;
+    sub = `${s.offense} ball · ${ORD[s.down]} & ${togoText(s)} at ${spotOf(s.offense, s.defense, s.yardline)}`;
+    const sameDrive = last && last.offense === s.offense && !DRIVE_ENDS.includes(last.result) && halfOf(last.quarter) === halfOf(s.quarter);
+    const drive = v.drives[v.drives.length - 1];
+    ball = { poss: s.offense, yardline: s.yardline, distance: s.distance,
+             driveTeam: s.offense, driveStart: sameDrive ? drive.start_yardline : s.yardline };
+    panel = callPanel(v);
+  }
+  const since = P.slice(v.first_new);
+  const sinceHtml = since.length ? `<h3>${v.first_new === 0 ? "So far" : "Since your last call"} <span class="sub">${since.length} play${since.length === 1 ? "" : "s"}</span></h3>
+    <div class="since">${since.map(p => `<div class="${playClassOf(p)}"><span class="sit">${p.offense} · ${p.quarter === 5 ? "OT" : "Q" + p.quarter} ${clockText(p.clock)} · ${ORD[p.down]} & ${togoText(p)}</span> ${esc(p.text)}</div>`).join("")}</div>` : "";
+  const timeouts = s ? `Timeouts: ${a} ${s.timeouts[a]}, ${h} ${s.timeouts[h]} · clock ${s.clock_running ? "<b>running</b>" : "stopped"}` : "";
+  el.innerHTML = `<div class="card">
+    <h2>Game day: you call it <span class="sub">week ${v.week} · ${a} at ${h}</span></h2>
+    ${boardHtml(a, h, v.score[a], v.score[h], s?.offense, status, sub)}
+    ${fieldHtml(h, a, ball)}
+    <div class="situation">${timeouts}</div>
+    ${last ? `<div class="lastplay ${playClassOf(last)}"><span class="sit">${last.offense} · ${last.quarter === 5 ? "OT" : "Q" + last.quarter} ${clockText(last.clock)}</span> ${esc(last.text)}</div>` : ""}
+    ${panel}
+    ${v.over ? "" : `<div class="row" style="margin-top:14px">
+      <label class="note">Calling <select id="live-level"><option value="key" ${v.level === "key" ? "selected" : ""}>at key moments</option>
+        <option value="every" ${v.level === "every" ? "selected" : ""}>every snap</option></select></label>
+      <button class="btn" data-act="live-sim">Sim the rest of the game</button></div>`}
+    <div class="grid">
+      <div>${sinceHtml}</div>
+      <div><h3>Drives <span class="sub">${v.drives.length}</span></h3>
+        <div class="scroll" style="max-height:260px">${driveTable({ game: { home_team_id: h, away_team_id: a } }, v.drives, v.team)}</div></div>
+    </div></div>`;
+}
+function callPanel(v) {
+  const s = v.situation, moment = momentOf({ ...s, side: v.side });
+  let n = 0;
+  const btn = o => {
+    n += 1;
+    const hint = o.edge !== undefined ? `<span class="hint">${edgeHtml(o.edge)}matchup</span>`
+      : o.stops ? `<span class="hint">${o.stops.length ? "stops " + esc(o.stops.join(", ")) : "plays it straight"}${o.weak_against.length ? "; weak to " + esc(o.weak_against.join(", ")) : ""}</span>` : "";
+    return `<button class="btn callbtn" data-call="${o.call}"><span class="top"><span class="lab">${esc(o.label)}</span>${n <= 9 ? `<kbd>${n}</kbd>` : ""}</span>
+      ${hint}${o.note ? `<span class="hint">${esc(o.note)}</span>` : ""}</button>`;
+  };
+  if (v.side === "offense") {
+    const group = (name, g) => `<div class="callgroup">${name}</div><div class="callgrid">${v.options.filter(o => o.group === g).map(btn).join("")}</div>`;
+    return `<h3>Your call: offense <span class="sub">${moment}</span></h3>
+      ${group("Run", "run")}${group("Pass", "pass")}${group("Special", "special")}
+      <p class="note">Each play's number is how our players match up against theirs for it. Their defensive call, which you don't see, matters too.</p>`;
+  }
+  const threats = v.threats.slice(0, 3).map(t => `${esc(t.play.toLowerCase())} ${signed(t.edge)}`).join(", ");
+  return `<h3>Your call: defense <span class="sub">${moment}</span></h3>
+    <div class="callgrid">${v.options.map(btn).join("")}</div>
+    <p class="threats">Their best matchups against us: ${threats}.</p>`;
+}
+async function liveAction(url, body) {
+  if (liveBusy) return;
+  liveBusy = true;
+  $$(".callbtn, [data-act^='live']").forEach(b => b.disabled = true);
+  try { liveView(await call(url, body)); }
+  catch (e) { fail(e); if (live) liveView(live); }
+  finally { liveBusy = false; }
+}
+document.addEventListener("keydown", e => {
+  if (!live || live.over || liveBusy || currentTab() !== "week" || e.target.closest("input, select, textarea") || $("#viewer").open) return;
+  const option = live.options[Number(e.key) - 1];
+  if (/^[1-9]$/.test(e.key) && option) liveAction("/api/live/call", { game_id: live.game_id, call: option.call });
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "live-level" && live) liveAction("/api/live/level", { game_id: live.game_id, level: e.target.value });
+});
 
 // ---- Roster, standings, schedule, cap ------------------------------------------
 async function rosterView() {
@@ -337,7 +444,7 @@ $("#viewer").addEventListener("close", () => { replay?.stop(); replay = null; $(
 // ---- Events -----------------------------------------------------------------
 async function quit() {
   try {
-    gameDay?.view?.stop(); gameDay = null;
+    gameDay?.view?.stop(); gameDay = null; live = liveFinal = null;
     const name = H?.save;
     await call("/api/league/default", {});
     if (name) toast(`Saved. Load ${name} to carry on from week ${H.week}.`);
@@ -362,7 +469,7 @@ $("#new-game").onsubmit = async e => {
   } catch (err) { fail(err); }
 };
 document.addEventListener("click", async e => {
-  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos]");
+  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos],[data-call]");
   if (!t || t.disabled) return;
   try {
     if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); await refresh(); }
@@ -371,7 +478,10 @@ document.addEventListener("click", async e => {
     else if (t.dataset.pos !== undefined) { rosterPos = t.dataset.pos; await rosterView(); }
     else if (t.dataset.act === "sim") await playWeek(false);
     else if (t.dataset.act === "watch") await playWeek(true);
-    else if (t.dataset.act === "results") { gameDay?.view?.stop(); gameDay = null; await refresh(); }
+    else if (t.dataset.call) await liveAction("/api/live/call", { game_id: live.game_id, call: t.dataset.call });
+    else if (t.dataset.act === "call") { t.disabled = true; await liveAction("/api/live/start", { level: $("#call-level").value }); }
+    else if (t.dataset.act === "live-sim") await liveAction("/api/live/sim", { game_id: live.game_id });
+    else if (t.dataset.act === "results") { gameDay?.view?.stop(); gameDay = null; live = liveFinal = null; await refresh(); }
     else if (t.dataset.act === "advance") {
       t.disabled = true;
       const r = await call("/api/hub/advance", {});

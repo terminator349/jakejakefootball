@@ -224,11 +224,19 @@ def _lineup(db, team_id: str) -> Lineup:
     return build_lineup(team_id, players, starters)
 
 
+def new_game(db, game) -> Game:
+    """A scheduled game, ready to play: the rosters as they stand and the game's own seed."""
+    seed = db.execute("SELECT seed FROM game").fetchone()[0]
+    return Game(_lineup(db, game["home_team_id"]), _lineup(db, game["away_team_id"]), seed=f"{seed}-{game['id']}")
+
+
 def _play(db, game) -> dict:
     """Simulate one game with the rosters as they stand and save everything it produced."""
-    seed = db.execute("SELECT seed FROM game").fetchone()[0]
-    result = Game(_lineup(db, game["home_team_id"]), _lineup(db, game["away_team_id"]),
-                  seed=f"{seed}-{game['id']}").play()
+    return save_result(db, game, new_game(db, game).play())
+
+
+def save_result(db, game, result: Game) -> dict:
+    """Save a finished game: the score, every snap and every player's stats."""
     home, away = result.score[game["home_team_id"]], result.score[game["away_team_id"]]
     db.execute("UPDATE games SET home_score = ?, away_score = ? WHERE id = ?", (home, away, game["id"]))
     db.executemany("INSERT INTO plays VALUES (:game_id, :n, :drive, :quarter, :clock, :offense, :down, :distance, "
@@ -238,6 +246,7 @@ def _play(db, game) -> dict:
                    [(game["id"], line["player_id"], line["team_id"], stat, value)
                     for line in result.player_stats() for stat, value in line.items()
                     if stat not in ("player_id", "team_id")])
+    db.execute("DELETE FROM live_games WHERE game_id = ?", (game["id"],))  # a called game is over too
     return {"game_id": game["id"], "week": game["week"], "home_team_id": game["home_team_id"],
             "away_team_id": game["away_team_id"], "home_score": home, "away_score": away,
             "plays": len(result.plays)}

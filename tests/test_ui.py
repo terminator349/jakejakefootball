@@ -91,7 +91,8 @@ def test_agent_needs_a_key(client, monkeypatch):
 def test_game_and_bench_pages(client):
     assert "<title>Front Office</title>" in client.get("/").text
     assert "Test Bench" in client.get("/bench").text
-    assert "class WatchView" in client.get("/static/common.js").text
+    script = client.get("/static/common.js")
+    assert "class WatchView" in script.text and script.headers["cache-control"] == "no-cache"
     assert "--turf" in client.get("/static/common.css").text
 
 
@@ -111,3 +112,20 @@ def test_play_a_week_in_the_game(client, monkeypatch):
     assert client.post("/api/hub/advance", json={}).json() == {"week": 2}
     schedule = client.get("/api/hub/schedule").json()["games"]
     assert len(schedule) == 17 and schedule[0]["played"] and not schedule[1]["played"]
+
+
+def test_call_the_plays_in_the_game(client, monkeypatch):
+    monkeypatch.setattr(league_db, "DB_FILE", league_db.DB_FILE)
+    client.post("/api/saves/new", json={"name": "called", "seed": "2"})
+    view = client.post("/api/live/start", json={"level": "every"}).json()
+    assert view["side"] in ("offense", "defense") and view["options"]
+    assert client.get("/api/hub").json()["live"]["game_id"] == view["game_id"]
+    assert client.post("/api/hub/play", json={}).status_code == 400  # finish or sim the called game first
+    bad = client.post("/api/live/call", json={"game_id": view["game_id"], "call": "hail_mary"})
+    assert bad.status_code == 400
+    call = "base" if view["side"] == "defense" else "run_inside"
+    after = client.post("/api/live/call", json={"game_id": view["game_id"], "call": call}).json()
+    assert len(after["plays"]) > len(view["plays"])
+    assert client.get(f"/api/live?id={view['game_id']}").json()["plays"] == after["plays"]
+    final = client.post("/api/live/sim", json={"game_id": view["game_id"]}).json()
+    assert final["over"] and client.get("/api/hub").json()["week_played"] is True

@@ -58,7 +58,7 @@ No API key is needed: the agents join the game as they are built.
 3. **Play the week.** **Sim it** plays every game and shows the results.
    **Watch it** plays the week, then shows our game drive by drive, with a
    scoreboard and the ball on the field, before any other score. **Call it**
-   arrives with G8.
+   puts you on the sideline (G8, below).
 4. **Results**: our score, every game of the week with its box score, the
    standings, and a replay of our game. Then go on to the next week.
 5. **Roster, Standings, Schedule and Cap** tabs: any team's roster with
@@ -70,6 +70,39 @@ No API key is needed: the agents join the game as they are built.
 After week 17 the game shows the final standings; the playoffs are G6.
 `agents/game_loop.py` builds the week in plain Python, and
 `pytest tests/test_game_loop.py tests/test_ui.py` checks it and the page's API.
+
+### Call it (G8)
+
+Pick **at key moments** or **every snap** next to the button, then press
+**Call it**. At key moments the game sims until a moment worth calling and
+hands you the call:
+
+- **On offense**: a 4th down, the red zone, the two-minute drill (end of either
+  half) and overtime.
+- **On defense**: they're in our red zone, overtime, or the last two minutes of
+  a one-score game.
+
+Every snap hands you each call, except the ones a defensive call can't change
+(their punts, field goals, kneels and spikes).
+
+- **Offense**: six plays, each with a number for how our players match up
+  against theirs for it (their defensive call, which you don't see, matters
+  too), plus punt, field goal (with its distance), kneel and spike.
+- **Defense**: five calls, each saying what it stops and what it's weak
+  against, with their best matchups against us listed underneath.
+
+Number keys 1 - 9 make a call. The screen shows the score, clock, timeouts, the
+ball and the first-down line, the plays since your last call and the drive
+chart. Switch levels or **Sim the rest of the game** at any time. When it ends,
+the rest of the week is played and the results follow.
+
+A called game survives **Save & quit** and a restart. The save keeps only your
+calls (the `live_games` table, schema version 3), and `agents/live.py` rebuilds
+the game by replaying the seed with them, so the same calls always give the
+same game. **Sim it** is refused while a game is being called, so it can't be
+thrown away. Trading during a called game (from the bench) would change the
+replay; the game itself has no way to do it. `pytest tests/test_live.py`
+checks it.
 
 ## Test bench (local web UI)
 
@@ -219,7 +252,7 @@ mismatches have diminishing returns, so a weak unit hurts but isn't hopeless.
 - **Play callers**: teams the owner isn't coaching use plain-Python tendencies
   by down, distance, score and clock, leaning toward what works against that
   defense. Every offense throws more against our secondary than anyone else's.
-  `step()` also takes a person's calls, ready for G8.
+  `step()` also takes a person's calls, which is how G8 lets the owner call them.
 - **The clock**: a snap takes a few seconds off at the whistle. If the clock
   keeps running, the huddle and the walk to the line run off before the next
   snap, unless a team calls a timeout or the offense spikes the ball. Late in a
@@ -255,7 +288,7 @@ pytest tests/test_simulator.py
 
 Done when: games look like football over hundreds of seeds, the play log
 rebuilds the score, drive by drive, and the end of each half is played like a
-real one. Calling the plays yourself is G8.
+real one. Calling the plays yourself is G8 (see "Call it" above).
 
 ## 1.3: the Cap & Contracts agent
 

@@ -5,6 +5,7 @@
   --bad: #c62828; --bad-bg: #fdecea; --warn: #9a6700; --warn-bg: #fff4d6; --ours: #eef4ff;
   --turf: #3f8f46; --endzone: #2c6e33; --chalk: rgba(255,255,255,.75); --ball: #7a3e12; --togo: #f5c518;
   --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  color-scheme: light dark;  /* scrollbars and form controls follow the theme */
 }
 @media (prefers-color-scheme: dark) {
   :root {
