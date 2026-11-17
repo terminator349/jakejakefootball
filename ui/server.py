@@ -1,13 +1,16 @@
-"""A local test bench for the front office: one web page over the real code.
+"""The game and its test bench, served on this computer only.
 
     python -m ui.server          # then open http://127.0.0.1:8765
 
-Everything the page shows comes from the same functions the game and the agents
-use: the league tools, the rule checks, saves and the season, the League Office
-MCP server (started over stdio, as the agents start it) and the Analytics agent.
-It only listens on this computer.
+/ is the game (task G2): new game, load, one week at a time, roster, standings,
+schedule and cap, play the week (sim or watch our game), save and quit.
 
-"Sim this week" plays the week's games with the season simulator (3.1).
+/bench is the test bench: one page over the real code, for trying out
+everything built so far: the league tools, the rule checks, saves and the
+season, the League Office MCP server (started over stdio, as the agents start
+it) and the Analytics agent.
+
+Both pages share ui/static/ and read and change the same loaded league.
 """
 
 import json
@@ -23,12 +26,13 @@ from mcp.client.stdio import StdioServerParameters
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import FileResponse, JSONResponse
-from starlette.routing import Route
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 
-from agents import league_db, rules, saves, season, tools
+from agents import game_loop, league_db, live, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
-PAGE = Path(__file__).parent / "index.html"
+UI_DIR = Path(__file__).parent
 HOST, PORT = "127.0.0.1", 8765
 
 # Errors a person can cause from the page; they come back as a message, not a crash.
@@ -227,12 +231,90 @@ async def run_analytics(request, body):
             "cost": getattr(metrics, "cost", None)}
 
 
-async def page(request):
-    return FileResponse(PAGE)
+# ---- The game (G2) ------------------------------------------------------------
+
+async def hub(request, body):
+    """The week as the owner sees it. The game only plays saves, never the default league."""
+    if active_save() is None:
+        return {"save": None}
+    return {"save": active_save(), **game_loop.overview()}
+
+
+def _needs_a_save():
+    if active_save() is None:
+        raise ValueError("Start or load a game first.")
+
+
+async def hub_play(request, body):
+    _needs_a_save()
+    return game_loop.play_week()
+
+
+async def hub_advance(request, body):
+    _needs_a_save()
+    return {"week": season.advance_week()}
+
+
+async def hub_schedule(request, body):
+    _needs_a_save()
+    return {"games": game_loop.our_schedule()}
+
+
+async def live_start(request, body):
+    _needs_a_save()
+    return live.start(body.get("level", "key"))
+
+
+async def live_state(request, body):
+    _needs_a_save()
+    return live.state(int(request.query_params.get("id", "0")))
+
+
+async def live_call(request, body):
+    _needs_a_save()
+    return live.call(int(body.get("game_id", 0)), body.get("call", ""), body.get("level"))
+
+
+async def live_level(request, body):
+    _needs_a_save()
+    return live.set_level(int(body.get("game_id", 0)), body.get("level", ""))
+
+
+async def live_sim(request, body):
+    _needs_a_save()
+    return live.sim_rest(int(body.get("game_id", 0)))
+
+
+class FreshStaticFiles(StaticFiles):
+    """ui/static/, checked with the server on every load, so an updated page never runs old code."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
+async def game_page(request):
+    return FileResponse(UI_DIR / "game.html")
+
+
+async def bench_page(request):
+    return FileResponse(UI_DIR / "bench.html")
 
 
 app = Starlette(routes=[
-    Route("/", page),
+    Route("/", game_page),
+    Route("/bench", bench_page),
+    Mount("/static", FreshStaticFiles(directory=UI_DIR / "static"), name="static"),
+    Route("/api/hub", api(hub)),
+    Route("/api/hub/play", api(hub_play), methods=["POST"]),
+    Route("/api/hub/advance", api(hub_advance), methods=["POST"]),
+    Route("/api/hub/schedule", api(hub_schedule)),
+    Route("/api/live", api(live_state)),
+    Route("/api/live/start", api(live_start), methods=["POST"]),
+    Route("/api/live/call", api(live_call), methods=["POST"]),
+    Route("/api/live/level", api(live_level), methods=["POST"]),
+    Route("/api/live/sim", api(live_sim), methods=["POST"]),
     Route("/api/status", api(status)),
     Route("/api/saves", api(list_saves)),
     Route("/api/saves/new", api(new_game), methods=["POST"]),
@@ -260,5 +342,5 @@ app = Starlette(routes=[
 
 if __name__ == "__main__":
     load_dotenv()
-    print(f"Front Office test bench: http://{HOST}:{PORT}")
+    print(f"Front Office: http://{HOST}:{PORT}   (test bench: http://{HOST}:{PORT}/bench)")
     uvicorn.run(app, host=HOST, port=PORT, log_level="warning")

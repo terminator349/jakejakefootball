@@ -72,10 +72,10 @@ GM briefing
 | W1   | Oct 26 - Nov 1 | 0.1, 0.2 (done)                     |
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
 | W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                 |
-| W4   | Nov 16 - 22    | 3.1, G2, 1.3, G7                    |
+| W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7         |
 | W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3, G7               |
-| W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8                        |
-| W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8                    |
+| W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8 (done early)           |
+| W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8 (done early)       |
 | W8   | Dec 14 - 20    | 2.2, G5                             |
 | W9   | Dec 21 - 27    | 2.3                                 |
 | W10  | Dec 28 - Jan 3 | 3.2, G6                             |
@@ -122,7 +122,7 @@ New SQLite tables for the current week, the 17-week schedule (each rival three
 or four times), game results, standings and a log of every move. "New game"
 copies the `league.json` seed into a fresh save; "Load game" continues one.
 
-### 3.1 Season simulator: play by play (W3 - W5, moved up from W9 - W11)
+### 3.1 Season simulator: play by play (W3 - W5, moved up from W9 - W11) - Done
 Plays each game one snap at a time, in plain Python with a seeded random number
 generator and no model calls. The game state is the down, distance, yard line,
 clock, score and timeouts. Each snap, the offense picks a play (inside or
@@ -141,13 +141,21 @@ with the better-rated team winning more often.
 Built in stages: "Sim it" (a game in one step) by W4 so G2 is playable, then
 "Watch it" (drive by drive, from the play log) in W5.
 
-Progress, Nov 12: "Sim it" is done and tuned (see the README). Next: "Watch
-it", and better late-game play calling.
+Progress, Nov 12: "Sim it" is done and tuned (see the README).
 
-### G2 Web game loop (W4)
+Progress, Nov 17: "Watch it" is done: drive summaries from the play log, and
+drive-by-drive playback in the test bench. Late in a half the AI now manages
+the clock (hurry-up, timeouts, spikes, a last field goal, kneels). 3.1 is done;
+G2 builds the real game screen on it.
+
+### G2 Web game loop (W4) - Done
 The week above as a web page, grown from the test bench in `ui/`: roster,
 standings, schedule and cap, play the week, save and quit. Fully playable with
 no API key, with no agent features yet.
+
+Done Nov 17: the game is at `/` and the test bench moved to `/bench`, sharing
+`ui/static/`. Each week shows plain-Python front-office notes until the G3
+briefing, and the menu's agent options say which task brings them.
 
 ### G7 Rookie draft and the Draft agent (W4 - W5, added Nov 12)
 Before week 1 of a new game, the six teams hold a rookie draft. A seeded pool of
@@ -164,7 +172,7 @@ if the roster stays at or under the maximum and the payroll under the hard cap,
 on a rookie contract set by draft position. Each pick goes into the move log
 (G1), and the save keeps the prospect pool and the draft order.
 
-### G8 Call the plays (W6 - W7, added Nov 12)
+### G8 Call the plays (W6 - W7, added Nov 12) - Done
 Before each Herons game the owner chooses how to play it: **Sim it**, **Watch
 it** drive by drive, or **Call it**. Calling comes in two levels: *key moments*
 (the game sims until a 4th down, the red zone, the two-minute drill or
@@ -173,6 +181,13 @@ the score, clock, down and distance, the ball on a field strip, the play-call
 buttons and a play-by-play log. Rival games are always simmed with the same
 engine. Key-moment calling is the target; calling every snap comes after it,
 time permitting.
+
+Done Nov 17, both levels, ahead of W6. A game being called is saved as its
+seed plus the owner's calls and rebuilt by replaying them, so it survives Save &
+quit and a restart. Offensive calls show how our players match up for each
+play; defensive calls show what each one stops and the opponent's best
+matchups. The owner can switch levels or sim the rest at any time. Coaching's
+suggested call (2.1) is still to come.
 
 ### 1.3 Cap & Contracts agent (W4 - W5) - Done
 A specialist agent that reads payroll and contracts and says whether a move fits

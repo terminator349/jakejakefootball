@@ -10,7 +10,13 @@ and player stats add up as the game goes.
 Teams the owner isn't coaching call their plays with plain-Python tendencies
 (call_offense, call_defense). Those tendencies lean toward plays where the
 offense's starters beat the defense's, so a weak unit gets attacked: a team
-with poor safeties sees more deep passes.
+with poor safeties sees more deep passes. Late in a half they manage the clock:
+the hurry-up, timeouts, spikes, a field goal before time runs out, and kneels
+to run out a win.
+
+The clock: a snap takes a few seconds off at the whistle. If the clock keeps
+running, the huddle and the walk to the line run off before the next snap,
+unless a team calls a timeout or the offense spikes the ball.
 
 Two random streams keep games repeatable: one for the AI's calls and one for
 what happens on the field. The same seed gives the same game, and so do the
@@ -33,6 +39,7 @@ RUNS = ("run_inside", "run_outside")
 PASSES = ("pass_short", "pass_deep", "play_action", "screen")
 OFFENSE_PLAYS = RUNS + PASSES
 FOURTH_DOWN = ("punt", "field_goal")
+OFFENSE_CALLS = OFFENSE_PLAYS + FOURTH_DOWN + ("kneel", "spike")
 DEFENSE_CALLS = ("base", "blitz", "cover_2", "deep_zone", "run_stuff")
 
 # How each defensive call shifts each play, in rating points (positive helps the offense).
@@ -134,6 +141,7 @@ class Situation:
     yardline: int              # from the offense's own goal line
     score: dict[str, int]
     timeouts: dict[str, int]
+    clock_running: bool = False  # the last play ended with the clock running
 
     @property
     def lead(self) -> int:
@@ -149,17 +157,54 @@ def field_goal_distance(yardline: int) -> int:
     return 100 - yardline + 17  # the snap is 7 yards behind the line, plus the end zone
 
 
+def in_field_goal_range(sit: Situation, offense: Lineup) -> bool:
+    return field_goal_distance(sit.yardline) <= 45 + (offense.units["kick_power"] - 60) * 0.5
+
+
+def hurrying(sit: Situation) -> bool:
+    """Whether the offense is racing the clock: the two-minute drill before the half,
+    behind late (earlier when two scores down), or tied at the end."""
+    if sit.quarter == 2:
+        return sit.clock <= 120 and not (sit.clock <= 30 and sit.yardline < 45)
+    if sit.quarter >= 4 and sit.lead < 0:
+        return sit.clock <= 300 or (sit.lead <= -9 and sit.clock <= 600) or sit.lead <= -17
+    return sit.quarter >= 4 and sit.lead == 0 and sit.clock <= 120
+
+
+def kick_helps(sit: Situation) -> bool:
+    """A field goal now is worth it: before the half, or to tie or win at the end."""
+    return sit.quarter == 2 or -3 <= sit.lead <= 0
+
+
+def wants_spike(sit: Situation, offense: Lineup) -> bool:
+    """Spike the ball: the clock is running, the offense is in a hurry with no timeouts
+    left, and there isn't time to huddle."""
+    if not (sit.clock_running and hurrying(sit) and sit.timeouts[sit.offense] == 0 and 3 <= sit.clock <= 25):
+        return False
+    return sit.down <= 2 or (sit.down == 3 and in_field_goal_range(sit, offense) and kick_helps(sit))
+
+
 def call_offense(sit: Situation, offense: Lineup, defense: Lineup, rng: random.Random) -> str:
     """The AI's play call for the offense, from the situation and the matchups."""
     lead, late = sit.lead, sit.late
-    if sit.quarter >= 4 and lead > 0 and sit.clock <= 40 * (4 - sit.down) + 5:
+    fg_range, hurry = in_field_goal_range(sit, offense), hurrying(sit)
+    timeouts = sit.timeouts[sit.offense]
+    # Ahead late: kneel if the defense can't stop the clock in time (about 40 seconds a snap).
+    if sit.quarter >= 4 and lead > 0 and sit.clock <= 38 * (4 - sit.down - sit.timeouts[sit.defense]) + 2:
         return "kneel"
+    end_of_half = sit.quarter in (2, 4, 5)
+    if end_of_half and fg_range and kick_helps(sit) and sit.clock <= (8 if timeouts else 14):
+        return "field_goal"  # kick while there's still time
+    if end_of_half and sit.clock <= 8 and sit.yardline < 80 and (lead <= 0 and sit.quarter >= 4 or sit.yardline >= 45):
+        return "pass_deep"  # the last snap: throw it to the end zone
+    if sit.quarter == 2 and sit.clock <= 20 and sit.yardline < 45 and not fg_range:
+        return "kneel"  # too far away: run out the half
     if sit.down == 4:
-        fg_range = field_goal_distance(sit.yardline) <= 45 + (offense.units["kick_power"] - 60) * 0.5
-        if sit.quarter >= 4 and lead < 0 and sit.clock <= 300:
-            if fg_range and -3 <= lead and sit.clock <= 30:
-                return "field_goal"
-            return rng.choice(PASSES[:3]) if sit.distance > 3 else "run_inside"
+        if sit.quarter >= 4 and lead < 0 and (sit.clock <= 300 or hurry):
+            if fg_range and (-3 <= lead or (-11 <= lead <= -9 and sit.clock > 120)):
+                return "field_goal"  # tie or win it, or make it a one-score game
+            if sit.clock <= 300 or sit.yardline >= 50:
+                return rng.choice(PASSES[:3]) if sit.distance > 3 else "run_inside"
         if sit.distance <= 1 and 35 <= sit.yardline and rng.random() < 0.45:
             return "run_inside"
         if fg_range:
@@ -181,11 +226,15 @@ def call_offense(sit: Situation, offense: Lineup, defense: Lineup, rng: random.R
             weights[p] *= 0.25 if sit.down >= 3 else 0.7
     if sit.down == 1 and sit.distance >= 10:
         weights["play_action"] *= 1.5
-    if late and lead < 0:
+    if hurry:
         for p in PASSES:
             weights[p] *= 2.0
         for p in RUNS:
             weights[p] *= 0.4
+        if sit.clock <= 30 or (timeouts == 0 and sit.clock <= 90):
+            for p in RUNS:  # a run in bounds lets the clock run
+                weights[p] = 0.0
+            weights["screen"] *= 0.3
     elif late and lead > 0:
         for p in RUNS:
             weights[p] *= 1.8
@@ -235,6 +284,9 @@ class Game:
                             for group in team.depth.values() for p in group}
         self.drive = 0
         self.over = False
+        self.clock_running = False
+        self.pending = 0   # seconds that run off before the next snap if the clock is running
+        self.note = ""     # e.g. a timeout, told in the next play's text
         # Coin toss: the winner receives; the other team receives after halftime.
         receiver = home.team_id if self.field_rng.random() < 0.5 else away.team_id
         self.second_half_receiver = self._other(receiver)
@@ -246,7 +298,8 @@ class Game:
 
     def situation(self) -> Situation:
         return Situation(self.quarter, self.clock, self.offense, self._other(self.offense), self.down,
-                         self.distance, self.yardline, dict(self.score), dict(self.timeouts))
+                         self.distance, self.yardline, dict(self.score), dict(self.timeouts),
+                         self.clock_running)
 
     def _unit(self, team_id: str, unit: str) -> float:
         return self.teams[team_id].units[unit] + (HOME_EDGE if team_id == self.home.team_id else 0)
@@ -274,12 +327,13 @@ class Game:
         return f"{self.offense} {self.yardline}" if self.yardline < 50 else f"{self._other(self.offense)} {100 - self.yardline}"
 
     def _log(self, call: str, defense_call: str | None, result: str, yards: int, text: str, before: Situation) -> dict:
-        entry = {"n": len(self.plays) + 1, "drive": self.drive, "quarter": before.quarter, "clock": before.clock,
+        entry = {"n": len(self.plays) + 1, "drive": self.snap_drive, "quarter": before.quarter, "clock": before.clock,
                  "offense": before.offense, "down": before.down, "distance": before.distance,
                  "yardline": before.yardline, "call": call, "defense_call": defense_call, "result": result,
-                 "yards": yards, "text": text, "home_score": self.score[self.home.team_id],
+                 "yards": yards, "text": self.note + text, "home_score": self.score[self.home.team_id],
                  "away_score": self.score[self.away.team_id]}
         self.plays.append(entry)
+        self.note = ""
         return entry
 
     # -- possessions --
@@ -324,23 +378,51 @@ class Game:
             self._new_possession(defense, 35)  # free kick after a safety
 
     # -- clock --
-    def _run_clock(self, seconds: int, stops: bool, before: Situation, out_of_bounds: bool = False) -> None:
-        trailing = None
-        if before.score[before.offense] != before.score[before.defense]:
-            trailing = min(before.score, key=before.score.get)
+    def _run_clock(self, seconds: int, stops: bool, out_of_bounds: bool = False, snap_time: int | None = None) -> None:
+        """Take the snap's own time off the clock. If the clock keeps running, the rest of
+        `seconds` (the huddle and the walk to the line) runs off before the next snap."""
         two_minute = self.clock <= 120 and self.quarter in (2, 4, 5)
         if out_of_bounds and (two_minute or (self.quarter == 4 and self.clock <= 300)):
             stops = True
-        if not stops and two_minute and trailing and self.timeouts[trailing] > 0:
-            self.timeouts[trailing] -= 1
-            stops = True
-        hurry = before.late and before.lead < 0 or (self.quarter == 2 and self.clock <= 120)
-        used = self.field_rng.randint(4, 8) if stops else (self.field_rng.randint(12, 20) if hurry else seconds)
+        if snap_time is not None:
+            used = snap_time
+        else:
+            used = self.field_rng.randint(4, 8) if stops else min(seconds, 6)
+        self.clock_running, self.pending = not stops, 0 if stops else max(0, seconds - used)
         self.clock -= used
         if self.clock <= 0:
             self._end_of_period()
 
+    def _pre_snap(self, sit: Situation, spike: bool) -> int:
+        """Seconds that run off a running clock before the next snap, after any timeout."""
+        if not sit.clock_running:
+            return 0
+        if spike:
+            return min(self.field_rng.randint(3, 6), max(0, sit.clock - 1))
+        if sit.clock <= 120 and sit.quarter in (2, 4, 5):
+            # The defense stops the clock when it's behind and can still get the ball back:
+            # late in a game it can win, or before the half if the offense is backed up.
+            if sit.lead > 0 and self.timeouts[sit.defense] and (
+                    sit.lead <= 16 if sit.quarter >= 4 else sit.yardline < 40):
+                return self._timeout(sit.defense)
+            # The offense stops it when it's racing the clock, but not to punt.
+            kick = in_field_goal_range(sit, self.teams[sit.offense]) and kick_helps(sit)
+            if hurrying(sit) and self.timeouts[sit.offense] and (sit.lead < 0 or sit.clock <= 60) \
+                    and (sit.down < 4 or kick):
+                return self._timeout(sit.offense)
+        if hurrying(sit):
+            return self.field_rng.randint(8, 14)
+        if sit.quarter >= 4 and sit.lead > 0 and sit.clock <= 300:
+            return max(self.pending, self.field_rng.randint(37, 40))  # let the play clock run down
+        return self.pending
+
+    def _timeout(self, team_id: str) -> int:
+        self.timeouts[team_id] -= 1
+        self.note = f"Timeout {team_id}. "
+        return 0
+
     def _end_of_period(self) -> None:
+        self.clock_running, self.pending = False, 0
         if self.quarter == 2:
             self.quarter, self.clock = 3, QUARTER_SECONDS
             self.timeouts = {t: TIMEOUTS_PER_HALF for t in self.timeouts}
@@ -358,40 +440,58 @@ class Game:
             self.quarter, self.clock = self.quarter + 1, QUARTER_SECONDS
 
     # -- one snap --
-    def step(self, offense_call: str | None = None, defense_call: str | None = None) -> dict:
-        """Run one snap. Calls left as None are made by the AI. Returns the play's log entry."""
+    def step(self, offense_call: str | None = None, defense_call: str | None = None) -> dict | None:
+        """Run one snap. Calls left as None are made by the AI. Returns the play's log entry,
+        or None if time ran out before the snap (the end of the half or the game)."""
         if self.over:
             raise ValueError("The game is over.")
+        if offense_call is not None and offense_call not in OFFENSE_CALLS:
+            raise ValueError(f"Unknown play {offense_call!r}. Plays: {OFFENSE_CALLS}")
+        if defense_call is not None and defense_call not in DEFENSE_CALLS:
+            raise ValueError(f"Unknown defensive call {defense_call!r}. Calls: {DEFENSE_CALLS}")
+        sit = self.situation()
+        if offense_call is None and wants_spike(sit, self.teams[sit.offense]):
+            offense_call = "spike"
+        runoff = self._pre_snap(sit, offense_call == "spike")
+        if runoff >= self.clock > 0:
+            quarter, self.clock = self.quarter, 0
+            self._end_of_period()
+            if quarter in (2, 4, 5):
+                return None
+        else:
+            self.clock -= runoff
+        self.clock_running, self.pending = False, 0
+        self.snap_drive = self.drive  # a play that ends the drive belongs to it, not the next one
         sit = self.situation()
         offense, defense = self.teams[sit.offense], self.teams[sit.defense]
         call = offense_call or call_offense(sit, offense, defense, self.call_rng)
+        if call == "spike":
+            qb = offense.starters("QB", 1)[0]
+            return self._advance(call, None, 0, sit, f"{self._name(qb)} spikes the ball.", "spike", 1,
+                                 stops=True, snap_time=1)
         if call in FOURTH_DOWN or call == "kneel":
             return self._special(call, sit)
-        if call not in OFFENSE_PLAYS:
-            raise ValueError(f"Unknown play {call!r}. Plays: {OFFENSE_PLAYS + FOURTH_DOWN + ('kneel',)}")
         dcall = defense_call or call_defense(sit, defense, offense, self.call_rng)
-        if dcall not in DEFENSE_CALLS:
-            raise ValueError(f"Unknown defensive call {dcall!r}. Calls: {DEFENSE_CALLS}")
         unit, against = UNITS[call]
         edge = soften(self._unit(sit.offense, unit) - self._unit(sit.defense, against)) + MATCHUP[call][dcall]
         if call in RUNS:
             return self._run(call, dcall, edge, sit)
         return self._pass(call, dcall, edge, sit)
 
-    def _advance(self, call: str, dcall: str, yards: int, sit: Situation, text: str, result: str,
-                 seconds: int, stops: bool = False, out_of_bounds: bool = False) -> dict:
+    def _advance(self, call: str, dcall: str | None, yards: int, sit: Situation, text: str, result: str,
+                 seconds: int, stops: bool = False, out_of_bounds: bool = False, snap_time: int | None = None) -> dict:
         """Move the ball, then handle a touchdown, safety, first down or turnover on downs."""
         rng = self.field_rng
         if self.yardline + yards >= 100:
             yards = 100 - self.yardline
             text += self._touchdown()
             entry = self._log(call, dcall, "touchdown", yards, text.replace("{yards}", f"{yards} yards") + " TOUCHDOWN.", sit)
-            self._run_clock(rng.randint(5, 9), True, sit)
+            self._run_clock(rng.randint(5, 9), True)
             return entry
         if self.yardline + yards <= 0:
             self._safety()
             entry = self._log(call, dcall, "safety", yards, text.replace("{yards}", "") + " SAFETY.", sit)
-            self._run_clock(rng.randint(5, 9), True, sit)
+            self._run_clock(rng.randint(5, 9), True)
             return entry
         self.yardline += yards
         if yards >= self.distance:
@@ -405,7 +505,7 @@ class Game:
         else:
             self.down, self.distance = self.down + 1, self.distance - yards
         entry = self._log(call, dcall, result, yards, text.replace("{yards}", _yards(yards)), sit)
-        self._run_clock(seconds, stops, sit, out_of_bounds)
+        self._run_clock(seconds, stops, out_of_bounds, snap_time)
         return entry
 
     def _run(self, call: str, dcall: str, edge: float, sit: Situation) -> dict:
@@ -426,7 +526,7 @@ class Game:
                 spot = 99
             self._turnover(100 - spot)
             entry = self._log(call, dcall, "fumble", yards, text, sit)
-            self._run_clock(rng.randint(5, 9), True, sit)
+            self._run_clock(rng.randint(5, 9), True)
             return entry
         gained = min(yards, 100 - self.yardline)
         self._stat(runner, "rush_yds", gained)
@@ -435,7 +535,7 @@ class Game:
         side = "up the middle" if inside else rng.choice(["around left end", "around right end"])
         out_of_bounds = not inside and rng.random() < 0.2
         return self._advance(call, dcall, yards, sit, f"{self._name(runner)} runs {side} for {{yards}}.", "run",
-                             rng.randint(34, 46), out_of_bounds=out_of_bounds)
+                             rng.randint(35, 48), out_of_bounds=out_of_bounds)
 
     def _pass(self, call: str, dcall: str, edge: float, sit: Situation) -> dict:
         rng = self.field_rng
@@ -482,7 +582,7 @@ class Game:
             text = f"{self._name(qb)} pass intended for {self._name(target)} INTERCEPTED by {self._name(picker)}."
             self._turnover(100 - spot + back)
             entry = self._log(call, dcall, "interception", 0, text, sit)
-            self._run_clock(rng.randint(6, 10), True, sit)
+            self._run_clock(rng.randint(6, 10), True)
             return entry
         p_comp = {"pass_short": 0.71, "pass_deep": 0.42, "play_action": 0.57, "screen": 0.80}[call] + 0.006 * edge
         if rng.random() >= min(0.92, max(0.15, p_comp)):
@@ -506,14 +606,15 @@ class Game:
             self._stat(target, "rec_td")
         out_of_bounds = rng.random() < 0.18
         return self._advance(call, dcall, yards, sit, f"{self._name(qb)} pass complete to {self._name(target)} "
-                             f"for {{yards}}.", "complete", rng.randint(34, 46), out_of_bounds=out_of_bounds)
+                             f"for {{yards}}.", "complete", rng.randint(35, 48), out_of_bounds=out_of_bounds)
 
     def _special(self, call: str, sit: Situation) -> dict:
         rng = self.field_rng
         team = self.teams[sit.offense]
         if call == "kneel":
             qb = team.starters("QB", 1)[0]
-            return self._advance(call, None, -1, sit, f"{self._name(qb)} kneels.", "kneel", 40)
+            return self._advance(call, None, -1 if self.yardline > 1 else 0, sit, f"{self._name(qb)} kneels.",
+                                 "kneel", 40, snap_time=2)
         if call == "punt":
             punter = team.starters("P", 1)[0]
             gross = max(25, round(rng.gauss(43 + (team.units["punt_power"] - 70) * 0.3, 5)))
@@ -527,7 +628,7 @@ class Game:
                 text = f"{self._name(punter)} punts {gross} yards, returned {back}."
             self._turnover(start)
             entry = self._log(call, None, "punt", 0, text, sit)
-            self._run_clock(rng.randint(8, 12), True, sit)
+            self._run_clock(rng.randint(8, 12), True)
             return entry
         # Field goal
         kicker = team.starters("K", 1)[0]
@@ -549,7 +650,7 @@ class Game:
             self._turnover(max(20, 100 - (self.yardline - 7)))
             result = "field_goal_missed"
         entry = self._log(call, None, result, 0, text, sit)
-        self._run_clock(rng.randint(5, 9), True, sit)
+        self._run_clock(rng.randint(5, 9), True)
         return entry
 
     def play(self) -> "Game":
@@ -568,3 +669,75 @@ def _yards(n: int) -> str:
     if n < 0:
         return f"a loss of {-n}"
     return f"{n} yard{'s' if n != 1 else ''}"
+
+
+# ---- Drives ----------------------------------------------------------------
+
+DRIVE_ENDS = {"touchdown", "field_goal", "field_goal_missed", "punt", "interception", "fumble",
+              "turnover_on_downs", "safety"}
+
+
+def _elapsed(quarter: int, clock: int) -> int:
+    """Game seconds gone at a moment, counting overtime after the fourth quarter."""
+    if quarter <= 4:
+        return (quarter - 1) * QUARTER_SECONDS + QUARTER_SECONDS - clock
+    return 4 * QUARTER_SECONDS + OVERTIME_SECONDS - clock
+
+
+def _half_ends(quarter: int) -> int:
+    return {1: 2, 2: 2, 3: 4, 4: 4}.get(quarter, 5)
+
+
+def drives(plays: list[dict]) -> list[dict]:
+    """Group a play log (a Game's plays, or rows of the plays table) into drives.
+
+    A drive starts when the ball changes hands, and at the start of the second half
+    and of overtime. Each drive has the team, when and where it started, how many
+    snaps it took, the yards gained, the time it used, how it ended and the score after it.
+    """
+    groups: list[list[dict]] = []
+    for play in plays:
+        prev = groups[-1][-1] if groups else None
+        team = play.get("offense", play.get("offense_team_id"))
+        if prev is None or team != prev.get("offense", prev.get("offense_team_id")) \
+                or _half_ends(play["quarter"]) != _half_ends(prev["quarter"]):
+            groups.append([])
+        groups[-1].append(play)
+
+    result, before = [], {"home": 0, "away": 0}
+    for i, group in enumerate(groups):
+        first, last = group[0], group[-1]
+        team = first.get("offense", first.get("offense_team_id"))
+        start = _elapsed(first["quarter"], first["clock"])
+        half_end = _elapsed(_half_ends(first["quarter"]), 0)
+        if i + 1 < len(groups):
+            end = min(half_end, _elapsed(groups[i + 1][0]["quarter"], groups[i + 1][0]["clock"]))
+        elif last["quarter"] == 5 and last["result"] in ("touchdown", "field_goal", "safety"):
+            end = _elapsed(5, last["clock"]) + 5  # a score ends overtime at once
+        else:
+            end = half_end
+        if last["result"] in DRIVE_ENDS:
+            how = last["result"]
+        else:
+            how = "end_of_game" if i + 1 == len(groups) else "end_of_half"
+        if how == "touchdown":
+            end_line = 100
+        elif how == "safety":
+            end_line = 0
+        elif how in DRIVE_ENDS:
+            end_line = last["yardline"]
+        else:
+            end_line = max(0, min(100, last["yardline"] + last["yards"]))
+        snaps = [p for p in group if p["call"] not in FOURTH_DOWN]
+        after = {"home": last["home_score"], "away": last["away_score"]}
+        result.append({
+            "number": i + 1, "team": team, "quarter": first["quarter"], "clock": first["clock"],
+            "start_yardline": first["yardline"], "end_yardline": end_line, "plays": len(snaps),
+            "yards": sum(p["yards"] for p in snaps if p["result"] != "interception"),
+            "seconds": max(0, end - start), "result": how,
+            "points_home": after["home"] - before["home"], "points_away": after["away"] - before["away"],
+            "home_score": after["home"], "away_score": after["away"],
+            "first_play": first["n"], "last_play": last["n"],
+        })
+        before = after
+    return result

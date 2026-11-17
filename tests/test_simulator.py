@@ -225,3 +225,93 @@ def test_g1_saves_are_upgraded_not_refused(tmp_path):
     with sqlite3.connect(path) as db:
         assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION
     db.close()
+
+
+# ---- Late-game play calling and drives (3.1, "Watch it") ----------------------
+
+def late(quarter, clock, lead, down=1, yardline=50, timeouts=(3, 3), running=False, offense="HAR", defense="MES"):
+    from agents.simulator import Situation
+    return Situation(quarter, clock, offense, defense, down, 10, yardline, {offense: 20 + lead, defense: 20},
+                     {offense: timeouts[0], defense: timeouts[1]}, running)
+
+
+def calls(sit, n=400):
+    import random
+    from agents.simulator import call_offense
+    rng = random.Random(1)
+    return Counter(call_offense(sit, LINEUPS[sit.offense], LINEUPS[sit.defense], rng) for _ in range(n))
+
+
+def test_field_goal_before_time_runs_out():
+    assert calls(late(2, 6, lead=0, yardline=80)) == {"field_goal": 400}       # end of the half
+    assert calls(late(4, 6, lead=-2, yardline=80)) == {"field_goal": 400}      # to win it
+    assert "field_goal" not in calls(late(4, 6, lead=-5, yardline=80))         # a field goal won't do
+    assert calls(late(4, 5, lead=-5, yardline=40)) == {"pass_deep": 400}       # the last snap: throw it deep
+
+
+def test_no_runs_when_behind_and_out_of_time():
+    assert not set(calls(late(4, 50, lead=-4, timeouts=(0, 3)))) & {"run_inside", "run_outside"}
+    assert set(calls(late(4, 50, lead=-4, timeouts=(2, 3)))) & {"run_inside", "run_outside"}  # timeouts left
+
+
+def test_spike_only_without_timeouts_and_a_running_clock():
+    from agents.simulator import wants_spike
+    har = LINEUPS["HAR"]
+    assert wants_spike(late(4, 20, lead=-4, timeouts=(0, 3), running=True), har)
+    assert not wants_spike(late(4, 20, lead=-4, timeouts=(1, 3), running=True), har)   # call a timeout instead
+    assert not wants_spike(late(4, 20, lead=-4, timeouts=(0, 3), running=False), har)  # the clock is stopped
+    assert not wants_spike(late(4, 20, lead=4, timeouts=(0, 3), running=True), har)    # ahead: let it run
+    assert not wants_spike(late(1, 20, lead=-4, timeouts=(0, 3), running=True), har)   # not late in a half
+
+
+def test_kneel_only_when_the_defense_cant_stop_the_clock():
+    assert calls(late(4, 100, lead=3, timeouts=(3, 0))) == {"kneel": 400}
+    assert "kneel" not in calls(late(4, 100, lead=3, timeouts=(3, 3)))
+
+
+def test_clock_management_shows_up_in_games(sample):
+    plays = [p for game in sample for p in game.plays]
+    assert any(p["call"] == "spike" for p in plays)
+    assert any(p["text"].startswith("Timeout") for p in plays)
+    assert any(p["result"] == "field_goal" and p["quarter"] == 2 and p["clock"] <= 14 for p in plays)
+
+
+def test_time_can_run_out_before_the_snap():
+    """With the clock running, a half can end before the next snap: step() returns None
+    and the game moves on to the third quarter (or ends)."""
+    seen = 0
+    for seed in range(40):
+        game = Game(LINEUPS["HAR"], LINEUPS["MES"], seed=f"out-{seed}")
+        while not game.over:
+            quarter, clock_running = game.quarter, game.clock_running
+            if game.step() is None:
+                seen += 1
+                assert clock_running and quarter in (2, 4, 5)
+                assert game.over or (game.quarter == 3 and game.clock == 15 * 60)
+    assert seen > 0
+
+
+def test_drives_cover_every_play_and_add_up(sample):
+    from agents.simulator import drives
+    for game in sample:
+        ds = drives(game.plays)
+        assert [n for d in ds for n in range(d["first_play"], d["last_play"] + 1)] == [p["n"] for p in game.plays]
+        assert (ds[-1]["home_score"], ds[-1]["away_score"]) == (game.score[game.home.team_id], game.score[game.away.team_id])
+        assert sum(d["points_home"] for d in ds) == game.score[game.home.team_id]
+        assert ds[-1]["result"] in ("end_of_game", "touchdown", "field_goal", "safety", "interception", "fumble",
+                                    "punt", "turnover_on_downs", "field_goal_missed")
+        for d in ds:
+            group = game.plays[d["first_play"] - 1:d["last_play"]]
+            assert {p["offense"] for p in group} == {d["team"]}
+            assert len({p["drive"] for p in group}) == 1  # a drive-ending play belongs to its own drive
+            assert 0 <= d["seconds"] <= 15 * 60
+        assert sum(d["seconds"] for d in ds) <= 70 * 60
+    per_team = sum(len(drives(g.plays)) for g in sample) / (2 * len(sample))
+    assert 9.5 <= per_team <= 12.5  # the NFL averages about 11
+
+
+def test_box_score_has_the_drives(scratch_db):
+    game = season.play_week()[0]
+    box = season.box_score(game["game_id"])
+    assert box["drives"][0]["first_play"] == 1 and box["drives"][-1]["last_play"] == len(box["plays"])
+    assert sum(d["points_home"] for d in box["drives"]) == game["home_score"]

@@ -4,8 +4,8 @@ An AI-run American football front office, played as an interactive web game.
 You are the owner; each week your General Manager briefs you, you give orders,
 and a hierarchy of agents scouts, trades and manages the roster against rival
 AI general managers. On game day you can sim the game, watch it drive by
-drive, or call the plays yourself. See `ROADMAP.md` for the game design and the build
-plan; a "How to play" section arrives with the game loop (task G2).
+drive, or call the plays yourself. See "How to play" below, and `ROADMAP.md`
+for the game design and the build plan.
 
 The league is fictional: six teams of 48 players, a 17-game season, and a hard
 $255M salary cap. Our team, the Harbor City Herons (`HAR`), has $5.5M of cap
@@ -21,7 +21,7 @@ data/       league.json (generated season start), league.db (SQLite, the default
 saves/      one SQLite database per saved game (git-ignored) - from G1
 draft/      standalone draft simulator - players, rules, valuation, engine, CPU agent
 tests/      checks that run without an API key
-ui/         a local web page for trying out everything built so far
+ui/         the game (game.html), the test bench (bench.html) and what they share (static/)
 private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
 run.py      entry point (Analytics agent)
@@ -39,17 +39,80 @@ copy .env.example .env    # then put your OPENROUTER_API_KEY in .env
 python data/generate_league.py
 ```
 
-## Test bench (local web UI)
-
-A page for trying out everything built so far, running the real code:
+## How to play (G2)
 
 ```powershell
 python -m ui.server      # then open http://127.0.0.1:8765
 ```
 
+No API key is needed: the agents join the game as they are built.
+
+1. **Start a game.** Give it a name (and a seed if you want a season you can
+   repeat). Each game is its own save in `saves/`, saved as you play. Continue
+   or load a game from the same screen.
+2. **Each week** shows the matchup, both records, and front-office notes read
+   from the league: last week's result, our weakest and strongest spots, the
+   trade deadline and the cap. The GM's own briefing replaces the notes in G3,
+   and the orders and proposed moves from the roadmap's sketch show what they
+   wait on (1.4, G4).
+3. **Play the week.** **Sim it** plays every game and shows the results.
+   **Watch it** plays the week, then shows our game drive by drive, with a
+   scoreboard and the ball on the field, before any other score. **Call it**
+   puts you on the sideline (G8, below).
+4. **Results**: our score, every game of the week with its box score, the
+   standings, and a replay of our game. Then go on to the next week.
+5. **Roster, Standings, Schedule and Cap** tabs: any team's roster with
+   ratings, contracts and starters; our 17 games with results, box scores and
+   replays; payroll, cap space, the biggest contracts and who is in a final year.
+6. **Save & quit** goes back to the title screen. The save already holds
+   everything; load it to carry on from the same week.
+
+After week 17 the game shows the final standings; the playoffs are G6.
+`agents/game_loop.py` builds the week in plain Python, and
+`pytest tests/test_game_loop.py tests/test_ui.py` checks it and the page's API.
+
+### Call it (G8)
+
+Pick **at key moments** or **every snap** next to the button, then press
+**Call it**. At key moments the game sims until a moment worth calling and
+hands you the call:
+
+- **On offense**: a 4th down, the red zone, the two-minute drill (end of either
+  half) and overtime.
+- **On defense**: they're in our red zone, overtime, or the last two minutes of
+  a one-score game.
+
+Every snap hands you each call, except the ones a defensive call can't change
+(their punts, field goals, kneels and spikes).
+
+- **Offense**: six plays, each with a number for how our players match up
+  against theirs for it (their defensive call, which you don't see, matters
+  too), plus punt, field goal (with its distance), kneel and spike.
+- **Defense**: five calls, each saying what it stops and what it's weak
+  against, with their best matchups against us listed underneath.
+
+Number keys 1 - 9 make a call. The screen shows the score, clock, timeouts, the
+ball and the first-down line, the plays since your last call and the drive
+chart. Switch levels or **Sim the rest of the game** at any time. When it ends,
+the rest of the week is played and the results follow.
+
+A called game survives **Save & quit** and a restart. The save keeps only your
+calls (the `live_games` table, schema version 3), and `agents/live.py` rebuilds
+the game by replaying the seed with them, so the same calls always give the
+same game. **Sim it** is refused while a game is being called, so it can't be
+thrown away. Trading during a called game (from the bench) would change the
+replay; the game itself has no way to do it. `pytest tests/test_live.py`
+checks it.
+
+## Test bench (local web UI)
+
+A page for trying out everything built so far, running the real code, at
+http://127.0.0.1:8765/bench on the same server as the game:
+
 - **Game & saves**: start, load and list saves; sim the week with the 3.1
   simulator or type scores by hand; advance the week; standings and the full
-  schedule. Click a result for its box score and play-by-play.
+  schedule. Click a result for its box score, drive chart and play-by-play, or
+  **Watch** it drive by drive.
 - **League**: teams, payroll and cap space; any roster; each team's biggest gaps
   from `compare_to_league`; the rules.
 - **Trades**: pick players on both sides, check the trade against the 1.2 rules
@@ -175,7 +238,7 @@ Done when: a new game starts at week 1 with a fair 17-week schedule, results
 and standings agree, every trade is logged, and a loaded game continues where
 it stopped.
 
-## 3.1: the season simulator (first stage: "Sim it")
+## 3.1: the season simulator ("Sim it" and "Watch it")
 
 `agents/simulator.py` plays a game one snap at a time, in plain Python with no
 model calls. `Game.step()` runs one snap: the offense picks a play (inside or
@@ -189,25 +252,43 @@ mismatches have diminishing returns, so a weak unit hurts but isn't hopeless.
 - **Play callers**: teams the owner isn't coaching use plain-Python tendencies
   by down, distance, score and clock, leaning toward what works against that
   defense. Every offense throws more against our secondary than anyone else's.
-  `step()` also takes a person's calls, ready for G8.
+  `step()` also takes a person's calls, which is how G8 lets the owner call them.
+- **The clock**: a snap takes a few seconds off at the whistle. If the clock
+  keeps running, the huddle and the walk to the line run off before the next
+  snap, unless a team calls a timeout or the offense spikes the ball. Late in a
+  half the AI hurries (earlier when two scores down) and stops running the ball
+  when it can't stop the clock. It calls timeouts (on defense, only while it can
+  still get the ball back), spikes when out of timeouts, kicks a field goal
+  before time runs out, throws it deep on the last snap, and kneels to finish a
+  win once the defense can't stop the clock. A half can now end before the next snap; `step()` then
+  returns `None`.
 - **Repeatable**: separate random streams for calls and for what happens on the
   field. The same season seed plays the same season.
 - **Saving games** (`agents/season.py`): `play_week()` plays the current week's
   unplayed games with the rosters as they stand, and saves each score, every
   snap (`plays` table) and every player's stats (`player_game_stats`).
-  `box_score(game_id)` returns team totals, player lines and the play-by-play.
-- **Tuned** over hundreds of seeded games, per team per game: about 21 points
-  and 65 scrimmage plays, 64% completions, 7.1 yards a pass, 4.3 a carry, 1.9
-  sacks and 4.4 punts. Home teams win 52%, and under 1% of games end tied. The
-  Herons win about a third of their games, and the Odom trade from 1.2 lifts
+  `box_score(game_id)` returns team totals, player lines, the drives and the
+  play-by-play.
+- **Drives** (`drives()` in `agents/simulator.py`): the play log grouped into
+  possessions, each with where and when it started, plays, yards, time used,
+  how it ended (touchdown, field goal, punt, turnover, downs, end of half...)
+  and the score after it. About 11 drives a team, as in the NFL.
+- **Watch it** (test bench): a scoreboard, a field with the ball, the drive so
+  far and the first-down line, and the drive chart as it grows. Step a play or
+  a drive at a time, autoplay, or skip to the end.
+- **Tuned** over hundreds of seeded games, per team per game: about 22 points
+  and 65 scrimmage plays, 64% completions, 7.1 yards a pass, 4.3 a carry, 2.1
+  sacks and 4.3 punts. Home teams win about 54%, and under 1% of games end tied.
+  The Herons win about 30% of their games, and the Odom trade from 1.2 lifts
   that by about six points.
 
 ```powershell
 pytest tests/test_simulator.py
 ```
 
-Still to come in 3.1: "Watch it" (drive by drive) in W5, and smarter late-game
-calls (spikes, the hurry-up when far behind) as part of it.
+Done when: games look like football over hundreds of seeds, the play log
+rebuilds the score, drive by drive, and the end of each half is played like a
+real one. Calling the plays yourself is G8 (see "Call it" above).
 
 ## 1.3: the Cap & Contracts agent
 
