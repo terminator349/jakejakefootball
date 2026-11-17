@@ -12,8 +12,7 @@ import sys
 
 from dotenv import load_dotenv
 
-from agents.analytics import league_office_tools
-from agents.cap_contracts import CapReport, build_cap_contracts_agent, ground_report
+from agents.cap_contracts import CapReport, build_cap_contracts_agent, ground_report, league_office_tools
 
 DEFAULT_QUESTION = "Is every team in the league legal under the $255M hard cap right now?"
 

@@ -1,9 +1,10 @@
 # Front Office
 
-An AI-run American football front office, played as an interactive terminal
-game. You are the owner; each week your General Manager briefs you, you give
-orders, and a hierarchy of agents scouts, trades and manages the roster against
-rival AI general managers. See `ROADMAP.md` for the game design and the build
+An AI-run American football front office, played as an interactive web game.
+You are the owner; each week your General Manager briefs you, you give orders,
+and a hierarchy of agents scouts, trades and manages the roster against rival
+AI general managers. On game day you can sim the game, watch it drive by
+drive, or call the plays yourself. See `ROADMAP.md` for the game design and the build
 plan; a "How to play" section arrives with the game loop (task G2).
 
 The league is fictional: six teams of 48 players, a 17-game season, and a hard
@@ -16,9 +17,11 @@ space and a weak secondary.
 agents/     agent + team definitions, and the plain-Python tools they call
 servers/    MCP servers (League Office, Trade Desk, Simulator) - from 1.1
 skills/     markdown know-how + helper scripts - from 1.5
-data/       league.json (generated season start), league.db (SQLite, the live league), draft_results.json
+data/       league.json (generated season start), league.db (SQLite, the default league), draft_results.json
+saves/      one SQLite database per saved game (git-ignored) - from G1
 draft/      standalone draft simulator - players, rules, valuation, engine, CPU agent
 tests/      checks that run without an API key
+ui/         a local web page for trying out everything built so far
 private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
 run.py      entry point (Analytics agent)
@@ -35,6 +38,30 @@ pip install -r requirements.txt
 copy .env.example .env    # then put your OPENROUTER_API_KEY in .env
 python data/generate_league.py
 ```
+
+## Test bench (local web UI)
+
+A page for trying out everything built so far, running the real code:
+
+```powershell
+python -m ui.server      # then open http://127.0.0.1:8765
+```
+
+- **Game & saves**: start, load and list saves; sim the week with the 3.1
+  simulator or type scores by hand; advance the week; standings and the full
+  schedule. Click a result for its box score and play-by-play.
+- **League**: teams, payroll and cap space; any roster; each team's biggest gaps
+  from `compare_to_league`; the rules.
+- **Trades**: pick players on both sides, check the trade against the 1.2 rules
+  or make it, and see the move log.
+- **League Office (MCP)**: starts the server over stdio, as the agents do, lists
+  its tools and calls any of them with your arguments.
+- **Analytics agent**: asks the real agent a question (needs `OPENROUTER_API_KEY`
+  in `.env`) and shows its report, every tool call and the run's tokens and cost.
+
+Everything reads and changes the loaded league: a save, or `data/league.db`
+when none is loaded. The page only listens on this computer, and restarting
+it goes back to the default league. `pytest tests/test_ui.py` checks its API.
 
 ## 0.2: one agent, plain Python tools
 
@@ -83,6 +110,104 @@ pytest tests/test_league_db.py     # uses scratch databases, never data/league.d
 Done when: an MCP client lists the four tools and gets the same JSON as the
 plain Python functions, both in-process and over stdio; the tools read
 rosters and contracts from SQLite; and the agent's answer still matches the data.
+
+## 1.2: rule checks
+
+`agents/rules.py` holds the league rules as plain Python. A trade is legal only
+if, afterwards, every roster is between 46 and 53 players, no payroll is over
+the $255M hard cap, and the week is no later than the week-9 deadline. It must
+also be a real trade: two different teams, each sending players it actually has.
+
+- `check_trade(trade)` lists every rule the trade would break, each with
+  a reason the owner can read ("HAR's payroll would be $257.31M, $2.31M over the
+  $255.0M hard cap."), plus each team's roster size, payroll and cap space
+  after the trade. It changes nothing.
+- `make_trade(trade)` runs the same checks and moves the players in
+  the league database (a save, or `data/league.db`) only if they all pass; otherwise it raises `IllegalMove` and
+  the league is unchanged. It is plain Python for now: the Trade Desk (2.1) and
+  the owner's approvals (G4) will call it.
+
+The League Office server serves `check_trade` as a fifth read-only tool. The
+Analytics agent still gets only the four data tools; `check_trade` is meant for
+Cap & Contracts (1.3). Since G1 the current week comes from the league
+database, not from the caller.
+
+```powershell
+pytest tests/test_rules.py    # scratch databases, never data/league.db
+```
+
+Done when: every illegal trade is refused with the rule it broke, a legal one
+changes the rosters, and a refused one changes nothing.
+
+## G1: game state and save files
+
+Every league database now holds a game as well as the league: the current
+week, the 17-week schedule with each game's result, and a log of every move.
+Standings are an SQL view over the results, so they can't drift from them.
+
+- **Schedule** (`agents/season.py`): made from a season seed when the database
+  is built. Every team plays once a week and meets each rival three or four
+  times, with 8 or 9 home games and no back-to-back rematches. The same seed
+  gives the same schedule.
+- **Season**: `record_result` writes a score for a game in the current week
+  (the simulator, 3.1, will call it). `advance_week` moves on only once every
+  game that week has a result. After week 17 the current week is 18 and the
+  regular season is over. `standings` ranks teams by win percentage (a tie is
+  half a win), then point difference, then points scored.
+- **Saves** (`agents/saves.py`): `new_game(name)` builds `saves/<name>.db` from
+  the `league.json` seed with its own season seed. `load_game(name)` makes a
+  save the league every tool reads. `list_saves()` shows each save's week and
+  our record. A save is never overwritten unless asked.
+- **Moves**: `make_trade` logs each trade (the week and every player's old and
+  new team) in the same transaction that makes it; `move_log()` reads the log.
+  `check_trade` and `make_trade` take the current week from the save.
+- **Old databases**: each database records its schema version. An old
+  `data/league.db` is rebuilt automatically. A save one version behind is
+  upgraded in place (G1 saves gain the 3.1 tables); anything older is refused
+  with a message, never rebuilt.
+
+```powershell
+python -m servers.league_office --db saves/herons.db   # serve a saved game
+pytest tests/test_season.py tests/test_saves.py
+```
+
+Done when: a new game starts at week 1 with a fair 17-week schedule, results
+and standings agree, every trade is logged, and a loaded game continues where
+it stopped.
+
+## 3.1: the season simulator (first stage: "Sim it")
+
+`agents/simulator.py` plays a game one snap at a time, in plain Python with no
+model calls. `Game.step()` runs one snap: the offense picks a play (inside or
+outside run, short or deep pass, play action, screen, punt, field goal, kneel)
+and the defense a call (base, blitz, cover 2, deep zone, run stuff). The
+result comes from the starters' unit strengths (run blocking against run
+defense, deep passing against deep coverage, pass rush against pass blocking),
+how the two calls match up, and a seeded random number generator. Big
+mismatches have diminishing returns, so a weak unit hurts but isn't hopeless.
+
+- **Play callers**: teams the owner isn't coaching use plain-Python tendencies
+  by down, distance, score and clock, leaning toward what works against that
+  defense. Every offense throws more against our secondary than anyone else's.
+  `step()` also takes a person's calls, ready for G8.
+- **Repeatable**: separate random streams for calls and for what happens on the
+  field. The same season seed plays the same season.
+- **Saving games** (`agents/season.py`): `play_week()` plays the current week's
+  unplayed games with the rosters as they stand, and saves each score, every
+  snap (`plays` table) and every player's stats (`player_game_stats`).
+  `box_score(game_id)` returns team totals, player lines and the play-by-play.
+- **Tuned** over hundreds of seeded games, per team per game: about 21 points
+  and 65 scrimmage plays, 64% completions, 7.1 yards a pass, 4.3 a carry, 1.9
+  sacks and 4.4 punts. Home teams win 52%, and under 1% of games end tied. The
+  Herons win about a third of their games, and the Odom trade from 1.2 lifts
+  that by about six points.
+
+```powershell
+pytest tests/test_simulator.py
+```
+
+Still to come in 3.1: "Watch it" (drive by drive) in W5, and smarter late-game
+calls (spikes, the hurry-up when far behind) as part of it.
 
 ## 1.3: the Cap & Contracts agent
 

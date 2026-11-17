@@ -4,8 +4,8 @@ import asyncio
 
 from agno.tools.mcp import MCPTools
 
-from agents.analytics import TOOL_CALL_LIMIT, league_office_tools
-from agents.cap_contracts import CapReport, build_cap_contracts_agent, ground_report
+from agents.analytics import TOOL_CALL_LIMIT
+from agents.cap_contracts import CapReport, build_cap_contracts_agent, ground_report, league_office_tools
 
 
 def test_agent_builds_with_its_tools():
@@ -20,7 +20,7 @@ def test_agent_sees_the_league_office_tools():
     async def go():
         async with league_office_tools() as league_office:
             return set(league_office.functions)
-    assert asyncio.run(go()) == {"list_teams", "get_roster", "compare_to_league", "get_league_rules",
+    assert asyncio.run(go()) == {"list_teams", "get_roster", "get_league_rules", "check_trade",
                                  "validate_cap_compliance", "check_cap_fit"}
 
 

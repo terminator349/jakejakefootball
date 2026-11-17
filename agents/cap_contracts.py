@@ -1,18 +1,39 @@
 """The Cap & Contracts director: checks whether a roster move is legal under the cap.
 
 It reads the league through the same League Office MCP server as Analytics, which
-Agno starts as a subprocess. In task 1.4 this agent becomes the second member of the
-GM's Team. Its `role` is what the GM will read when deciding whether to delegate to it.
+Agno starts as a subprocess, but with its own tool list: check_trade (task 1.2) is
+meant for this agent, not Analytics, alongside the cap tools (task 1.3). In task 1.4
+this agent becomes the second member of the GM's Team. Its `role` is what the GM will
+read when deciding whether to delegate to it.
 """
 
 import json
+import sys
+from pathlib import Path
 
 from agno.agent import Agent
 from agno.tools.mcp import MCPTools
+from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
 
 from agents.analytics import TOOL_CALL_LIMIT, specialist_model
 from agents.tools import list_teams
+
+PROJECT_ROOT = Path(__file__).parent.parent
+
+# This agent's own slice of the League Office's tools - the data it needs plus
+# every legality check (trade, cap), none of which Analytics gets.
+CAP_CONTRACTS_TOOLS = ["list_teams", "get_roster", "get_league_rules", "check_trade",
+                       "validate_cap_compliance", "check_cap_fit"]
+
+
+def league_office_tools(db_file: Path | None = None) -> MCPTools:
+    """The League Office server's tools this agent needs. Connect with `async with`
+    before running the agent. Pass a save file to serve that game instead of the
+    default league."""
+    args = ["-m", "servers.league_office"] + (["--db", str(Path(db_file).resolve())] if db_file else [])
+    server = StdioServerParameters(command=sys.executable, args=args, cwd=str(PROJECT_ROOT))
+    return MCPTools(server_params=server, transport="stdio", include_tools=CAP_CONTRACTS_TOOLS)
 
 PARSER_PROMPT = (
     "The user message is a cap report written by the salary cap and contracts director of an "
@@ -72,6 +93,9 @@ def build_cap_contracts_agent(league_office: MCPTools, debug: bool = False) -> A
             "tool gives it: the salary the team must send away or cut first.",
             "If no specific team or move is named, or you're asked to confirm the whole league is "
             "legal, call validate_cap_compliance instead and report any teams it flags as over the cap.",
+            "For a proposed trade (players moving between two teams), call check_trade instead: it "
+            "reports every rule the trade would break (cap, roster size, trade deadline) under the "
+            "league as it stands, without making the trade.",
             "Cite the exact payroll, cap space and salary figures in $M, as the tools give them, as "
             "your evidence.",
             "Tool results do not change during a run: call each tool at most once per team or move, "

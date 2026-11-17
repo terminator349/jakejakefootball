@@ -137,8 +137,7 @@ def test_agent_sees_the_league_office_tools():
     async def go():
         async with league_office_tools() as league_office:
             return set(league_office.functions)
-    assert asyncio.run(go()) == {"list_teams", "get_roster", "compare_to_league", "get_league_rules",
-                                 "validate_cap_compliance", "check_cap_fit"}
+    assert asyncio.run(go()) == {"list_teams", "get_roster", "compare_to_league", "get_league_rules"}
 
 
 def test_agent_has_loop_guards():
