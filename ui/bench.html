@@ -25,15 +25,8 @@ pre { font: 12px/1.45 var(--mono); background: var(--bg); border: 1px solid var(
 .toolcard { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0; cursor: pointer; }
 .toolcard:hover { border-color: var(--accent); }
 .toolcard .desc { color: var(--muted); font-size: 12px; white-space: pre-wrap; max-height: 3.2em; overflow: hidden; }
-details.call { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
-details.call summary { cursor: pointer; font: 13px var(--mono); }
 .examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
 .examples button { font-size: 12px; }
-.report dt { color: var(--muted); font-size: 12px; margin-top: 8px; }
-.report dd { margin: 2px 0 0; }
-.stats { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
-.spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; }
-@keyframes spin { to { transform: rotate(360deg); } }
 span[data-box] { cursor: pointer; text-decoration: underline dotted; }
 </style>
 </head>
@@ -48,7 +41,7 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
     <button data-tab="league">League</button>
     <button data-tab="trades">Trades</button>
     <button data-tab="mcp">League Office (MCP)</button>
-    <button data-tab="agent">Analytics agent</button>
+    <button data-tab="agent">Agents</button>
   </nav>
 </header>
 
@@ -169,23 +162,27 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
     </div>
   </section>
 
-  <!-- Analytics agent -->
+  <!-- Agents -->
   <section class="tab" id="tab-agent">
     <div class="grid">
       <div class="card">
-        <h2>Ask the Analytics agent <span class="sub">0.2 · 1.1</span></h2>
-        <p class="note">Runs the real agent (DeepSeek V4.1 Flash through OpenRouter) against the loaded league, through the League Office MCP server. A run takes 20-60 seconds and uses a little of your OpenRouter credit.</p>
+        <h2>Ask an agent <span class="sub" id="agent-task"></span></h2>
+        <div class="row"><select id="agent-pick">
+          <option value="gm">General Manager, leading Analytics, Cap &amp; Contracts and Draft</option>
+          <option value="analytics">Analytics</option>
+          <option value="cap">Cap &amp; Contracts</option></select></div>
+        <p class="note" id="agent-about"></p>
         <div class="examples" id="examples"></div>
-        <textarea id="question" rows="3">We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?</textarea>
+        <textarea id="question" rows="3"></textarea>
         <div class="row"><button class="btn primary" id="ask">Run agent</button><span class="note" id="ask-status"></span></div>
         <div id="agent-stats" class="stats"></div>
       </div>
       <div class="card">
-        <h2>Report <span class="sub">RosterReport, grounded in the data</span></h2>
+        <h2>Report <span class="sub" id="report-kind"></span></h2>
         <div id="report"><p class="empty">No run yet.</p></div>
       </div>
       <div class="card" style="grid-column: 1 / -1">
-        <h2>Tool calls <span class="sub">what the agent asked the League Office</span></h2>
+        <h2 id="calls-title">Tool calls</h2>
         <div id="calls"><p class="empty">No run yet.</p></div>
       </div>
     </div>
@@ -401,38 +398,51 @@ async function callMcp() {
   } catch (e) { $("#mcp-call-time").textContent = ""; fail(e); }
 }
 
-// ---- agent ------------------------------------------------------------
-const EXAMPLES = [
-  "We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?",
-  "How does our offensive line compare to the league?",
-  "Which team has the best secondary, and how much cap space do they have?",
-  "Is our quarterback worth his contract?",
-];
+// ---- agents -----------------------------------------------------------
+const AGENTS = {
+  gm: { task: "1.4", report: "GMReport, grounded in the data", calls: "Who the GM asked, and what each specialist did",
+    about: "Runs the GM's Agno team against the loaded league: the GM decides which specialists to ask, writes each a task, and combines their answers. Analytics and Cap & Contracts each start their own League Office server; Draft reads Draft Day's results. A run takes 1-2 minutes.",
+    examples: ["We're 1 game out of a playoff spot. Where is our roster weakest, and can we afford a player who fixes it?",
+      "Can we afford a $6M safety, and would one fix our secondary?",
+      "Which team did best on Draft Day, and what did we take at cornerback?",
+      "Is our quarterback worth his contract, and what would cutting him free up?"] },
+  analytics: { task: "0.2 · 1.1", report: "RosterReport, grounded in the data", calls: "Tool calls: what Analytics asked the League Office",
+    about: "Runs the Analytics agent on its own, through the League Office MCP server. A run takes 20-60 seconds.",
+    examples: ["We're 1 game out of a playoff spot. Where is our roster weakest, and what should we look for?",
+      "How does our offensive line compare to the league?",
+      "Which team has the best secondary, and how much cap space do they have?",
+      "Is our quarterback worth his contract?"] },
+  cap: { task: "1.3", report: "CapReport, grounded in the data", calls: "Tool calls: what Cap & Contracts asked the League Office",
+    about: "Runs the Cap & Contracts agent on its own, through the League Office MCP server. A run takes 20-60 seconds.",
+    examples: ["Is every team in the league legal under the $255M hard cap right now?",
+      "Can we sign a free agent safety for $6M a year?",
+      "Would trading HAR-46 for SUM-45 break any rule?"] },
+};
+const agentPick = () => $("#agent-pick").value;
+function showAgent() {
+  const a = AGENTS[agentPick()];
+  $("#agent-task").textContent = a.task;
+  $("#agent-about").textContent = a.about + " Every run uses a little of your OpenRouter credit (DeepSeek V4.1 Flash).";
+  $("#examples").innerHTML = a.examples.map(q => `<button class="btn sm">${esc(q)}</button>`).join("");
+  $("#question").value = a.examples[0];
+  $("#report-kind").textContent = a.report;
+  $("#calls-title").textContent = a.calls;
+}
 async function runAgent() {
   const q = $("#question").value.trim(); if (!q) return;
-  const started = Date.now();
-  $("#ask").disabled = true;
+  const which = agentPick(), started = Date.now();
+  $("#ask").disabled = $("#agent-pick").disabled = true;
   const timer = setInterval(() => $("#ask-status").innerHTML = `<span class="spin"></span> running… ${Math.round((Date.now() - started) / 1000)}s`, 500);
   try {
-    const r = await call("/api/agent/analytics", { question: q });
-    const rep = r.report;
-    $("#report").innerHTML = rep ? `<dl class="report">
-      <dt>Answer</dt><dd>${esc(rep.answer)}</dd>
-      <dt>Weakest area</dt><dd><b>${esc(rep.weakest_area)}</b> <span class="pos">${esc(rep.team_id)}</span></dd>
-      <dt>Evidence</dt><dd><ul>${rep.evidence.map(e => `<li>${esc(e)}</li>`).join("")}</ul></dd>
-      <dt>Target profile</dt><dd>${esc(rep.target_profile)}</dd>
-      <dt>Payroll · cap space (from the league)</dt><dd>${money(rep.payroll)} · ${money(rep.cap_space)}</dd></dl>`
-      : `<p class="note">The agent didn't return a RosterReport. Its text:</p><pre>${esc(r.text)}</pre>`;
-    $("#calls").innerHTML = r.tool_calls.length ? r.tool_calls.map((c, i) => {
-      let body = c.result; try { body = JSON.stringify(JSON.parse(c.result), null, 2); } catch {}
-      return `<details class="call"><summary>${i + 1}. ${c.tool}(${esc(JSON.stringify(c.args))}) ${c.error ? `<span class="badge bad">error</span>` : ""}</summary><pre>${esc(body)}</pre></details>`;
-    }).join("") : `<p class="empty">The agent made no tool calls.</p>`;
-    $("#agent-stats").innerHTML = `<span>${r.seconds}s</span><span>${r.tool_calls.length} tool calls</span>
-      ${r.input_tokens != null ? `<span>${r.input_tokens} in / ${r.output_tokens} out tokens</span>` : ""}
-      ${r.cost != null ? `<span>$${Number(r.cost).toFixed(5)}</span>` : ""}<span>${esc(r.model || "")}</span>`;
+    const r = await call(`/api/agent/${which}`, { question: q });
+    $("#report").innerHTML = r.report
+      ? (which === "gm" ? `<p class="note">Asked: ${r.consulted.map(esc).join(", ") || "no one"}</p>` : "") + reportHtml(r.report)
+      : `<p class="note">The agent didn't return its report. Its text:</p><pre>${esc(r.text)}</pre>`;
+    $("#calls").innerHTML = which === "gm" ? frontOfficeHtml(r, true) : toolCallsHtml(r.tool_calls);
+    $("#agent-stats").innerHTML = runStatsHtml(r);
     $("#ask-status").textContent = "Done.";
   } catch (e) { $("#ask-status").textContent = ""; fail(e); }
-  finally { clearInterval(timer); $("#ask").disabled = !state.status.api_key_set; }
+  finally { clearInterval(timer); $("#ask").disabled = !state.status.api_key_set; $("#agent-pick").disabled = false; }
 }
 
 // ---- events -----------------------------------------------------------
@@ -506,7 +516,8 @@ $("#mcp-list").onclick = listMcp;
 $("#mcp-tool").onchange = e => pickMcp(e.target.value);
 $("#mcp-call").onclick = callMcp;
 $("#ask").onclick = runAgent;
-$("#examples").innerHTML = EXAMPLES.map(q => `<button class="btn sm">${esc(q)}</button>`).join("");
+$("#agent-pick").onchange = showAgent;
+showAgent();
 $("#examples").onclick = e => { if (e.target.tagName === "BUTTON") $("#question").value = e.target.textContent; };
 
 // ---- start ------------------------------------------------------------

@@ -100,3 +100,16 @@ table.drives td.how { white-space: normal; }
 .card h3 { font-size: 14px; margin: 14px 0 8px; display: flex; align-items: center; gap: 8px; }
 .card h3 .sub { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: auto; }
 a { color: var(--accent); }
+/* The agents' reports and runs (bench and game) */
+details.call { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin: 6px 0; }
+details.call summary { cursor: pointer; font: 13px var(--mono); overflow-wrap: anywhere; }
+details.call pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+details.specialist { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+details.specialist summary { cursor: pointer; }
+details.specialist .task { font-size: 13px; white-space: pre-wrap; margin: 8px 0; padding: 8px 10px; background: var(--bg); border-radius: 6px; }
+.report dt { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.report dd { margin: 2px 0 0; }
+.report ul { margin: 2px 0; padding-left: 18px; }
+.stats { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
+.spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; }
+@keyframes spin { to { transform: rotate(360deg); } }

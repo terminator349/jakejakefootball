@@ -73,7 +73,7 @@ GM briefing
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
 | W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                 |
 | W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7         |
-| W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3, G7               |
+| W5   | Nov 23 - 29    | 3.1, 1.3, 1.4 (done early), G3, G7  |
 | W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8 (done early)           |
 | W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8 (done early)       |
 | W8   | Dec 14 - 20    | 2.2, G5                             |
@@ -206,10 +206,18 @@ them to the draft's in-memory teams, but both call the same
 `agents.tools.cap_math`, so there is one cap rule and one cap tool
 implementation for the whole project.
 
-### 1.4 GM team: first agent-to-agent link (W5)
+### 1.4 GM team: first agent-to-agent link (W5) - Done
 A General Manager agent leads Analytics and Cap & Contracts as an Agno team,
 deciding which specialist to ask and combining their answers. In the game, the
 GM is the one the owner talks to (menu option 1).
+
+Done Nov 17, ahead of W5. The GM leads every agent built so far: Analytics,
+Cap & Contracts, and a new Draft desk that reads Draft Day's results, since the
+Draft GM agent itself only makes picks. Specialists see each other's answers
+within a question, so a cap check can use the salary Analytics found. In the
+game, **Ask the front office** on the week screen goes to the GM, and the
+answer shows who was asked and what each said; the bench's Agents tab runs the
+GM or either specialist on its own.
 
 ### G3 Weekly GM briefing (W5)
 At the start of each week, the GM writes a short briefing: record, last week's

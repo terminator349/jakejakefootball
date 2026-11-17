@@ -8,7 +8,7 @@ schedule and cap, play the week (sim or watch our game), save and quit.
 /bench is the test bench: one page over the real code, for trying out
 everything built so far: the league tools, the rule checks, saves and the
 season, the League Office MCP server (started over stdio, as the agents start
-it) and the Analytics agent.
+it) and the agents: Analytics, Cap & Contracts, and the GM who leads them (1.4).
 
 Both pages share ui/static/ and read and change the same loaded league.
 """
@@ -200,30 +200,46 @@ async def mcp_call(request, body):
             "text": text, "json": parsed}
 
 
-# ---- The Analytics agent ---------------------------------------------------
+# ---- The agents ---------------------------------------------------------------
 
-async def run_analytics(request, body):
-    from agents.analytics import RosterReport, build_analytics_agent, ground_report, league_office_tools
-
+def _question(body) -> str:
     question = (body.get("question") or "").strip()
     if not question:
         raise ValueError("Type a question for the agent.")
     if not os.getenv("OPENROUTER_API_KEY"):
         raise ValueError("OPENROUTER_API_KEY is not set. Add it to .env and restart the UI.")
+    return question
 
+
+async def run_analytics(request, body):
+    from agents.analytics import RosterReport, build_analytics_agent, ground_report, league_office_tools
+    return await _run_specialist(_question(body), league_office_tools, build_analytics_agent,
+                                 RosterReport, ground_report)
+
+
+async def run_cap_contracts(request, body):
+    from agents.cap_contracts import CapReport, build_cap_contracts_agent, ground_report, league_office_tools
+    return await _run_specialist(_question(body), league_office_tools, build_cap_contracts_agent,
+                                 CapReport, ground_report)
+
+
+async def run_gm(request, body):
+    """The GM's team (1.4): the GM delegates to Analytics, Cap & Contracts and Draft."""
+    from agents import gm
+    return await gm.ask(_question(body), _db_for_agents())
+
+
+async def _run_specialist(question, league_office_tools, build, report_type, ground_report):
     started = time.perf_counter()
     async with league_office_tools(_db_for_agents()) as league_office:
-        response = await build_analytics_agent(league_office).arun(question)
+        response = await build(league_office).arun(question)
     elapsed = time.perf_counter() - started
 
-    calls = []
-    for call in response.tools or []:
-        result = call.result if isinstance(call.result, str) else json.dumps(call.result, default=str)
-        calls.append({"tool": call.tool_name, "args": call.tool_args, "error": bool(call.tool_call_error),
-                      "result": result})
+    from agents.gm import tool_calls
+    calls = tool_calls(response)
     metrics = response.metrics
     content = response.content
-    report = ground_report(content).model_dump() if isinstance(content, RosterReport) else None
+    report = ground_report(content).model_dump() if isinstance(content, report_type) else None
     return {"report": report, "text": None if report else str(content), "tool_calls": calls,
             "seconds": round(elapsed, 1), "model": response.model,
             "input_tokens": getattr(metrics, "input_tokens", None),
@@ -237,7 +253,7 @@ async def hub(request, body):
     """The week as the owner sees it. The game only plays saves, never the default league."""
     if active_save() is None:
         return {"save": None}
-    return {"save": active_save(), **game_loop.overview()}
+    return {"save": active_save(), **game_loop.overview(), "api_key_set": bool(os.getenv("OPENROUTER_API_KEY"))}
 
 
 def _needs_a_save():
@@ -253,6 +269,12 @@ async def hub_play(request, body):
 async def hub_advance(request, body):
     _needs_a_save()
     return {"week": season.advance_week()}
+
+
+async def hub_ask(request, body):
+    """Ask the front office: the owner talks to the GM, who asks the specialists (1.4)."""
+    _needs_a_save()
+    return await run_gm(request, body)
 
 
 async def hub_schedule(request, body):
@@ -310,6 +332,7 @@ app = Starlette(routes=[
     Route("/api/hub/play", api(hub_play), methods=["POST"]),
     Route("/api/hub/advance", api(hub_advance), methods=["POST"]),
     Route("/api/hub/schedule", api(hub_schedule)),
+    Route("/api/hub/ask", api(hub_ask), methods=["POST"]),
     Route("/api/live", api(live_state)),
     Route("/api/live/start", api(live_start), methods=["POST"]),
     Route("/api/live/call", api(live_call), methods=["POST"]),
@@ -337,6 +360,8 @@ app = Starlette(routes=[
     Route("/api/mcp/tools", api(mcp_tools)),
     Route("/api/mcp/call", api(mcp_call), methods=["POST"]),
     Route("/api/agent/analytics", api(run_analytics), methods=["POST"]),
+    Route("/api/agent/cap", api(run_cap_contracts), methods=["POST"]),
+    Route("/api/agent/gm", api(run_gm), methods=["POST"]),
 ])
 
 

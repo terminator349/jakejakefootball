@@ -30,6 +30,12 @@ ul.notes { margin: 0; padding-left: 18px; } ul.notes li { margin: 5px 0; }
 .soon { display: flex; flex-direction: column; gap: 6px; }
 .soon button { text-align: left; display: flex; justify-content: space-between; gap: 10px; }
 .soon .when { color: var(--muted); font-size: 12px; }
+.soon.inline { flex-direction: row; flex-wrap: wrap; margin-top: 12px; }
+.ask-examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.ask-examples button { font-size: 12px; }
+.gm-answer { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.gm-answer .lead { font-size: 15px; margin: 6px 0 10px; }
+.gm-answer ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13px; }
 .result-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .result-head .scoreline { margin: 0; }
 .games div { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
@@ -189,10 +195,53 @@ function matchup(tw, t) {
   return `<div class="versus">${tw.home ? them + `<div class="at">at</div>` + us : us + `<div class="at">at</div>` + them}</div>`;
 }
 const SOON = [
-  ["Ask the front office", "1.4: the GM and its specialists"],
   ["Give an order", "G4: e.g. \"upgrade safety, stay under $5M\""],
   ["Review proposed moves", "G4: approve or veto each one"],
 ];
+
+// ---- Ask the front office (1.4): the owner asks the GM, the GM asks its specialists ----
+const ASK_EXAMPLES = [
+  "Where is our roster weakest, and can we afford a player who fixes it?",
+  "Can we afford a $6M safety?",
+  "How did we do on Draft Day?",
+];
+const ask = { question: ASK_EXAMPLES[0], run: null, asked: null, started: null };
+function askCard() {
+  const keyless = !H.api_key_set;
+  return `<div class="card" style="grid-column: 1 / -1"><h2>Ask the front office <span class="sub">your GM, Analytics, Cap &amp; Contracts and Draft</span></h2>
+    <textarea id="ask-q" rows="2" ${ask.started ? "disabled" : ""}>${esc(ask.question)}</textarea>
+    <div class="ask-examples">${ASK_EXAMPLES.map(q => `<button class="btn sm" data-ask-example ${ask.started ? "disabled" : ""}>${esc(q)}</button>`).join("")}</div>
+    <div class="row"><button class="btn primary" data-act="ask" ${keyless || ask.started ? "disabled" : ""}>Ask the GM</button>
+      <span class="note" id="ask-status">${keyless ? "The front office needs OPENROUTER_API_KEY in .env (then restart the server)."
+        : ask.started ? askWaiting() : "Your GM decides which specialists to ask. An answer takes a minute or two."}</span></div>
+    <div id="ask-answer">${ask.run ? askAnswer(ask.run) : ""}</div>
+    <div class="soon inline">${SOON.map(([what, when]) => `<button class="btn" disabled><span>${what}</span><span class="when">${esc(when)}</span></button>`).join("")}</div>
+  </div>`;
+}
+const askWaiting = () => `<span class="spin"></span> The GM is on it… ${Math.round((Date.now() - ask.started) / 1000)}s`;
+function askAnswer(r) {
+  const rep = r.report;
+  const who = r.consulted.length ? `Your GM asked ${r.consulted.join(" and ").replace(/ and (?=.* and )/g, ", ")}.` : "Your GM answered without asking anyone.";
+  const head = `<p class="note">You asked: “${esc(ask.asked)}” ${esc(who)}</p>`;
+  if (!rep) return `<div class="gm-answer">${head}<p class="lead">${esc(r.text)}</p></div>`;
+  const rec = rep.recommendation && rep.recommendation.toLowerCase() !== "none" ? `<p><b>Recommendation:</b> ${esc(rep.recommendation)}</p>` : "";
+  return `<div class="gm-answer">${head}<p class="lead">${esc(rep.answer)}</p>${rec}
+    ${rep.evidence.length ? `<ul>${rep.evidence.map(e => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}
+    <p class="note">Our payroll ${money(rep.payroll)}, cap space ${money(rep.cap_space)} (from the league).</p>
+    <h3>How the front office got there <span class="sub">${r.seconds}s${r.cost != null ? ` · $${Number(r.cost).toFixed(4)}` : ""}</span></h3>
+    ${frontOfficeHtml(r)}</div>`;
+}
+async function askGM() {
+  const q = ($("#ask-q")?.value || ask.question).trim();
+  if (!q) return toast("Type a question for your GM.", "bad");
+  Object.assign(ask, { question: q, started: Date.now() });
+  if (currentTab() === "week") await weekView();
+  const tick = setInterval(() => { const el = $("#ask-status"); if (el) el.innerHTML = askWaiting(); }, 500);
+  try { Object.assign(ask, { run: await call("/api/hub/ask", { question: q }), asked: q }); }
+  catch (e) { fail(e); }
+  finally { clearInterval(tick); ask.started = null; if (currentTab() === "week" && !gameDay && !live) await weekView(); }
+}
+document.addEventListener("input", e => { if (e.target.id === "ask-q") ask.question = e.target.value; });
 async function weekView() {
   const el = $("#tab-week");
   if (gameDay) return;                       // the game-day view is on screen
@@ -218,11 +267,9 @@ async function weekView() {
     <div class="card"><h2>Front office notes <span class="sub">from the league data</span></h2>
       <ul class="notes">${H.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>
       <p class="note">Your GM's weekly briefing replaces these notes with G3.</p></div>
-    <div class="card"><h2>The front office <span class="sub">arriving with the agents</span></h2>
-      <div class="soon">${SOON.map(([what, when]) => `<button class="btn" disabled><span>${what}</span><span class="when">${esc(when)}</span></button>`).join("")}</div>
-      <p class="note">Until then the roster stays as it is, and the week is yours to play.</p></div>
     <div class="card"><h2>Around the league <span class="sub">week ${H.week}</span></h2>
       <div class="games">${others.map(g => `<div><span>${g.away_team_id} at ${g.home_team_id}</span><span class="note">${g.home_score === null ? "not played" : `${g.away_score}-${g.home_score}`}</span></div>`).join("")}</div></div>
+    ${askCard()}
   </div>`;
 }
 function resultsView(el, season) {
@@ -469,13 +516,15 @@ $("#new-game").onsubmit = async e => {
   } catch (err) { fail(err); }
 };
 document.addEventListener("click", async e => {
-  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos],[data-call]");
+  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos],[data-call],[data-ask-example]");
   if (!t || t.disabled) return;
   try {
     if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); await refresh(); }
     else if (t.dataset.box) await openViewer(t.dataset.box, "box");
     else if (t.dataset.replay) await openViewer(t.dataset.replay, "replay");
     else if (t.dataset.pos !== undefined) { rosterPos = t.dataset.pos; await rosterView(); }
+    else if (t.dataset.askExample !== undefined) { ask.question = t.textContent; $("#ask-q").value = ask.question; }
+    else if (t.dataset.act === "ask") await askGM();
     else if (t.dataset.act === "sim") await playWeek(false);
     else if (t.dataset.act === "watch") await playWeek(true);
     else if (t.dataset.call) await liveAction("/api/live/call", { game_id: live.game_id, call: t.dataset.call });
