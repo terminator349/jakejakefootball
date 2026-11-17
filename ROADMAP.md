@@ -73,7 +73,7 @@ GM briefing
 | W2   | Nov 2 - Nov 8  | 1.1 (done)                          |
 | W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                 |
 | W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7         |
-| W5   | Nov 23 - 29    | 3.1, 1.3, 1.4 (done early), G3, G7  |
+| W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3 (done early), G7  |
 | W6   | Nov 30 - Dec 6 | 1.5, 2.1, G8 (done early)           |
 | W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8 (done early)       |
 | W8   | Dec 14 - 20    | 2.2, G5                             |
@@ -219,10 +219,16 @@ game, **Ask the front office** on the week screen goes to the GM, and the
 answer shows who was asked and what each said; the bench's Agents tab runs the
 GM or either specialist on its own.
 
-### G3 Weekly GM briefing (W5)
+### G3 Weekly GM briefing (W5) - Done
 At the start of each week, the GM writes a short briefing: record, last week's
 results, the biggest weakness and cap space, with every number from the league
 data.
+
+Done Nov 17, ahead of W5. Plain Python gathers the week's facts; the GM writes
+from them, and a check rejects any number that isn't in them (a failed draft
+goes back once with the numbers named, then the plain notes stand in). Each
+week's briefing is kept in the save. The front-office-memo skill (1.5) will
+shape its style.
 
 ### 1.5 Skills: cap rules, player valuation, memos (W6)
 Markdown know-how plus helper scripts in `skills/`: `salary-cap-rules`,

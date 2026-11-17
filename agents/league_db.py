@@ -33,7 +33,8 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 # 0 (SQLite's default): tasks 1.1 - 1.2. 1: task G1 adds the game tables.
 # 2: task 3.1 adds play logs and player game stats.
 # 3: task G8 adds games in progress, where the owner calls the plays.
-SCHEMA_VERSION = 3
+# 4: task G3 adds the GM's weekly briefings.
+SCHEMA_VERSION = 4
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -167,9 +168,20 @@ CREATE TABLE IF NOT EXISTS live_games (
 );
 """
 
+BRIEFING_SCHEMA = """
+-- The GM's briefing for each week (task G3), written once and kept, so the owner
+-- reads the same one every time. Only briefings whose numbers checked out are kept.
+CREATE TABLE IF NOT EXISTS briefings (
+    week     INTEGER PRIMARY KEY,
+    briefing TEXT NOT NULL,                        -- JSON: headline, paragraphs, watch
+    written  TEXT NOT NULL,                        -- when, in UTC
+    cost     REAL                                  -- what the model calls cost, in $
+);
+"""
+
 # How to bring an older database up to date, by the version it is at. A version not
 # listed here can't be upgraded: data/league.db is rebuilt, and a save is refused.
-MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA}
+MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -195,7 +207,7 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA)
+        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}

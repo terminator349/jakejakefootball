@@ -29,7 +29,7 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import game_loop, league_db, live, rules, saves, season, tools
+from agents import briefing, game_loop, league_db, live, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -253,7 +253,9 @@ async def hub(request, body):
     """The week as the owner sees it. The game only plays saves, never the default league."""
     if active_save() is None:
         return {"save": None}
-    return {"save": active_save(), **game_loop.overview(), "api_key_set": bool(os.getenv("OPENROUTER_API_KEY"))}
+    week = game_loop.overview()
+    return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
+            "briefing": None if week["season_over"] else briefing.stored(week["week"])}  # G3, once written
 
 
 def _needs_a_save():
@@ -269,6 +271,14 @@ async def hub_play(request, body):
 async def hub_advance(request, body):
     _needs_a_save()
     return {"week": season.advance_week()}
+
+
+async def hub_briefing(request, body):
+    """This week's GM briefing (G3): the one in the save, or the GM writes it now."""
+    _needs_a_save()
+    if not os.getenv("OPENROUTER_API_KEY"):
+        raise ValueError("The GM's briefing needs OPENROUTER_API_KEY in .env (then restart the server).")
+    return await briefing.this_week()
 
 
 async def hub_ask(request, body):
@@ -333,6 +343,7 @@ app = Starlette(routes=[
     Route("/api/hub/advance", api(hub_advance), methods=["POST"]),
     Route("/api/hub/schedule", api(hub_schedule)),
     Route("/api/hub/ask", api(hub_ask), methods=["POST"]),
+    Route("/api/hub/briefing", api(hub_briefing), methods=["POST"]),
     Route("/api/live", api(live_state)),
     Route("/api/live/start", api(live_start), methods=["POST"]),
     Route("/api/live/call", api(live_call), methods=["POST"]),
