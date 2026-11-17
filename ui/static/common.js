@@ -174,3 +174,46 @@ class WatchView {
     if (done && !this.ended) { this.ended = true; this.onEnd?.(); }
   }
 }
+
+// ---- The agents' reports (0.2, 1.3) and the GM's team (1.4) ------------------------
+const REPORT_LABELS = { answer: "Answer", recommendation: "Recommendation", weakest_area: "Weakest area",
+  target_profile: "Target profile", evidence: "Evidence", fits_under_cap: "Fits under the cap",
+  salary_to_clear: "Salary to clear", payroll: "Payroll (from the league)", cap_space: "Cap space (from the league)" };
+const MONEY_FIELDS = ["payroll", "cap_space", "salary_to_clear"];
+
+function reportHtml(rep) {
+  if (!rep || typeof rep !== "object") return `<pre>${esc(rep ?? "")}</pre>`;
+  const value = (k, v) => Array.isArray(v) ? `<ul>${v.map(e => `<li>${esc(e)}</li>`).join("")}</ul>`
+    : typeof v === "boolean" ? (v ? "Yes" : "No") : MONEY_FIELDS.includes(k) ? money(v) : esc(v);
+  return `<dl class="report">${Object.entries(rep).filter(([k]) => k !== "team_id").map(([k, v]) =>
+    `<dt>${REPORT_LABELS[k] || esc(k)}${k === "answer" && rep.team_id ? ` <span class="pos">${esc(rep.team_id)}</span>` : ""}</dt>
+     <dd>${value(k, v)}</dd>`).join("")}</dl>`;
+}
+function toolCallsHtml(calls) {
+  if (!calls.length) return `<p class="empty">No tool calls.</p>`;
+  return calls.map((c, i) => {
+    let body = c.result; try { body = JSON.stringify(JSON.parse(c.result), null, 2); } catch {}
+    return `<details class="call"><summary>${i + 1}. ${esc(c.tool)}(${esc(JSON.stringify(c.args))}) ${c.error ? `<span class="badge bad">error</span>` : ""}</summary><pre>${esc(body)}</pre></details>`;
+  }).join("");
+}
+function runStatsHtml(r) {
+  const calls = r.tool_calls ? r.tool_calls.length : r.specialists.reduce((n, s) => n + s.tool_calls.length, 0);
+  return `<span>${r.seconds}s</span>${r.delegations ? `<span>${r.delegations.length} delegations</span>` : ""}<span>${calls} tool calls</span>
+    ${r.input_tokens != null ? `<span>${r.input_tokens} in / ${r.output_tokens} out tokens</span>` : ""}
+    ${r.cost != null ? `<span>$${Number(r.cost).toFixed(4)}</span>` : ""}<span>${esc(r.model || "")}</span>`;
+}
+// Who the GM asked, the task it wrote for each, what each specialist said and, with
+// `withTools`, the raw tool calls behind it (the bench shows them; the game doesn't).
+const memberKey = s => String(s || "").toLowerCase().replace(/[^a-z]/g, "");
+function frontOfficeHtml(r, withTools = false) {
+  if (!r.specialists.length) return `<p class="empty">The GM answered without asking a specialist.</p>`;
+  const tasks = r.delegations.slice();
+  return r.specialists.map(s => {
+    const i = tasks.findIndex(d => memberKey(d.member) === memberKey(s.name));
+    const task = i >= 0 ? tasks.splice(i, 1)[0].task : null;
+    const tools = s.tool_calls.map(c => c.tool).join(", ") || "no tools";
+    return `<details class="specialist"><summary><b>${esc(s.name)}</b> <span class="note">${s.tool_calls.length} tool calls: ${esc(tools)}</span></summary>
+      ${task ? `<p class="task"><span class="note">The GM asked:</span> ${esc(task)}</p>` : ""}
+      ${reportHtml(s.report)}${withTools ? `<h3>Tool calls</h3>${toolCallsHtml(s.tool_calls)}` : ""}</details>`;
+  }).join("");
+}

@@ -26,6 +26,7 @@ private/    slides, scripts, proposal, schedule exports (git-ignored, never post
 ROADMAP.md  the build plan, task by task
 run.py      entry point (Analytics agent)
 check_cap.py entry point (Cap & Contracts agent)
+ask_gm.py   entry point (the GM and its specialists)
 draft_day.py entry point (draft simulator)
 ```
 
@@ -45,16 +46,19 @@ python data/generate_league.py
 python -m ui.server      # then open http://127.0.0.1:8765
 ```
 
-No API key is needed: the agents join the game as they are built.
+No API key is needed to play. Asking the front office needs `OPENROUTER_API_KEY`
+in `.env`; the other agents join the game as they are built.
 
 1. **Start a game.** Give it a name (and a seed if you want a season you can
    repeat). Each game is its own save in `saves/`, saved as you play. Continue
    or load a game from the same screen.
 2. **Each week** shows the matchup, both records, and front-office notes read
    from the league: last week's result, our weakest and strongest spots, the
-   trade deadline and the cap. The GM's own briefing replaces the notes in G3,
-   and the orders and proposed moves from the roadmap's sketch show what they
-   wait on (1.4, G4).
+   trade deadline and the cap. The GM's own briefing replaces the notes in G3.
+   **Ask the front office** puts any question to your GM, who asks Analytics,
+   Cap & Contracts or Draft and answers you with a recommendation, the numbers
+   behind it and what each specialist said (1.4, below). Orders and proposed
+   moves show what they wait on (G4).
 3. **Play the week.** **Sim it** plays every game and shows the results.
    **Watch it** plays the week, then shows our game drive by drive, with a
    scoreboard and the ball on the field, before any other score. **Call it**
@@ -119,8 +123,10 @@ http://127.0.0.1:8765/bench on the same server as the game:
   or make it, and see the move log.
 - **League Office (MCP)**: starts the server over stdio, as the agents do, lists
   its tools and calls any of them with your arguments.
-- **Analytics agent**: asks the real agent a question (needs `OPENROUTER_API_KEY`
-  in `.env`) and shows its report, every tool call and the run's tokens and cost.
+- **Agents**: asks the GM's team, Analytics or Cap & Contracts a question
+  (needs `OPENROUTER_API_KEY` in `.env`) and shows the report, every tool call
+  and the run's tokens and cost. For the GM: each task it gave a specialist, and
+  each specialist's report and tool calls.
 
 Everything reads and changes the loaded league: a save, or `data/league.db`
 when none is loaded. The page only listens on this computer, and restarting
@@ -311,6 +317,59 @@ pytest tests/test_cap_contracts.py                    # agent checks, no API key
 Done when: `check_cap_fit` correctly reports whether a hypothetical salary fits
 each team's cap space and how much must be cleared if it doesn't, and
 `validate_cap_compliance` confirms every team is at or under $255M.
+
+## 1.4: the GM's team, the first agent-to-agent link
+
+`agents/gm.py` puts a General Manager in charge of every agent built so far,
+as an Agno `Team` in coordinate mode. The owner asks the GM; the GM decides
+which specialists the question needs, writes each a specific task, and
+combines their answers. It has no data tools of its own, so every number it
+gives comes from a specialist.
+
+```
+Owner -> GM -> Analytics        League Office: rosters, ratings, rankings
+            -> Cap & Contracts  League Office: payroll, cap fit, trade checks
+            -> Draft            Draft Day results and the draft class
+```
+
+- **Specialists keep their own tools.** Analytics and Cap & Contracts each start
+  their own League Office server with their own slice of its tools, pointed at
+  the same league (the loaded save, in the game).
+- **They hand work on.** Later specialists see what earlier ones said in the
+  same run (`share_member_interactions`), so the GM can ask Analytics for the
+  weakness and a target salary, then ask Cap & Contracts whether that salary
+  fits.
+- **The Draft desk** (`agents/draft_desk.py`) is new. The Draft GM agent
+  (`draft/agent.py`) only makes picks, one at a time, so the GM's team gets a
+  desk that reads Draft Day's results (`data/draft_results.json`) through three
+  plain Python tools. `draft_summary` grades every team's class (average
+  overall, players rated 90+, market value against rookie salary, rank) so
+  teams compare in one call; `team_draft` and `best_undrafted` name the players.
+  Draft Day's rosters are not the league's, and the desk says so. When the
+  draft moves into the game (G7), these tools read the save's prospect pool.
+- **Grounded**: `GMReport` (answer, recommendation, evidence) is filled by a
+  parser model, as for the specialists. The money line is always our payroll
+  and cap space, from the league. `summarize()` adds who was asked, each task,
+  each specialist's grounded report and tool calls, and the run's total tokens
+  and cost (the GM's calls plus the specialists'). DeepSeek's structured output
+  now and then runs on into whitespace; then the GM's own text is parsed again
+  (up to twice), and if that fails too, the owner sees the GM's text as written.
+- **Guards**: at most six delegations a question, each specialist asked about
+  its own area only, and each with its own tool-call limit.
+
+A question takes from under a minute to about two and a half, and costs from a
+tenth of a cent to about two cents, depending on how many specialists it needs.
+
+```powershell
+python ask_gm.py                                                  # weakest spot, and can we afford a fix?
+python ask_gm.py "Which team did best on Draft Day?"
+python ask_gm.py --debug                          # every delegation, tool call and model message
+pytest tests/test_gm.py                           # team and Draft desk checks, no API key needed
+```
+
+Done when: the GM routes a question to the right specialists, passes one's
+findings to the next, and answers the owner with their numbers, in the game
+and on the bench.
 
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 

@@ -84,8 +84,20 @@ def test_league_office_over_stdio(client):
 
 def test_agent_needs_a_key(client, monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    response = client.post("/api/agent/analytics", json={"question": "Where are we weakest?"})
-    assert response.status_code == 400 and "OPENROUTER_API_KEY" in response.json()["error"]
+    for agent in ("analytics", "cap", "gm"):
+        response = client.post(f"/api/agent/{agent}", json={"question": "Where are we weakest?"})
+        assert response.status_code == 400 and "OPENROUTER_API_KEY" in response.json()["error"]
+    assert "Type a question" in client.post("/api/agent/gm", json={"question": " "}).json()["error"]
+
+
+def test_ask_the_front_office_in_the_game(client, monkeypatch):
+    monkeypatch.setattr(league_db, "DB_FILE", league_db.DB_FILE)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    assert "Start or load" in client.post("/api/hub/ask", json={"question": "Where?"}).json()["error"]
+    client.post("/api/saves/new", json={"name": "asking", "seed": "1"})
+    assert client.get("/api/hub").json()["api_key_set"] is False  # the page says why it can't ask
+    assert "OPENROUTER_API_KEY" in client.post("/api/hub/ask", json={"question": "Where?"}).json()["error"]
+    assert "Agents" in client.get("/bench").text and "function frontOfficeHtml" in client.get("/static/common.js").text
 
 
 def test_game_and_bench_pages(client):
