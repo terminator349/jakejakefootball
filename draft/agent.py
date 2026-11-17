@@ -1,12 +1,12 @@
 """The CPU GM: an LLM agent that makes one draft pick at a time.
 
-Called once per CPU pick (no tools - the shortlist and team context are
-already in the prompt), so a full draft is one completion call per CPU pick,
-not a tool-calling loop. Same model and parser_model pattern as
+Called once per CPU pick, given the same cap-checking tools as the Cap &
+Contracts agent (draft/tools.build_cap_tools, backed by agents.tools.cap_math)
+so it can confirm a pick is legal under the hard cap itself instead of only
+trusting the pre-filtered shortlist. Same model and parser_model pattern as
 agents/analytics.py, for the same reason: DeepSeek loops when a JSON schema
-is attached to a request that also has tools; a parser_model call avoids
-that even here, where there are no tools, so the structured output stays
-reliable call after call.
+is attached to a request that also has tools, so a parser_model call keeps
+the structured output reliable call after call.
 """
 
 import json
@@ -16,7 +16,9 @@ from agno.models.openrouter import OpenRouter
 from pydantic import BaseModel, Field
 
 DRAFT_MODEL = "deepseek/deepseek-v4.1-flash-1017"
-TOOL_CALL_LIMIT = 1
+# One cap check per pick, plus a safety margin, is enough; this is a hard stop
+# against a runaway loop, not an expected call count.
+TOOL_CALL_LIMIT = 3
 
 
 def draft_model() -> OpenRouter:
@@ -28,11 +30,12 @@ class PickDecision(BaseModel):
     reason: str = Field(description="One short sentence on why this player, for the draft log.")
 
 
-def build_draft_agent(debug: bool = False) -> Agent:
+def build_draft_agent(tools: list | None = None, debug: bool = False) -> Agent:
     return Agent(
         name="Draft GM",
         role="Makes a single NFL draft pick for one team, given its roster needs, cap room and a shortlist.",
         model=draft_model(),
+        tools=tools or [],
         instructions=[
             "You are the general manager making one pick in a 53-round amateur draft for your team.",
             "Choose exactly one player from the shortlist you're given - never invent a player or id "
@@ -40,7 +43,9 @@ def build_draft_agent(debug: bool = False) -> Agent:
             "Weigh the player's value against your team's open roster needs and your front office's "
             "stated philosophy. A slightly lower-value player who fills an urgent need can beat a "
             "slightly higher-value player at a position you've already filled.",
-            "Respect your remaining cap room: never pick a player whose cost would push you over it.",
+            "The salary cap is hard: going over it is illegal, not just taxed. If you have cap tools, "
+            "call check_cap_fit with the player's rookie salary before picking them, to confirm the "
+            "pick is legal; never pick a player whose cost would push you over the cap.",
         ],
         output_schema=PickDecision,
         parser_model=draft_model(),

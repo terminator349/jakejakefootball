@@ -1,10 +1,14 @@
-"""Roster shape, salary cap and rookie-contract rules for the draft.
+"""Roster shape and rookie-contract rules for the draft.
 
 A real 53-man NFL roster isn't 53 of whatever's best - it's a shape. These
 constants are what turn "draft the best player" into "draft the best player
 you're still allowed to roster," which is what makes "positions of need"
 mean something.
 """
+
+import json
+
+from agents.tools import get_league_rules
 
 TEAMS = [
     ("HAR", "Harbor City", "Herons"),
@@ -29,7 +33,9 @@ ROSTER_TEMPLATE = {
 }
 assert sum(ROSTER_TEMPLATE.values()) == 53
 
-SALARY_CAP = 220.0  # $M, hard cap - same rule as the Step 0/1 league, no overage allowed.
+# The same hard cap as the main league (data/league.json's rules), not a separate
+# number: the draft and the Cap & Contracts agent judge every team by the same rule.
+SALARY_CAP = json.loads(get_league_rules())["salary_cap"]
 
 # How much a position's market value and rookie salary get scaled relative to
 # a league-average player at the same overall rating. Rough real-world premium

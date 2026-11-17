@@ -112,3 +112,58 @@ def get_league_rules() -> str:
     """Get the league's rules: hard salary cap ($M), minimum/maximum roster size, games
     per season, trade deadline week, and how many players start at each position."""
     return json.dumps(load_league()["rules"])
+
+
+def _team_payroll(league: dict, team_id: str) -> float:
+    return sum(p["salary"] for p in league["players"] if p["team_id"] == team_id)
+
+
+def cap_math(payroll: float, new_salary: float, cap: float) -> dict:
+    """The salary-cap arithmetic behind every cap-fit check in this project.
+
+    Shared by check_cap_fit (the main SQLite league) and draft/tools.py (the
+    standalone draft's in-memory teams), so a pick or a signing is judged by
+    exactly the same rule and reported in the same shape everywhere.
+    """
+    cap_space = cap - payroll
+    return {
+        "salary_cap": cap, "payroll": round(payroll, 2), "cap_space_before": round(cap_space, 2),
+        "new_salary": round(new_salary, 2), "fits_under_cap": new_salary <= cap_space,
+        "cap_space_after": round(cap_space - new_salary, 2),
+        "salary_to_clear": round(max(0.0, new_salary - cap_space), 2),
+    }
+
+
+def validate_cap_compliance() -> str:
+    """Check every team's payroll against the league's hard salary cap and report which
+    teams, if any, are over it. Use this to confirm the whole league is legal, or when
+    no specific team or move is named."""
+    league = load_league()
+    cap = league["rules"]["salary_cap"]
+    teams = []
+    for team in league["teams"]:
+        payroll = _team_payroll(league, team["id"])
+        teams.append({"team_id": team["id"], "payroll": round(payroll, 2),
+                      "cap_space": round(cap - payroll, 2), "over_cap": payroll > cap})
+    over = [t for t in teams if t["over_cap"]]
+    return json.dumps({"salary_cap": cap, "all_teams_compliant": not over,
+                       "teams_over_cap": over, "teams": teams})
+
+
+def check_cap_fit(team_id: str, new_salary: float) -> str:
+    """Check whether signing or acquiring a player at a given salary ($M per season) fits
+    under one team's hard salary cap, and if not, exactly how much salary the team must
+    send away or cut first to make the move legal.
+
+    Args:
+        team_id: three-letter team id, e.g. "HAR". Use list_teams to find ids.
+        new_salary: the new contract's salary in $M per season.
+    """
+    league = load_league()
+    team_id = team_id.upper()
+    if team_id not in _team_ids(league):
+        return _unknown_team(league, team_id)
+
+    cap = league["rules"]["salary_cap"]
+    payroll = _team_payroll(league, team_id)
+    return json.dumps({"team_id": team_id, **cap_math(payroll, new_salary, cap)})

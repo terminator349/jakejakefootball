@@ -22,6 +22,7 @@ tests/      checks that run without an API key
 private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
 run.py      entry point (Analytics agent)
+check_cap.py entry point (Cap & Contracts agent)
 draft_day.py entry point (draft simulator)
 ```
 
@@ -83,13 +84,41 @@ Done when: an MCP client lists the four tools and gets the same JSON as the
 plain Python functions, both in-process and over stdio; the tools read
 rosters and contracts from SQLite; and the agent's answer still matches the data.
 
+## 1.3: the Cap & Contracts agent
+
+A second specialist, `agents/cap_contracts.py`, reads the same League Office
+server and answers whether a roster move is legal under the hard $255M cap.
+Two new read-only tools joined `servers/league_office.py`:
+`check_cap_fit(team_id, new_salary)` tests one new contract against a team's
+cap space and reports `salary_to_clear` if it doesn't fit; `validate_cap_compliance()`
+scans every team and flags any that are over the cap. The agent returns a
+structured `CapReport` (payroll, cap space, `fits_under_cap`, `salary_to_clear`),
+using the same DeepSeek V4.1 Flash + parser-model pattern as Analytics.
+
+```powershell
+python check_cap.py                                                  # is the league legal right now?
+python check_cap.py "Can we sign a free agent safety for $6M/year?"  # ask about a specific move
+python check_cap.py --debug                           # watch every tool call
+pytest tests/test_cap_contracts.py                    # agent checks, no API key needed
+```
+
+Done when: `check_cap_fit` correctly reports whether a hypothetical salary fits
+each team's cap space and how much must be cleared if it doesn't, and
+`validate_cap_compliance` confirms every team is at or under $255M.
+
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 
 A separate, self-contained draft simulator - it doesn't read or write
-`data/league.json`/`league.db` and isn't used by the Analytics agent above
-(its own roster size and $220M cap are independent numbers, not the main
-league's 48-player/$255M rules). It builds a fresh 53-man roster for each of
-6 teams by drafting from a pool of ~385 real NFL players, rated with their
+`data/league.json`/`league.db` and its 53-man roster shape is its own (not
+the main league's 48-player rosters), but it shares the main league's $255M
+hard cap: `draft/roster_rules.SALARY_CAP` reads it from the same rules the
+Cap & Contracts agent uses, so there's one cap number for the whole project,
+not two. The Draft GM agent (`draft/agent.py`) carries the same `check_cap_fit`
+and `validate_cap_compliance` tools as Cap & Contracts, bound to the draft's
+own in-memory teams by `draft/tools.build_cap_tools` - same cap arithmetic
+(`agents.tools.cap_math`), different team data. It builds a fresh 53-man
+roster for each of 6 teams by drafting from a pool of ~385 real NFL players,
+rated with their
 actual Madden NFL 26 overall rating (pulled from playerratingspro.com in
 November 2026 - see `draft/players.py`). Long snapper is the one exception:
 Madden doesn't publish LS ratings, so those eight are a rough estimate.
@@ -105,7 +134,7 @@ pytest tests/test_draft.py           # engine checks, no API key needed
 - **Random order, snake format**: a fresh random draft order each run; the order reverses every round.
 - **Roster shape**: `draft/roster_rules.ROSTER_TEMPLATE` sets exactly how many of each position fill the 53 spots - a position closes the moment a team hits its target, which is what "positions of need" means here.
 - **Value and need**: `draft/valuation.py` scores every available player by estimated market value ($M, shown on the board) tilted toward whichever open position the team needs most urgently.
-- **Salary cap**: drafted players get a rookie-scale salary from `draft/roster_rules.rookie_salary` (higher picks cost more, decaying by pick number); a $220M hard cap applies, and no team can draft a player it can't afford.
-- **CPU GMs**: the 5 teams you don't control are each drafted by the same kind of OpenRouter/DeepSeek agent as Analytics (`draft/agent.py`), given a shortlist of the best value/need players and a randomly assigned front-office philosophy (best-player-available, need-first, trenches-first, or premium-positions-first) so the six teams draft differently. Pass `--no-llm` to skip the API and use the underlying heuristic directly instead.
+- **Salary cap**: drafted players get a rookie-scale salary from `draft/roster_rules.rookie_salary` (higher picks cost more, decaying by pick number); the $255M hard cap applies, and no team can draft a player it can't afford. `eligible_for()` pre-filters the pool to what a team can afford, and the CPU GM's own `check_cap_fit`/`validate_cap_compliance` tools double-check a pick before it's made.
+- **CPU GMs**: the 5 teams you don't control are each drafted by the same kind of OpenRouter/DeepSeek agent as Analytics (`draft/agent.py`), given a shortlist of the best value/need players, cap-checking tools, and a randomly assigned front-office philosophy (best-player-available, need-first, trenches-first, or premium-positions-first) so the six teams draft differently. Pass `--no-llm` to skip the API and use the underlying heuristic directly instead.
 - **You draft too**: on your team's turn, `board`, `board <POS>`, `needs`, `best`, and `pick <id>` from the command line.
 - Results are written to `data/draft_results.json` (draft order, every team's final roster and payroll, and the full pick-by-pick log).

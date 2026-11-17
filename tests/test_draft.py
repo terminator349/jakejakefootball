@@ -5,9 +5,13 @@ end to end; the LLM-agent path (draft/agent.py) isn't exercised without an
 OPENROUTER_API_KEY and isn't covered by these tests.
 """
 
+import json
+
+from draft.agent import build_draft_agent
 from draft.engine import DraftEngine, build_teams, random_draft_order, snake_pick_order
 from draft.players import build_player_pool
 from draft.roster_rules import ROSTER_TEMPLATE, SALARY_CAP, TEAMS, rookie_salary
+from draft.tools import build_cap_tools
 from draft.valuation import market_value, need_score, pick_score
 
 
@@ -97,6 +101,46 @@ def test_full_heuristic_draft_fills_every_roster_legally():
         assert len(team.roster) == 53
         assert team.position_counts() == ROSTER_TEMPLATE
         assert team.payroll() <= SALARY_CAP, f"{team.id} is over the hard cap: ${team.payroll():.1f}M"
+
+
+def test_draft_shares_the_main_leagues_hard_cap():
+    """The draft no longer has its own cap number - it reads the same $255M rule
+    the Cap & Contracts agent does."""
+    from agents.tools import get_league_rules
+    assert SALARY_CAP == json.loads(get_league_rules())["salary_cap"] == 255.0
+
+
+def test_cap_tools_match_a_teams_payroll():
+    teams = build_teams(None, __import__("random").Random(6))
+    teams_by_id = {t.id: t for t in teams}
+    check_cap_fit, validate_cap_compliance = build_cap_tools(teams_by_id, SALARY_CAP)
+
+    data = json.loads(validate_cap_compliance())
+    assert data["salary_cap"] == SALARY_CAP
+    assert data["all_teams_compliant"] is True
+    assert {t["team_id"] for t in data["teams"]} == set(teams_by_id)
+
+    fit = json.loads(check_cap_fit(teams[0].id, 10.0))
+    assert fit["team_id"] == teams[0].id
+    assert fit["cap_space_before"] == SALARY_CAP  # empty roster, full cap room
+    assert fit["fits_under_cap"] is True
+
+    over = json.loads(check_cap_fit(teams[0].id, SALARY_CAP + 1))
+    assert over["fits_under_cap"] is False
+    assert over["salary_to_clear"] == 1.0
+
+
+def test_cap_tools_reject_unknown_team():
+    teams_by_id = {t.id: t for t in build_teams(None, __import__("random").Random(7))}
+    check_cap_fit, _ = build_cap_tools(teams_by_id, SALARY_CAP)
+    assert "error" in json.loads(check_cap_fit("XYZ", 5.0))
+
+
+def test_draft_gm_carries_the_same_cap_tools_as_cap_and_contracts():
+    teams_by_id = {t.id: t for t in build_teams(None, __import__("random").Random(8))}
+    agent = build_draft_agent(tools=build_cap_tools(teams_by_id, SALARY_CAP))
+    assert {tool.__name__ for tool in agent.tools} == {"check_cap_fit", "validate_cap_compliance"}
+    assert agent.tool_call_limit is not None and agent.tool_call_limit <= 10
 
 
 def test_random_draft_order_uses_every_team_once():

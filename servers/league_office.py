@@ -13,9 +13,11 @@ Run it from the project root so `agents` can be imported.
 from mcp.server.mcpserver import MCPServer
 from mcp_types import ToolAnnotations
 
-from agents.tools import compare_to_league, get_league_rules, get_roster, list_teams
+from agents.tools import (check_cap_fit, compare_to_league, get_league_rules, get_roster,
+                          list_teams, validate_cap_compliance)
 
-LEAGUE_TOOLS = [list_teams, get_roster, compare_to_league, get_league_rules]
+LEAGUE_TOOLS = [list_teams, get_roster, compare_to_league, get_league_rules,
+                validate_cap_compliance, check_cap_fit]
 
 # Nothing here changes the league, so clients can call these tools freely.
 READ_ONLY = ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False)
@@ -23,7 +25,8 @@ READ_ONLY = ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_worl
 league_office = MCPServer(
     name="League Office",
     instructions="Read-only league data for a fictional American football league: teams, "
-                 "rosters, ratings, contracts and rules. Every tool returns JSON text.",
+                 "rosters, ratings, contracts, rules and hard-cap checks. Every tool returns "
+                 "JSON text.",
 )
 
 for tool in LEAGUE_TOOLS:

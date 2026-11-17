@@ -3,10 +3,12 @@
 import asyncio
 import json
 
+import pytest
 from agno.tools.mcp import MCPTools
 
 from agents.analytics import build_analytics_agent, league_office_tools
-from agents.tools import compare_to_league, get_league_rules, get_roster, list_teams, load_league
+from agents.tools import (check_cap_fit, compare_to_league, get_league_rules, get_roster,
+                          list_teams, load_league, validate_cap_compliance)
 
 
 def test_every_team_has_a_legal_roster():
@@ -95,6 +97,34 @@ def test_compare_to_league_rejects_unknown_team():
     assert "error" in json.loads(compare_to_league("XYZ"))
 
 
+def test_the_cap_is_255_million_and_every_team_is_compliant():
+    data = json.loads(validate_cap_compliance())
+    assert data["salary_cap"] == 255.0
+    assert data["all_teams_compliant"] is True
+    assert data["teams_over_cap"] == []
+    assert all(not t["over_cap"] for t in data["teams"])
+
+
+def test_check_cap_fit_within_cap_space():
+    team = next(t for t in json.loads(list_teams())["teams"] if t["id"] == "HAR")
+    data = json.loads(check_cap_fit("HAR", team["cap_space"]))
+    assert data["fits_under_cap"] is True
+    assert data["salary_to_clear"] == 0.0
+    assert data["cap_space_after"] == pytest.approx(0.0, abs=0.05)  # team["cap_space"] is rounded to 0.1
+
+
+def test_check_cap_fit_reports_salary_to_clear_when_over():
+    team = next(t for t in json.loads(list_teams())["teams"] if t["id"] == "HAR")
+    data = json.loads(check_cap_fit("har", team["cap_space"] + 3))
+    assert data["team_id"] == "HAR"
+    assert data["fits_under_cap"] is False
+    assert data["salary_to_clear"] == pytest.approx(3.0, abs=0.05)  # team["cap_space"] is rounded to 0.1
+
+
+def test_check_cap_fit_rejects_unknown_team():
+    assert "error" in json.loads(check_cap_fit("XYZ", 5.0))
+
+
 def test_agent_builds_with_its_tools():
     agent = build_analytics_agent(league_office_tools())
     assert agent.name == "Analytics"
@@ -107,7 +137,8 @@ def test_agent_sees_the_league_office_tools():
     async def go():
         async with league_office_tools() as league_office:
             return set(league_office.functions)
-    assert asyncio.run(go()) == {"list_teams", "get_roster", "compare_to_league", "get_league_rules"}
+    assert asyncio.run(go()) == {"list_teams", "get_roster", "compare_to_league", "get_league_rules",
+                                 "validate_cap_compliance", "check_cap_fit"}
 
 
 def test_agent_has_loop_guards():

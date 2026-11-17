@@ -12,8 +12,9 @@ from typing import Callable, Optional
 
 from draft.agent import build_draft_agent, choose_pick
 from draft.players import Player, build_player_pool
-from draft.roster_rules import ROUNDS, TEAMS, rookie_salary
+from draft.roster_rules import ROUNDS, SALARY_CAP, TEAMS, rookie_salary
 from draft.team import PHILOSOPHIES, Team
+from draft.tools import build_cap_tools
 from draft.valuation import market_value, pick_score
 
 SHORTLIST_SIZE = 12
@@ -56,7 +57,8 @@ class DraftEngine:
         self.draft_order = random_draft_order(self.teams, self.rng)
         self.available: list[Player] = build_player_pool()
         self.use_llm = use_llm
-        self.agent = build_draft_agent(debug=debug) if use_llm else None
+        cap_tools = build_cap_tools(self.teams_by_id, SALARY_CAP) if use_llm else None
+        self.agent = build_draft_agent(tools=cap_tools, debug=debug) if use_llm else None
         self.log: list[dict] = []
 
     def eligible_for(self, team: Team, overall_pick: int) -> list[Player]:
