@@ -17,7 +17,7 @@ import random
 from pathlib import Path
 
 from agents.league_db import connect
-from agents.simulator import Game, Lineup, build_lineup
+from agents.simulator import Game, Lineup, build_lineup, drives
 
 
 def _round_robin(teams: list[str]) -> list[list[tuple[str, str]]]:
@@ -290,7 +290,7 @@ TEAM_TOTALS = ("pass_cmp", "pass_att", "pass_yds", "pass_td", "int_thrown", "sac
 
 
 def box_score(game_id: int, db_file: Path | None = None) -> dict:
-    """A played game: score, team totals, each player's stats and the play-by-play."""
+    """A played game: score, team totals, each player's stats, the drives and the play-by-play."""
     db = connect(db_file)
     try:
         game = db.execute("SELECT * FROM games WHERE id = ?", (game_id,)).fetchone()
@@ -315,4 +315,4 @@ def box_score(game_id: int, db_file: Path | None = None) -> dict:
         totals["first_downs"] = sum(1 for p in plays if p["offense_team_id"] == team_id and "First down" in p["text"])
         teams[team_id] = totals
     return {"game": dict(game), "simulated": bool(plays), "teams": teams, "players": list(lines.values()),
-            "plays": plays}
+            "drives": drives(plays), "plays": plays}
