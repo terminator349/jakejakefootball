@@ -4,60 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Front Office Test Bench</title>
+<link rel="stylesheet" href="/static/common.css">
 <style>
-:root {
-  --bg: #f6f7f9; --panel: #ffffff; --ink: #1b1f24; --muted: #5f6b7a; --line: #e2e6eb;
-  --accent: #1f6feb; --accent-ink: #ffffff; --good: #1a7f37; --good-bg: #e6f4ea;
-  --bad: #c62828; --bad-bg: #fdecea; --warn: #9a6700; --warn-bg: #fff4d6; --ours: #eef4ff;
-  --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f1216; --panel: #171b21; --ink: #e6e9ee; --muted: #9aa5b4; --line: #2a313b;
-    --accent: #4c8dff; --accent-ink: #0b0e12; --good: #4ac26b; --good-bg: #13291b;
-    --bad: #ff7b72; --bad-bg: #3a1714; --warn: #e3b341; --warn-bg: #33270b; --ours: #172338;
-  }
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px 0; position: sticky; top: 0; z-index: 5; }
-.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-h1 { font-size: 18px; margin: 0; }
-h1 small { color: var(--muted); font-weight: 400; margin-left: 6px; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
-.chip { border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
-.chip b { color: var(--ink); font-weight: 600; }
-.chip.ok { color: var(--good); border-color: var(--good); } .chip.no { color: var(--bad); border-color: var(--bad); }
-nav { display: flex; gap: 2px; margin-top: 10px; overflow-x: auto; }
-nav button { border: 0; background: none; padding: 9px 14px; font: inherit; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-nav button.on { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
-main { padding: 18px 20px 60px; max-width: 1280px; margin: 0 auto; }
-.tab { display: none; } .tab.on { display: block; }
-.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); align-items: start; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
-.card h2 { font-size: 15px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
-.card h2 .sub { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: auto; }
-.note { color: var(--muted); font-size: 12px; margin: 6px 0; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 4px 6px; border-bottom: 1px solid var(--line); }
-td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-tr.ours td { background: var(--ours); }
-tr.click { cursor: pointer; } tr.click:hover td { background: var(--ours); }
-.scroll { max-height: 440px; overflow: auto; }
-button.btn { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 7px; padding: 6px 12px; cursor: pointer; }
-button.btn:hover:not(:disabled) { border-color: var(--accent); }
-button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-button.btn.danger { color: var(--bad); }
-button.btn:disabled { opacity: .5; cursor: default; }
-button.sm { padding: 2px 8px; font-size: 12px; }
-input, select, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; }
-input[type=number].score { width: 56px; padding: 3px 6px; }
-textarea { width: 100%; resize: vertical; }
-.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
-.badge { display: inline-block; border-radius: 5px; padding: 1px 7px; font-size: 12px; font-weight: 600; }
-.badge.good { background: var(--good-bg); color: var(--good); } .badge.bad { background: var(--bad-bg); color: var(--bad); }
-.badge.warn { background: var(--warn-bg); color: var(--warn); } .badge.plain { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+@media (max-width: 760px) { .trade-cols { grid-template-columns: 1fr; } }
 pre { font: 12px/1.45 var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 10px; overflow: auto; max-height: 420px; margin: 6px 0; white-space: pre-wrap; word-break: break-word; }
 .violation { border-left: 3px solid var(--bad); background: var(--bad-bg); padding: 6px 10px; border-radius: 0 6px 6px 0; margin: 6px 0; }
 .violation code { font: 11px var(--mono); color: var(--bad); margin-right: 6px; }
@@ -65,9 +14,7 @@ pre { font: 12px/1.45 var(--mono); background: var(--bg); border: 1px solid var(
 .players label { display: grid; grid-template-columns: 20px 34px 1fr 40px 64px; gap: 6px; align-items: center; padding: 4px 8px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; }
 .players label:hover { background: var(--ours); }
 .players label.picked { background: var(--ours); font-weight: 600; }
-.pos { font: 11px var(--mono); color: var(--muted); }
 .trade-cols { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
-@media (max-width: 760px) { .trade-cols { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } main, header { padding-left: 16px; padding-right: 16px; } }
 .gapbar { display: inline-block; height: 8px; border-radius: 4px; vertical-align: middle; }
 .week-grid { display: grid; grid-template-columns: 70px 1fr 1fr 1fr; font-size: 12px; }
 .week-grid div { padding: 4px 6px; border-bottom: 1px solid var(--line); }
@@ -87,19 +34,6 @@ details.call summary { cursor: pointer; font: 13px var(--mono); }
 .stats { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
 .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; }
 @keyframes spin { to { transform: rotate(360deg); } }
-#toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); padding: 9px 14px; border-radius: 8px; font-size: 13px; display: none; max-width: min(640px, 90vw); z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,.15); }
-#toast.good { display: block; background: var(--good-bg); color: var(--good); border: 1px solid var(--good); }
-#toast.bad { display: block; background: var(--bad-bg); color: var(--bad); border: 1px solid var(--bad); }
-.empty { color: var(--muted); font-style: italic; padding: 8px 0; }
-.scoreline { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 4px 0 10px; }
-.pbp { max-height: 460px; overflow: auto; font-size: 13px; }
-.pbp .q { position: sticky; top: 0; background: var(--panel); font-weight: 600; padding: 6px 0 4px; border-bottom: 1px solid var(--line); }
-.pbp .play { display: grid; grid-template-columns: 52px 92px 1fr 64px; gap: 8px; padding: 3px 0; border-bottom: 1px solid var(--line); }
-.pbp .play.td { background: var(--good-bg); } .pbp .play.to { background: var(--bad-bg); }
-.pbp .sit { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-.leaders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
-.leaders div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
-.leaders b { display: block; font-size: 12px; color: var(--muted); font-weight: 500; }
 span[data-box] { cursor: pointer; text-decoration: underline dotted; }
 </style>
 </head>
@@ -151,8 +85,12 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
         <div id="standings"></div>
       </div>
       <div class="card">
-        <h2>Schedule <span class="sub">seeded, 17 weeks · click a result</span></h2>
+        <h2>Schedule <span class="sub">seeded, 17 weeks Â· click a result</span></h2>
         <div class="scroll" id="schedule"></div>
+      </div>
+      <div class="card" style="grid-column: 1 / -1" id="watch-card" hidden>
+        <h2 id="watch-title">Watch it</h2>
+        <div id="watch"></div>
       </div>
       <div class="card" style="grid-column: 1 / -1" id="box-card" hidden>
         <h2 id="box-title">Box score</h2>
@@ -255,26 +193,9 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
 </main>
 <div id="toast"></div>
 
+<script src="/static/common.js"></script>
 <script>
-const $ = (s, el = document) => el.querySelector(s);
-const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
-const money = n => n == null ? "" : `$${Number(n).toFixed(2)}M`;
-const POSITIONS = ["QB", "RB", "WR", "TE", "OL", "DL", "LB", "CB", "S", "K", "P"];
 let state = { status: null, teams: [], trade: { a: { team: "HAR", picked: new Set(), players: [] }, b: { team: "MES", picked: new Set(), players: [] } } };
-
-async function call(url, body) {
-  const opts = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
-  const res = await fetch(url, opts);
-  const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-  if (!res.ok) throw data;
-  return data;
-}
-function toast(msg, kind = "good") {
-  const t = $("#toast"); t.textContent = msg; t.className = kind;
-  clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 4200);
-}
-const fail = e => toast(e?.error || e?.message || String(e), "bad");
 
 // ---- header -----------------------------------------------------------
 async function loadStatus() {
@@ -315,6 +236,7 @@ async function loadSeason() {
        <input type="number" min="0" class="score" id="hs-${g.id}" placeholder="${g.home_team_id}">
        <button class="btn sm" data-result="${g.id}">Save</button>`
       : `<span class="final">${g.away_team_id} ${g.away_score} - ${g.home_score} ${g.home_team_id}</span>
+         <button class="btn sm" data-watch="${g.id}">Watch</button>
          <button class="btn sm" data-box="${g.id}">Box score</button>`}</div>`).join("");
   $("#sim-week").disabled = $("#advance").disabled = s.season_over;
   const our = st.our_team;
@@ -339,43 +261,24 @@ async function loadSchedule() {
   }).join("")}</div>`;
 }
 
-const clockText = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-const QUARTERS = { 1: "1st quarter", 2: "2nd quarter", 3: "3rd quarter", 4: "4th quarter", 5: "Overtime" };
-const ORD = ["", "1st", "2nd", "3rd", "4th"];
 async function showBox(id) {
-  const b = await call(`/api/game?id=${id}`), g = b.game, h = g.home_team_id, a = g.away_team_id;
+  const b = await call(`/api/game?id=${id}`), g = b.game;
   $("#box-card").hidden = false;
-  $("#box-title").innerHTML = `Box score <span class="sub">week ${g.week}${b.simulated ? "" : " · score entered by hand"}</span>`;
-  const row = (label, f) => `<tr><td>${label}</td><td class="num">${f(b.teams[a])}</td><td class="num">${f(b.teams[h])}</td></tr>`;
-  const lead = (stat, fmt) => {
-    const best = team => b.players.filter(p => p.team_id === team && p[stat]).sort((x, y) => y[stat] - x[stat])[0];
-    return [a, h].map(t => { const p = best(t); return p ? `${t} ${esc(p.name)}: ${fmt(p)}` : `${t}: none`; }).join("<br>");
-  };
-  const playClass = p => p.result === "touchdown" ? "td" : ["interception", "fumble", "turnover_on_downs", "safety"].includes(p.result) ? "to" : "";
-  let quarter = 0, pbp = "";
-  for (const p of b.plays) {
-    if (p.quarter !== quarter) { quarter = p.quarter; pbp += `<div class="q">${QUARTERS[quarter]}</div>`; }
-    const spot = p.yardline === 50 ? "50" : p.yardline < 50 ? `own ${p.yardline}` : `opp ${100 - p.yardline}`;
-    const togo = p.distance >= 100 - p.yardline ? "goal" : p.distance;
-    pbp += `<div class="play ${playClass(p)}"><span class="sit">${clockText(p.clock)}</span><span class="sit">${p.offense_team_id} · ${ORD[p.down]} & ${togo}<br>${spot}</span>
-      <span>${esc(p.text)} <span class="pos">${p.call.replace(/_/g, " ")}${p.defense_call ? " vs " + p.defense_call.replace(/_/g, " ") : ""}</span></span>
-      <span class="sit num">${a} ${p.away_score}-${p.home_score}</span></div>`;
-  }
-  $("#box").innerHTML = `<div class="scoreline">${a} ${g.away_score} &nbsp;at&nbsp; ${h} ${g.home_score}</div>
-    ${b.simulated ? `<div class="grid">
-      <table><tr><th>Team</th><th class="num">${a}</th><th class="num">${h}</th></tr>
-        ${row("Total yards", t => t.total_yds)}${row("Passing", t => `${t.pass_cmp}/${t.pass_att}, ${t.pass_yds}`)}
-        ${row("Rushing", t => `${t.rush_att}-${t.rush_yds}`)}${row("First downs", t => t.first_downs)}
-        ${row("Sacked", t => t.sacked)}${row("Turnovers", t => t.turnovers)}${row("Field goals", t => `${t.fg_made}/${t.fg_att}`)}${row("Punts", t => t.punts)}</table>
-      <div class="leaders">
-        <div><b>Passing</b>${lead("pass_yds", p => `${p.pass_cmp}/${p.pass_att}, ${p.pass_yds} yds, ${p.pass_td || 0} TD, ${p.int_thrown || 0} INT`)}</div>
-        <div><b>Rushing</b>${lead("rush_yds", p => `${p.rush_att} for ${p.rush_yds} yds, ${p.rush_td || 0} TD`)}</div>
-        <div><b>Receiving</b>${lead("rec_yds", p => `${p.rec} for ${p.rec_yds} yds, ${p.rec_td || 0} TD`)}</div>
-        <div><b>Sacks</b>${lead("def_sacks", p => `${p.def_sacks}`)}<b style="margin-top:6px">Interceptions</b>${lead("def_int", p => `${p.def_int}`)}</div>
-      </div></div>
-      <h2 style="margin-top:14px">Play by play <span class="sub">${b.plays.length} plays · green: touchdowns · red: turnovers</span></h2>
-      <div class="pbp">${pbp}</div>` : `<p class="empty">This score was entered by hand, so there's no play-by-play.</p>`}`;
+  $("#box-title").innerHTML = `Box score ${b.simulated ? `<button class="btn sm" data-watch="${id}">Watch it</button>` : ""}
+    <span class="sub">week ${g.week}${b.simulated ? "" : " Â· score entered by hand"}</span>`;
+  $("#box").innerHTML = boxScoreHtml(b, state.status?.our_team);
   $("#box-card").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+let watching = null;
+async function startWatch(id) {
+  watching?.stop();
+  const b = await call(`/api/game?id=${id}`), g = b.game;
+  $("#watch-card").hidden = false;
+  $("#watch-title").innerHTML = `Watch it <span class="sub">week ${g.week} Â· ${g.away_team_id} at ${g.home_team_id}</span>`;
+  if (!b.simulated) { watching = null; $("#watch").innerHTML = `<p class="empty">This score was entered by hand, so there's nothing to watch.</p>`; }
+  else watching = new WatchView($("#watch"), b, { ourTeam: state.status?.our_team });
+  $("#watch-card").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ---- league -----------------------------------------------------------
@@ -543,6 +446,7 @@ $("#tabs").addEventListener("click", e => {
 document.addEventListener("click", async e => {
   const t = e.target;
   try {
+    if (t.closest("[data-watch]")) { await startWatch(t.closest("[data-watch]").dataset.watch); return; }
     if (t.closest("[data-box]")) { await showBox(t.closest("[data-box]").dataset.box); return; }
     if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); toast(`Loaded ${t.dataset.load}.`); await refreshAll(); }
     else if (t.dataset.result) {
@@ -581,7 +485,7 @@ $("#sim-week").onclick = async () => {
   const btn = $("#sim-week"); btn.disabled = true;
   try {
     const { played } = await call("/api/season/sim", {});
-    toast(played.length ? played.map(g => `${g.away_team_id} ${g.away_score}-${g.home_score} ${g.home_team_id}`).join(" · ") : "Every game this week already has a result.");
+    toast(played.length ? played.map(g => `${g.away_team_id} ${g.away_score}-${g.home_score} ${g.home_team_id}`).join(" Â· ") : "Every game this week already has a result.");
     await Promise.all([loadSeason(), loadSchedule(), loadSaves()]);
   } catch (e) { fail(e); } finally { btn.disabled = state.status?.season_over; }
 };

@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Front Office</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+.brand { font-size: 18px; margin: 0; }
+.teamline { color: var(--muted); font-size: 13px; }
+.teamline b { color: var(--ink); }
+header .top .grow { flex: 1; }
+.title { max-width: 760px; margin: 40px auto; }
+.title .hero { padding: 28px 24px; }
+.title .hero h1 { font-size: 28px; margin: 0 0 6px; }
+.title .hero p { color: var(--muted); margin: 0 0 18px; max-width: 56ch; }
+.title form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.title form input[name=name] { flex: 1; min-width: 160px; }
+.title form input[name=seed] { width: 120px; }
+.savelist button.btn { width: 100%; text-align: left; display: flex; justify-content: space-between; gap: 10px; margin: 6px 0; padding: 10px 12px; }
+.savelist .meta { color: var(--muted); font-size: 12px; }
+.versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin: 12px 0 16px; }
+.versus .team { display: flex; flex-direction: column; gap: 2px; }
+.versus .team.right { text-align: right; }
+.versus .team b { font-size: 24px; }
+.versus .team .rec { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.versus .at { color: var(--muted); font-size: 13px; }
+.versus .ours b { color: var(--accent); }
+ul.notes { margin: 0; padding-left: 18px; } ul.notes li { margin: 5px 0; }
+.soon { display: flex; flex-direction: column; gap: 6px; }
+.soon button { text-align: left; display: flex; justify-content: space-between; gap: 10px; }
+.soon .when { color: var(--muted); font-size: 12px; }
+.result-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.result-head .scoreline { margin: 0; }
+.games div { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.games div.ours { font-weight: 600; }
+.capbar { position: relative; height: 10px; border-radius: 5px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; min-width: 80px; }
+.capbar span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); }
+.capbar.tight span { background: var(--warn); }
+.big { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.kpis div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.kpis span { display: block; color: var(--muted); font-size: 12px; }
+.ratings { color: var(--muted); font-size: 12px; }
+tr.group td { background: var(--bg); font-weight: 600; font-size: 12px; color: var(--muted); }
+.filters { display: flex; gap: 4px; flex-wrap: wrap; }
+.filters button.on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); padding: 0;
+  width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+dialog::backdrop { background: rgba(0,0,0,.45); }
+dialog .card { border: 0; }
+dialog .close { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); z-index: 2; }
+.link { background: none; border: 0; color: var(--accent); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+@media (max-width: 760px) { .versus .team b { font-size: 20px; } .title { margin: 16px auto; } }
+</style>
+</head>
+<body>
+<header id="head" hidden>
+  <div class="top">
+    <h1 class="brand">Front Office</h1>
+    <span class="teamline" id="teamline"></span>
+    <span class="grow"></span>
+    <div class="chips" id="chips"></div>
+    <button class="btn sm" id="quit" title="Everything is saved as you play">Save &amp; quit</button>
+  </div>
+  <nav id="tabs">
+    <button data-tab="week" class="on">This week</button>
+    <button data-tab="roster">Roster</button>
+    <button data-tab="standings">Standings</button>
+    <button data-tab="schedule">Schedule</button>
+    <button data-tab="cap">Cap</button>
+  </nav>
+</header>
+
+<main>
+  <section id="title" class="title" hidden>
+    <div class="card hero">
+      <h1>Front Office</h1>
+      <p>You own the Harbor City Herons. Get them through a 17-game season against five rival front offices without ever going over the $255M hard cap.</p>
+      <div id="continue"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>New game</h2>
+      <form id="new-game">
+        <input name="name" placeholder="Save name, e.g. herons" maxlength="40" required pattern="[A-Za-z0-9][A-Za-z0-9_\-]*" title="Letters, numbers, - and _">
+        <input name="seed" type="number" placeholder="Seed (optional)" title="The same seed gives the same schedule and the same games">
+        <button class="btn primary">Start</button>
+      </form>
+      <p class="note">Each game is its own save in <code>saves/</code>. It saves as you play.</p>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Load a game</h2>
+      <div class="savelist" id="saves"></div>
+    </div>
+    <p class="note" style="text-align:center"><a href="/bench">Test bench</a></p>
+  </section>
+
+  <section class="tab on" id="tab-week"></section>
+  <section class="tab" id="tab-roster">
+    <div class="card">
+      <h2>Roster <span class="sub" id="roster-sum"></span></h2>
+      <div class="row"><select id="roster-team"></select><div class="filters" id="roster-pos"></div></div>
+      <div id="roster"></div>
+    </div>
+  </section>
+  <section class="tab" id="tab-standings"><div class="card"><h2>Standings <span class="sub" id="standings-sub"></span></h2><div id="standings"></div></div></section>
+  <section class="tab" id="tab-schedule"><div class="card"><h2>Our schedule <span class="sub">17 games · trade deadline after week 9</span></h2><div id="schedule"></div></div></section>
+  <section class="tab" id="tab-cap"><div id="cap"></div></section>
+</main>
+
+<dialog id="viewer"><div class="close"><b id="viewer-title"></b><button class="btn sm" id="viewer-close">Close</button></div>
+  <div class="card"><div id="viewer-body"></div></div></dialog>
+<div id="toast"></div>
+
+<script src="/static/common.js"></script>
+<script>
+let H = null;                 // /api/hub: the week as the owner sees it
+let gameDay = null;           // { gameId, view } while our game is being watched
+let rosterPos = "";
+let replay = null;
+
+const recordOf = r => `${r.wins}-${r.losses}${r.ties ? "-" + r.ties : ""}`;
+const nth = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th"));
+
+// ---- title screen and the header -------------------------------------
+async function refresh() {
+  try {
+    H = await call("/api/hub");
+    if (!H.save) return showTitle();
+    $("#title").hidden = true; $("#head").hidden = false;
+    $$(".tab").forEach(t => t.style.removeProperty("display"));
+    header();
+    await renderTab(currentTab());
+  } catch (e) { fail(e); }
+}
+async function showTitle() {
+  gameDay?.view.stop(); gameDay = null;
+  $("#head").hidden = true; $("#title").hidden = false;
+  $$(".tab").forEach(t => t.style.display = "none");
+  const { saves } = await call("/api/saves");
+  const ok = saves.filter(s => !s.outdated);
+  const line = s => `<span>${esc(s.name)}</span><span class="meta">${s.week > 17 ? "season over" : "week " + s.week} · ${s.team_id} ${recordOf(s)}</span>`;
+  $("#continue").innerHTML = ok.length ? `<button class="btn primary" data-load="${esc(ok[0].name)}">Continue: ${esc(ok[0].name)}</button>
+      <span class="note">&nbsp;${ok[0].week > 17 ? "season over" : "week " + ok[0].week}, ${recordOf(ok[0])}</span>`
+    : `<p class="note">No saved games yet. Start one below.</p>`;
+  $("#saves").innerHTML = saves.length ? saves.map(s => s.outdated
+      ? `<button class="btn" disabled>${esc(s.name)} <span class="meta">made by an older version</span></button>`
+      : `<button class="btn" data-load="${esc(s.name)}">${line(s)}</button>`).join("")
+    : `<p class="empty">Nothing to load yet.</p>`;
+}
+function header() {
+  const t = H.team, played = t.wins + t.losses + t.ties > 0;
+  $("#teamline").innerHTML = `<b>${esc(t.city)} ${esc(t.name)}</b> · ${t.record}${played ? ` · ${nth(t.rank)} of ${t.teams}` : ""} · save <b>${esc(H.save)}</b>`;
+  $("#chips").innerHTML = `
+    <span class="chip">${H.season_over ? "<b>Season over</b>" : `Week <b>${H.week}</b> of ${H.season_games}`}</span>
+    <span class="chip">Cap space <b>$${t.cap_space.toFixed(1)}M</b></span>
+    <span class="chip ${H.deadline_passed ? "no" : ""}">${H.deadline_passed ? "Trade deadline passed" : `Deadline: week <b>${H.trade_deadline_week}</b>`}</span>`;
+}
+function currentTab() { return $("#tabs button.on")?.dataset.tab || "week"; }
+async function renderTab(tab) {
+  if (tab === "week") return weekView();
+  if (tab === "roster") return rosterView();
+  if (tab === "standings") return standingsView();
+  if (tab === "schedule") return scheduleView();
+  if (tab === "cap") return capView();
+}
+
+// ---- This week ---------------------------------------------------------------
+function matchup(tw, t) {
+  const us = `<div class="team ours ${tw.home ? "right" : ""}"><b>${t.id}</b><span>${esc(t.city)} ${esc(t.name)}</span><span class="rec">${t.record}</span></div>`;
+  const o = tw.opponent;
+  const them = `<div class="team ${tw.home ? "" : "right"}"><b>${o.id}</b><span>${esc(o.city)} ${esc(o.name)}</span><span class="rec">${o.record}</span></div>`;
+  return `<div class="versus">${tw.home ? them + `<div class="at">at</div>` + us : us + `<div class="at">at</div>` + them}</div>`;
+}
+const SOON = [
+  ["Ask the front office", "1.4: the GM and its specialists"],
+  ["Give an order", "G4: e.g. \"upgrade safety, stay under $5M\""],
+  ["Review proposed moves", "G4: approve or veto each one"],
+];
+async function weekView() {
+  const el = $("#tab-week");
+  if (gameDay) return;                       // the game-day view is on screen
+  if (H.season_over) return seasonOverView(el);
+  const season = await call("/api/season");
+  if (H.week_played) return resultsView(el, season);
+  const tw = H.this_week, t = H.team;
+  const others = season.games.filter(g => g.id !== tw.game_id);
+  el.innerHTML = `<div class="grid">
+    <div class="card"><h2>Week ${H.week} <span class="sub">${H.week === H.trade_deadline_week ? "trade deadline week" : `of ${H.season_games}`}</span></h2>
+      ${matchup(tw, t)}
+      <div class="row">
+        <button class="btn primary" data-act="sim">Sim it</button>
+        <button class="btn" data-act="watch">Watch it</button>
+        <button class="btn" disabled title="Arrives with G8">Call it</button>
+      </div>
+      <p class="note"><b>Sim it</b> plays the week and goes to the results. <b>Watch it</b> plays the week, then lets you follow our game drive by drive before you see any other score. Calling the plays yourself arrives with G8.</p>
+    </div>
+    <div class="card"><h2>Front office notes <span class="sub">from the league data</span></h2>
+      <ul class="notes">${H.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>
+      <p class="note">Your GM's weekly briefing replaces these notes with G3.</p></div>
+    <div class="card"><h2>The front office <span class="sub">arriving with the agents</span></h2>
+      <div class="soon">${SOON.map(([what, when]) => `<button class="btn" disabled><span>${what}</span><span class="when">${esc(when)}</span></button>`).join("")}</div>
+      <p class="note">Until then the roster stays as it is, and the week is yours to play.</p></div>
+    <div class="card"><h2>Around the league <span class="sub">week ${H.week}</span></h2>
+      <div class="games">${others.map(g => `<div><span>${g.away_team_id} at ${g.home_team_id}</span><span class="note">${g.home_score === null ? "not played" : `${g.away_score}-${g.home_score}`}</span></div>`).join("")}</div></div>
+  </div>`;
+}
+function resultsView(el, season) {
+  const tw = H.this_week, o = tw.opponent;
+  const badge = { win: ["good", "Win"], loss: ["bad", "Loss"], tie: ["plain", "Tie"] }[tw.outcome];
+  const last = H.week === H.season_games;
+  el.innerHTML = `<div class="grid">
+    <div class="card"><h2>Week ${H.week} result</h2>
+      <div class="result-head"><span class="badge ${badge[0]}">${badge[1]}</span>
+        <div class="scoreline">${H.team.id} ${tw.our_score}, ${o.id} ${tw.their_score}</div></div>
+      <p class="note">${tw.home ? "At home against" : "At"} ${esc(o.city)} ${esc(o.name)}. ${esc(H.team.name)} now ${H.team.record}.</p>
+      <div class="row">
+        <button class="btn" data-replay="${tw.game_id}">Watch the replay</button>
+        <button class="btn" data-box="${tw.game_id}">Box score</button>
+      </div>
+      <div class="row"><button class="btn primary" data-act="advance">${last ? "Finish the regular season" : `Go to week ${H.week + 1}`}</button></div>
+    </div>
+    <div class="card"><h2>All of week ${H.week}</h2>
+      <div class="games">${season.games.map(g => `<div class="${g.id === tw.game_id ? "ours" : ""}">
+        <span>${g.away_team_id} ${g.away_score} at ${g.home_team_id} ${g.home_score}</span>
+        <button class="link" data-box="${g.id}">box score</button></div>`).join("")}</div></div>
+    <div class="card"><h2>Standings <span class="sub">after week ${H.week}</span></h2>${standingsTable(season.standings)}</div>
+  </div>`;
+}
+async function seasonOverView(el) {
+  const season = await call("/api/season"), t = H.team;
+  el.innerHTML = `<div class="grid">
+    <div class="card"><h2>The regular season is over</h2>
+      <div class="big">${t.record}</div>
+      <p>${esc(t.city)} ${esc(t.name)} finish ${nth(t.rank)} of ${t.teams}, scoring ${t.points_for} and allowing ${t.points_against}.</p>
+      <p class="note">The playoffs and the season summary arrive with G6. Every game stays in the schedule with its box score and replay.</p>
+      <div class="row"><button class="btn" id="to-title">Back to the title screen</button></div></div>
+    <div class="card"><h2>Final standings</h2>${standingsTable(season.standings)}</div>
+  </div>`;
+  $("#to-title").onclick = quit;
+}
+async function playWeek(watch) {
+  const btns = $$("[data-act]"); btns.forEach(b => b.disabled = true);
+  try {
+    const r = await call("/api/hub/play", {});
+    if (!watch) { toast("Week played."); return refresh(); }
+    const b = await call(`/api/game?id=${r.our_game_id}`);
+    gameDay = { gameId: r.our_game_id };
+    const g = b.game;
+    $("#tab-week").innerHTML = `<div class="card"><h2>Game day <span class="sub">week ${g.week} · ${g.away_team_id} at ${g.home_team_id}</span></h2>
+      <div id="gameday"></div>
+      <div class="row" id="after-game"><button class="link" data-act="results">Skip to the week's results</button></div></div>`;
+    gameDay.view = new WatchView($("#gameday"), b, { ourTeam: H.team.id, onEnd: () => {
+      $("#after-game").innerHTML = `<button class="btn primary" data-act="results">See the week's results</button>`;
+    } });
+  } catch (e) { fail(e); btns.forEach(b => b.disabled = false); }
+}
+
+// ---- Roster, standings, schedule, cap ------------------------------------------
+async function rosterView() {
+  const { teams, our_team } = await call("/api/teams");
+  const sel = $("#roster-team"), team = sel.value || our_team;
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === team ? "selected" : ""}>${esc(t.city)} ${esc(t.name)}${t.id === our_team ? " (us)" : ""}</option>`).join("");
+  $("#roster-pos").innerHTML = ["", ...POSITIONS].map(p => `<button class="btn sm ${p === rosterPos ? "on" : ""}" data-pos="${p}">${p || "All"}</button>`).join("");
+  const { players } = await call(`/api/roster?team=${team}&position=${rosterPos}`);
+  const info = teams.find(t => t.id === team);
+  $("#roster-sum").textContent = `${players.length} players${rosterPos ? " at " + rosterPos : ""} · payroll $${info.payroll.toFixed(1)}M`;
+  let pos = "", rows = "";
+  for (const p of players) {
+    if (p.position !== pos) { pos = p.position; rows += `<tr class="group"><td colspan="7">${pos}</td></tr>`; }
+    const ratings = Object.entries(p.ratings).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join(" · ");
+    rows += `<tr class="${p.starter ? "ours" : ""}"><td>${esc(p.name)} ${p.starter ? `<span class="badge plain">starter</span>` : ""}<div class="ratings">${ratings}</div></td>
+      <td class="pos">${p.position}</td><td class="num">${p.age}</td><td class="num"><b>${p.overall}</b></td>
+      <td class="num">${money(p.salary)}</td><td class="num">${p.contract_years}</td><td class="num">${p.games_missed_last_season}</td></tr>`;
+  }
+  $("#roster").innerHTML = `<div class="scroll" style="max-height:none"><table><tr><th>Player</th><th>Pos</th><th class="num">Age</th><th class="num">Ovr</th>
+    <th class="num">Salary</th><th class="num">Years</th><th class="num" title="Games missed last season">Missed</th></tr>${rows}</table></div>`;
+}
+function standingsTable(rows) {
+  return `<table><tr><th>#</th><th>Team</th><th class="num">W</th><th class="num">L</th><th class="num">T</th><th class="num">PF</th><th class="num">PA</th><th class="num">Diff</th></tr>
+    ${rows.map(r => `<tr class="${r.team_id === H.team.id ? "ours" : ""}"><td>${r.rank}</td><td>${esc(r.city)} ${esc(r.name)}</td>
+      <td class="num">${r.wins}</td><td class="num">${r.losses}</td><td class="num">${r.ties}</td>
+      <td class="num">${r.points_for}</td><td class="num">${r.points_against}</td><td class="num">${r.point_diff > 0 ? "+" : ""}${r.point_diff}</td></tr>`).join("")}</table>`;
+}
+async function standingsView() {
+  const season = await call("/api/season");
+  $("#standings-sub").textContent = "by win percentage, then point difference, then points scored";
+  $("#standings").innerHTML = standingsTable(season.standings);
+}
+async function scheduleView() {
+  const { games } = await call("/api/hub/schedule");
+  $("#schedule").innerHTML = `<table><tr><th>Week</th><th>Opponent</th><th>Result</th><th></th></tr>${games.map(g => {
+    const o = g.opponent, now = g.week === H.week && !H.season_over;
+    const res = !g.played ? (now ? `<span class="badge warn">this week</span>` : "")
+      : `<span class="badge ${g.outcome === "win" ? "good" : g.outcome === "loss" ? "bad" : "plain"}">${g.outcome[0].toUpperCase()}</span> ${g.our_score}-${g.their_score}`;
+    return `<tr class="${now ? "ours" : ""}"><td>${g.week}${g.week === H.trade_deadline_week ? ` <span class="note">deadline</span>` : ""}</td>
+      <td>${g.home ? "vs" : "at"} ${esc(o.city)} ${esc(o.name)}</td><td>${res}</td>
+      <td class="num">${g.played ? `<button class="btn sm" data-replay="${g.game_id}">Replay</button> <button class="btn sm" data-box="${g.game_id}">Box score</button>` : ""}</td></tr>`;
+  }).join("")}</table>`;
+}
+async function capView() {
+  const [{ teams, our_team }, { players }] = await Promise.all([call("/api/teams"), call(`/api/roster?team=${H.team.id}`)]);
+  const t = H.team, cap = t.salary_cap;
+  const top = [...players].sort((a, b) => b.salary - a.salary).slice(0, 10);
+  const expiring = players.filter(p => p.contract_years === 1).sort((a, b) => b.salary - a.salary);
+  const bar = payroll => `<div class="capbar ${cap - payroll < 6 ? "tight" : ""}"><span style="width:${Math.min(100, payroll / cap * 100)}%"></span></div>`;
+  $("#cap").innerHTML = `<div class="grid">
+    <div class="card"><h2>Our cap <span class="sub">hard cap: no move may go over it</span></h2>
+      <div class="kpis"><div><span>Payroll</span><b class="big">$${t.payroll.toFixed(1)}M</b></div>
+        <div><span>Cap space</span><b class="big">$${t.cap_space.toFixed(1)}M</b></div>
+        <div><span>Roster</span><b class="big">${t.roster_size}</b> <span>of ${t.roster_max} max</span></div></div>
+      ${bar(t.payroll)}<p class="note">$${t.payroll.toFixed(1)}M of $${cap.toFixed(0)}M used.</p></div>
+    <div class="card"><h2>League payrolls</h2><table><tr><th>Team</th><th></th><th class="num">Payroll</th><th class="num">Space</th></tr>
+      ${[...teams].sort((a, b) => b.payroll - a.payroll).map(x => `<tr class="${x.id === our_team ? "ours" : ""}"><td>${esc(x.city)} ${esc(x.name)}</td>
+        <td style="width:30%">${bar(x.payroll)}</td><td class="num">$${x.payroll.toFixed(1)}M</td><td class="num">$${x.cap_space.toFixed(1)}M</td></tr>`).join("")}</table></div>
+    <div class="card"><h2>Biggest contracts</h2><table><tr><th>Player</th><th>Pos</th><th class="num">Ovr</th><th class="num">Salary</th><th class="num">Years</th></tr>
+      ${top.map(p => `<tr><td>${esc(p.name)}</td><td class="pos">${p.position}</td><td class="num">${p.overall}</td><td class="num">${money(p.salary)}</td><td class="num">${p.contract_years}</td></tr>`).join("")}</table></div>
+    <div class="card"><h2>In the last year of their contract <span class="sub">${expiring.length} players</span></h2>
+      ${expiring.length ? `<table><tr><th>Player</th><th>Pos</th><th class="num">Ovr</th><th class="num">Salary</th></tr>
+      ${expiring.map(p => `<tr><td>${esc(p.name)}</td><td class="pos">${p.position}</td><td class="num">${p.overall}</td><td class="num">${money(p.salary)}</td></tr>`).join("")}</table>` : `<p class="empty">None.</p>`}</div>
+  </div>`;
+}
+
+// ---- Box score and replays -------------------------------------------------------
+async function openViewer(id, mode) {
+  replay?.stop(); replay = null;
+  const b = await call(`/api/game?id=${id}`), g = b.game;
+  $("#viewer-title").textContent = `${mode === "replay" ? "Replay" : "Box score"}: week ${g.week}, ${g.away_team_id} at ${g.home_team_id}`;
+  if (mode === "replay" && b.simulated) replay = new WatchView($("#viewer-body"), b, { ourTeam: H.team.id });
+  else $("#viewer-body").innerHTML = boxScoreHtml(b, H.team.id);
+  if (!$("#viewer").open) $("#viewer").showModal();
+}
+$("#viewer-close").onclick = () => $("#viewer").close();
+$("#viewer").addEventListener("close", () => { replay?.stop(); replay = null; $("#viewer-body").onclick = null; });
+
+// ---- Events -----------------------------------------------------------------
+async function quit() {
+  try {
+    gameDay?.view?.stop(); gameDay = null;
+    const name = H?.save;
+    await call("/api/league/default", {});
+    if (name) toast(`Saved. Load ${name} to carry on from week ${H.week}.`);
+    await refresh();
+  } catch (e) { fail(e); }
+}
+$("#quit").onclick = quit;
+$("#tabs").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-tab]"); if (!b) return;
+  $$("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+  $$(".tab").forEach(t => t.classList.toggle("on", t.id === `tab-${b.dataset.tab}`));
+  try { localStorage.setItem("fo-game-tab", b.dataset.tab); } catch {}
+  try { await renderTab(b.dataset.tab); } catch (err) { fail(err); }
+});
+$("#roster-team").onchange = () => rosterView().catch(fail);
+$("#new-game").onsubmit = async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  try {
+    await call("/api/saves/new", { name: f.get("name"), seed: f.get("seed") });
+    e.target.reset(); toast(`New game ${f.get("name")} started. Good luck.`); await refresh();
+  } catch (err) { fail(err); }
+};
+document.addEventListener("click", async e => {
+  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos]");
+  if (!t || t.disabled) return;
+  try {
+    if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); await refresh(); }
+    else if (t.dataset.box) await openViewer(t.dataset.box, "box");
+    else if (t.dataset.replay) await openViewer(t.dataset.replay, "replay");
+    else if (t.dataset.pos !== undefined) { rosterPos = t.dataset.pos; await rosterView(); }
+    else if (t.dataset.act === "sim") await playWeek(false);
+    else if (t.dataset.act === "watch") await playWeek(true);
+    else if (t.dataset.act === "results") { gameDay?.view?.stop(); gameDay = null; await refresh(); }
+    else if (t.dataset.act === "advance") {
+      t.disabled = true;
+      const r = await call("/api/hub/advance", {});
+      toast(r.week > H.season_games ? "That's the regular season." : `On to week ${r.week}.`);
+      await refresh();
+    }
+  } catch (err) { fail(err); }
+});
+
+try {
+  const tab = localStorage.getItem("fo-game-tab");
+  if (tab && $(`#tabs button[data-tab="${tab}"]`)) {
+    $$("#tabs button").forEach(x => x.classList.toggle("on", x.dataset.tab === tab));
+    $$(".tab").forEach(t => t.classList.toggle("on", t.id === `tab-${tab}`));
+  }
+} catch {}
+refresh();
+</script>
+</body>
+</html>
