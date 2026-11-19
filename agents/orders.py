@@ -19,9 +19,8 @@ season until the owner cancels them, so "don't trade Okafor" holds for every
 later order too.
 
 Approving re-checks the move against the rules and the orders as they are then,
-and proposes it on the Trade Desk as the Herons' offer. The other team answers
-it there: the rival GMs (2.2) will; until then it waits, and the bench's MCP tab
-can answer for them.
+and proposes it on the Trade Desk as the Herons' offer. The other team's GM
+answers it there (agents/rivals.py, 2.2).
 
 The GM searches on its own here, with the League Office's read tools, the Trade
 Desk's evaluate_trade and a target list (`trade_targets`). The scouting team
@@ -46,7 +45,7 @@ from agents.league_db import connect, load_league
 PROJECT_ROOT = Path(__file__).parent.parent
 OUR_TEAM = "HAR"
 MAX_PROPOSALS = 3        # moves the GM may file for one order
-SEARCH_TOOL_LIMIT = 24   # a search takes about 6-15 calls
+SEARCH_TOOL_LIMIT = 30   # a search takes about 6-15 calls, plus loading the negotiation skill
 READ_ATTEMPTS = 2        # DeepSeek's structured output now and then comes back empty
 TARGETS_SHOWN = 12
 
@@ -172,6 +171,17 @@ def orders(status: str = "active", db_file: Path | None = None) -> list[dict]:
     try:
         sql = "SELECT * FROM orders" + ("" if status == "all" else " WHERE status = ?") + " ORDER BY id"
         return [_order(row) for row in db.execute(sql, () if status == "all" else (status,))]
+    finally:
+        db.close()
+
+
+def void_waiting(note: str, db_file: Path | None = None) -> int:
+    """Void every move still waiting for the owner (the trade deadline passed, 2.3)."""
+    db = connect(db_file)
+    try:
+        with db:
+            return db.execute("UPDATE gm_proposals SET status = 'void', owner_note = ?, decided_week = ? "
+                              "WHERE status = 'waiting'", (note, _week(db))).rowcount
     finally:
         db.close()
 
@@ -467,6 +477,9 @@ SEARCH_INSTRUCTIONS = [
     "The salary cap is $255M and hard, and rosters must stay between 46 and 53 players. evaluate_trade tells "
     "you both teams' payroll, cap space and roster size after the trade: trust it rather than doing sums.",
     "Never send a player the owner protects. Never invent players: use only ids that your tools returned.",
+    "The other team decides by its appraisal in evaluate_trade (teams.<their id>.appraisal): below its margin "
+    "it will counter or say no. Use your negotiation skill to build an offer whose appraisal for them says "
+    "accept while ours stays worth it: swap strength for need, rather than offering backups for a starter.",
     "Write each reason with the numbers evaluate_trade gave you (ratings, salaries, unit changes, cap space "
     "after). If propose_to_owner refuses a move, read its problems and fix the move or try another.",
     "Propose only moves you would recommend. If nothing fits the order, propose nothing and say why.",
@@ -501,6 +514,7 @@ def build_searcher(league_office, trade_tools, order_id: int, db_file: Path | No
     from agents.analytics import specialist_model
     return Agent(name="General Manager", model=specialist_model(),
                  tools=[league_office, trade_tools, *build_tools(order_id, db_file)],
+                 skills=skills.load("negotiation"),  # how the other side will score it (2.2)
                  instructions=SEARCH_INSTRUCTIONS, tool_call_limit=SEARCH_TOOL_LIMIT, debug_mode=debug)
 
 
@@ -511,7 +525,9 @@ def search_prompt(order: dict, standing: list[dict], league: dict, week: int) ->
                                                  if o["terms"]["protected"] else "")
               for o in standing if o["id"] != order["id"]]
     return (f"It is week {week}; trades close after week {league['rules']['trade_deadline_week']}.\n"
-            f"Our payroll is ${payroll:.2f}M, cap space ${cap - payroll:.2f}M.\n\n"
+            f"Our payroll is ${payroll:.2f}M, cap space ${cap - payroll:.2f}M.\n"
+            "The teams: " + ", ".join(f"{t['id']} = {t['city']} {t['name']}" for t in league["teams"])
+            + ". Call each team by its name.\n\n"
             f"The owner's order #{order['id']}: \"{order['text']}\"\n"
             f"How you read it (enforced when you propose): {json.dumps(order['terms'])}\n\n"
             + (f"Standing orders that still apply:\n" + "\n".join(others) if others else "No other standing orders."))
@@ -528,6 +544,16 @@ async def give_order(text: str, db_file: Path | None = None, reader: Agent | Non
     league = load_league(db_file)
     terms, usage = await read_order(text, league, reader)
     order_id = save_order(text, ground_terms(terms, league), db_file)
+    return await work_order(order_id, db_file, searcher, usage, started)
+
+
+async def work_order(order_id: int, db_file: Path | None = None, searcher=None, usage: list[dict] | None = None,
+                     started: float | None = None) -> dict:
+    """Have the GM propose moves for an order already saved (the deadline, 2.3, saves its
+    own terms). `searcher` as in give_order."""
+    started = started or time.perf_counter()
+    usage = usage or []
+    league = load_league(db_file)
     order = next(o for o in orders("all", db_file) if o["id"] == order_id)
     week = _current_week(db_file)
     deadline = league["rules"]["trade_deadline_week"]
@@ -561,11 +587,20 @@ async def _search(order: dict, standing: list[dict], league: dict, week: int, db
     async with league_office_tools(db_file) as league_office, trade_desk_tools(db_file) as trade_tools:
         run = await build_searcher(league_office, trade_tools, order["id"], db_file).arun(
             search_prompt(order, standing, league, week))
-    content = run.content if isinstance(run.content, str) and run.content.strip() else None
+    content = final_message(run)
     filed = len(moves(db_file, order["id"]))
     reply = content or (f"I've put {filed} move{'s' if filed != 1 else ''} in front of you." if filed
                         else "I couldn't find a move that fits the order.")
     return reply, run
+
+
+def final_message(run) -> str | None:
+    """The GM's last message, not the notes it wrote between tool calls (which the run's
+    content runs together)."""
+    for message in reversed(getattr(run, "messages", None) or []):
+        if message.role == "assistant" and isinstance(message.content, str) and message.content.strip():
+            return message.content.strip()
+    return run.content.strip() if isinstance(run.content, str) and run.content.strip() else None
 
 
 def _current_week(db_file: Path | None) -> int:

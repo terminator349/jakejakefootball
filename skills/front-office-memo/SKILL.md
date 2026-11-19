@@ -41,6 +41,12 @@ Written at the start of each week from the week's facts.
 - **Watching**: one sentence on what the GM will watch this week, tied to the
   weakness or the opponent.
 - In week 1 there's no last week and no standings: say the season starts.
+- **Near the trade deadline** the facts carry a `warning`. In the deadline
+  week, lead with it: it's the last chance to trade this season. If the facts
+  have `since_our_trades`, say in one or two sentences what our trades did to
+  that unit: "up from" its rating before "to" its rating now, its rank now,
+  and how far we are from the team named now "instead of" before, with the
+  numbers exactly as the facts give them.
 
 ## Answering the owner
 

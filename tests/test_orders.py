@@ -318,3 +318,21 @@ def test_orders_and_approvals_in_the_game(client, monkeypatch):
     assert client.post("/api/hub/order/cancel", json={"order_id": oid}).json()["status"] == "cancelled"
     assert client.get("/api/hub").json()["desk"]["orders"] == []
     assert "Give an order" in client.get("/").text and "data-approve" in client.get("/").text
+
+
+def test_the_search_knows_each_teams_name(scratch_db):
+    """Without the names the GM guessed them from the ids ("Delaware" for DEL)."""
+    oid = an_order()
+    order = next(o for o in orders.orders() if o["id"] == oid)
+    prompt = orders.search_prompt(order, [order], load_league(), 7)
+    assert "DEL = Delta Bay Gators" in prompt and "SUM = Summit Sherpas" in prompt
+
+
+def test_the_reply_is_the_gms_last_message():
+    """Not the notes it wrote between tool calls, which the run's content runs together."""
+    msg = lambda role, content: SimpleNamespace(role=role, content=content)
+    run = SimpleNamespace(content="Let me check the roster.Here is my answer.", messages=[
+        msg("user", "the order"), msg("assistant", "Let me check the roster."), msg("tool", "{}"),
+        msg("assistant", "Here is my answer."), msg("tool", "{}"), msg("assistant", None)])
+    assert orders.final_message(run) == "Here is my answer."
+    assert orders.final_message(SimpleNamespace(content=" Only this. ", messages=[])) == "Only this."

@@ -135,7 +135,7 @@ def test_play_a_week_in_the_game(client, monkeypatch):
     played = client.post("/api/hub/play", json={}).json()
     assert played["our_game_id"] == week["this_week"]["game_id"]
     assert client.get("/api/hub").json()["week_played"] is True
-    assert client.post("/api/hub/advance", json={}).json() == {"week": 2}
+    assert client.post("/api/hub/advance", json={}).json()["week"] == 2  # with the rivals' news (G5)
     schedule = client.get("/api/hub/schedule").json()["games"]
     assert len(schedule) == 17 and schedule[0]["played"] and not schedule[1]["played"]
 

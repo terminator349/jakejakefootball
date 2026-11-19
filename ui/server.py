@@ -29,7 +29,7 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import briefing, game_loop, league_db, live, orders, rules, saves, season, tools
+from agents import briefing, deadline, game_loop, league_db, live, orders, rivals, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -263,7 +263,10 @@ async def hub(request, body):
     week = game_loop.overview()
     return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
             "briefing": None if week["season_over"] else briefing.stored(week["week"]),  # G3, once written
-            "desk": orders.desk_view()}  # G4: standing orders and the GM's proposed moves
+            "desk": orders.desk_view(),  # G4: standing orders and the GM's proposed moves
+            "offers": rivals.offers_to_us(),  # G5: rival GMs' offers to us, with our GM's read
+            "news": [] if week["season_over"] else rivals.news(week["week"]),  # G5: trades between rivals
+            "deadline": None if week["season_over"] else deadline.status()}  # 2.3: the trade deadline
 
 
 def _needs_a_save():
@@ -277,8 +280,12 @@ async def hub_play(request, body):
 
 
 async def hub_advance(request, body):
+    """On to the next week. Then the rival GMs move (G5): they trade with each other and
+    may make us an offer."""
     _needs_a_save()
-    return {"week": season.advance_week()}
+    week = season.advance_week()
+    news = rivals.between_weeks(_db_for_agents())["news"]
+    return {"week": week, "news": news + deadline.close(_db_for_agents())}  # 2.3: past the deadline, it closes
 
 
 async def hub_briefing(request, body):
@@ -317,6 +324,32 @@ async def hub_move_approve(request, body):
 async def hub_move_veto(request, body):
     _needs_a_save()
     return orders.veto(int(body.get("move_id") or 0), body.get("note") or "")
+
+
+async def hub_deadline(request, body):
+    """Work the trade deadline (2.3): the GM looks for trades that fix our biggest weakness
+    and that the other team will take. Without an API key the rules' search does it."""
+    _needs_a_save()
+    return await deadline.work(_db_for_agents(), use_model=bool(os.getenv("OPENROUTER_API_KEY")))
+
+
+async def hub_offer_answer(request, body):
+    """The rival GM our offer was made to answers it (2.2): accept, counter or reject.
+    Without an API key the rules answer for them."""
+    _needs_a_save()
+    return await rivals.answer_offer(int(body.get("proposal_id") or 0), _db_for_agents(),
+                                     use_model=bool(os.getenv("OPENROUTER_API_KEY")))
+
+
+async def hub_offer_accept(request, body):
+    """The owner accepts an offer made to us (a rival's offer or counter)."""
+    _needs_a_save()
+    return rivals.accept_offer(int(body.get("proposal_id") or 0), body.get("note") or "", _db_for_agents())
+
+
+async def hub_offer_reject(request, body):
+    _needs_a_save()
+    return rivals.reject_offer(int(body.get("proposal_id") or 0), body.get("note") or "", _db_for_agents())
 
 
 async def hub_schedule(request, body):
@@ -385,6 +418,10 @@ app = Starlette(routes=[
     Route("/api/hub/order/cancel", api(hub_order_cancel), methods=["POST"]),
     Route("/api/hub/move/approve", api(hub_move_approve), methods=["POST"]),
     Route("/api/hub/move/veto", api(hub_move_veto), methods=["POST"]),
+    Route("/api/hub/deadline", api(hub_deadline), methods=["POST"]),
+    Route("/api/hub/offer/answer", api(hub_offer_answer), methods=["POST"]),
+    Route("/api/hub/offer/accept", api(hub_offer_accept), methods=["POST"]),
+    Route("/api/hub/offer/reject", api(hub_offer_reject), methods=["POST"]),
     Route("/api/live", api(live_state)),
     Route("/api/live/start", api(live_start), methods=["POST"]),
     Route("/api/live/call", api(live_call), methods=["POST"]),

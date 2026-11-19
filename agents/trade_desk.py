@@ -36,7 +36,7 @@ import sqlite3
 from functools import cache
 from pathlib import Path
 
-from agents import rules
+from agents import negotiation, rules
 from agents.league_db import connect, load_league
 from agents.simulator import build_lineup
 
@@ -119,8 +119,12 @@ def evaluate(trade: rules.Trade, db_file: Path | None = None) -> dict:
     league = load_league(db_file)
     result["teams"] = {trade.team_a: _side(league, trade.team_a, trade.a_sends, trade.b_sends),
                        trade.team_b: _side(league, trade.team_b, trade.b_sends, trade.a_sends)}
+    for side in result["teams"].values():
+        side["appraisal"] = negotiation.appraise(side)  # how that team scores it (2.2)
     result["note"] = ("market_value is what the league pays a veteran of that position and overall, $M per season; "
-                      "surplus is market value minus salary. Unit changes are on the simulator's 25-99 scale.")
+                      "surplus is market value minus salary. Unit changes are on the simulator's 25-99 scale. "
+                      "appraisal is how that team scores the trade (market value gained - 0.5 x salary taken on "
+                      "+ 0.3 x unit points); a team accepts a trade that scores at least its margin.")
     return result
 
 
@@ -290,12 +294,12 @@ def _void_overtaken(db: sqlite3.Connection, accepted_id: int, moved: set[str]) -
     return voided
 
 
-def withdraw(proposal_id: int, team_id: str, db_file: Path | None = None) -> dict:
-    """The team that made an open proposal takes it back."""
+def withdraw(proposal_id: int, team_id: str, db_file: Path | None = None, reason: str = "") -> dict:
+    """The team that made an open proposal takes it back, optionally saying why."""
     db = _write(db_file)
     try:
         _open_for(_row(db, proposal_id), team_id, "from")
-        _decide(db, proposal_id, "withdrawn", "")
+        _decide(db, proposal_id, "withdrawn", reason)
         result = {"proposal": _proposal(db, _row(db, proposal_id))}
         db.commit()
         return result
@@ -354,8 +358,9 @@ def evaluate_trade(team_a: str, a_sends: list[str], team_b: str, b_sends: list[s
     and for each team: the players it gives and gets (overall, salary, years left, market
     value and surplus per season, and a verdict: bargain, fair or overpaid), its payroll
     change, the change in market value and surplus, which incoming players would start,
-    which starters it loses or moves to the bench, and how each of its simulator units (e.g. deep_coverage,
-    run_defense) would move. Use this before proposing or answering a trade.
+    which starters it loses or moves to the bench, how each of its simulator units (e.g. deep_coverage,
+    run_defense) would move, and its appraisal: the score that team puts on the trade and
+    whether that's enough for it to accept. Use this before proposing or answering a trade.
 
     Args:
         team_a: three-letter id of one team, e.g. "HAR".

@@ -46,9 +46,9 @@ python data/generate_league.py
 python -m ui.server      # then open http://127.0.0.1:8765
 ```
 
-No API key is needed to play. The GM's briefing and asking the front office
-need `OPENROUTER_API_KEY` in `.env`; the other agents join the game as they are
-built.
+No API key is needed to play. The GM's briefing, asking the front office and
+giving orders need `OPENROUTER_API_KEY` in `.env`; without it, the rival GMs
+answer by the rules alone. The other agents join the game as they are built.
 
 1. **Start a game.** Give it a name (and a seed if you want a season you can
    repeat). Each game is its own save in `saves/`, saved as you play. Continue
@@ -62,7 +62,13 @@ built.
    behind it and what each specialist said (1.4, below). **Give an order**
    ("Upgrade safety. Stay under $5M a year.") and your GM proposes trades that
    follow it; **approve** or **veto** each one under **Proposed moves** (G4,
-   below). Nothing goes to another team until you approve it.
+   below). Nothing goes to another team until you approve it, and then their
+   GM answers: yes, no or a counteroffer. Counteroffers and the offers rival
+   GMs make between weeks wait under **Offers to us**, with your GM's read on
+   each, and **Around the league** lists the other teams' trades (2.2 and G5,
+   below). From week 7 the **Trade deadline** card counts down to the deadline
+   after week 9; **Work the deadline** has your GM find trades that fix the
+   biggest weakness and that the other team will take (2.3, below).
 3. **Play the week.** **Sim it** plays every game and shows the results.
    **Watch it** plays the week, then shows our game drive by drive, with a
    scoreboard and the ball on the field, before any other score. **Call it**
@@ -429,6 +435,8 @@ skills/
   front-office-memo/  the house style for anything the owner reads
     scripts/check_memo.py         numbers not in the facts, and style problems
     references/examples.md        a good briefing, a bad one, a good answer
+  negotiation/        how every GM scores a trade, and building an offer they'll take (2.2)
+    scripts/appraise.py           the score, the margin and the verdict for a what-if
 ```
 
 | Who               | Skills                                                 |
@@ -437,6 +445,7 @@ skills/
 | Cap & Contracts   | salary-cap-rules                                       |
 | The GM            | front-office-memo, always on (in its instructions)     |
 | The briefing      | front-office-memo, always on, and its checks           |
+| The GM's search   | negotiation (G4, from 2.2)                             |
 
 - **The scripts use the league's own code**, not a copy of the rules:
   `cap_check.py` uses the League Office's `cap_math` and the rules in
@@ -527,8 +536,9 @@ propose  ->  open  ->  accept    the rules are checked again, then the players m
   approval of the Herons' own offers comes before the desk, in G4.
 
 The GM evaluates trades on the desk, and the moves the owner approves are
-proposed on it as the Herons' offers (G4). The rival GMs (2.2) will answer
-them. On the bench, the **MCP servers** tab can start
+proposed on it as the Herons' offers (G4). The rival GMs (2.2) answer them,
+and the evaluation gives each side's appraisal: the score that team's GM
+decides by. On the bench, the **MCP servers** tab can start
 either server and call any tool; the Trade Desk's writes change the loaded
 league.
 
@@ -580,10 +590,8 @@ moves are kept in the save (`orders` and `gm_proposals`, schema version 6).
   the trade deadline the GM says there's nothing it can propose.
 - **Approving checks again**: if the league or the orders changed since the
   move was filed, it's void and nothing is sent. Otherwise it goes on the
-  Trade Desk as the Herons' open offer. The other team answers it there: the
-  rival GMs will from 2.2. Until then it waits, and the bench's **MCP
-  servers** tab can answer for them (`respond_to_proposal`). The week screen
-  shows what became of each offer.
+  Trade Desk as the Herons' open offer, and the other team's GM answers it
+  at once (2.2, below). The week screen shows what became of each offer.
 - **Without a key**, giving an order says it needs one; approving, vetoing and
   cancelling are plain Python and always work.
 
@@ -600,6 +608,120 @@ pytest tests/test_orders.py    # every check, approval and the game's API, no AP
 Done when: an order in plain words becomes moves that follow it and the
 league rules, and the owner approves or vetoes each one before anything goes
 to another team.
+
+## 2.2 and G5: the rival GMs
+
+The other five teams have general managers of their own. They answer our
+offers (2.2), and between weeks they trade with each other and make us offers
+(G5), so the league changes even when the owner does nothing. The logic is in
+`agents/rivals.py`; how a team scores a trade is in `agents/negotiation.py`.
+
+```
+our offer (an approved move)  -> the rival's GM answers it    accept / counter (one more of our players) / reject
+advance the week              -> the rivals answer what's left, take back last week's offers to us,
+                                 maybe trade with each other (once a week at most) and make us an offer
+an offer to us                -> Offers to us, with our GM's read   Accept / Reject
+```
+
+- **Every GM scores a trade the same way**, by what it does for its own team:
+  `score = market value gained - 0.5 x salary taken on + 0.3 x unit points`
+  (tackling left out: no play uses it). A team accepts at its margin (0.25 at
+  normal difficulty), counters a trade short by less than 6, and rejects the
+  rest. The Trade Desk's `evaluate_trade` gives each side's **appraisal**, so
+  every agent sees the same number.
+- **Plain Python sets the limits, the model answers within them.** Before a
+  rival's GM sees an offer, plain Python works out its score and up to three
+  counteroffers: the same trade plus one more of our players, each legal and
+  each one the rival would take. The GM (DeepSeek V4 Flash, with a persona
+  per team) may accept only if the score is within 0.5 of its margin, counter
+  only with one of those options, and always reject, and it writes the reply
+  in its own voice. An answer outside the limits is replaced by the rules'
+  answer. Without a key the rules answer, with template replies.
+- **A counter is a new offer to us.** It shows under **Offers to us**, and the
+  owner accepts or rejects it there: accepting a counter is a second approval.
+- **Between weeks is plain Python and seeded**, so the same season plays out
+  the same way, and it takes about a second. Each week every rival has a
+  chance to look for a trade: it finds players on other teams who would start
+  at its two weakest positions and the best single player of its own to send,
+  and the trade happens only if both sides score it above their margin. An
+  offer to us must score 0.5 above the rival's margin for them, and at least
+  -1.0 for us, so it's worth a look. No rival asks twice for the same player,
+  offers to us last until the week ends, and nothing moves after the deadline.
+  The week screen lists the other teams' trades under **Around the league**.
+- **Our GM's read on an offer to us** (`advise`) uses the same score and warns
+  when an offer sends away a player one of the owner's orders protects.
+- **The negotiation skill** (`skills/negotiation/`) explains the formula and
+  how to build an offer the other side will take; its script scores a what-if.
+  The GM's search (G4) has it, so the moves it proposes already clear the
+  other team's margin where they can.
+
+A seeded season (seed 11) has about two trades between rivals and two or
+three offers to us. Live, Summit's GM answered Dubois for Odom (score -2.35
+for them) with a counter asking for Tobias Tanaka as well, in its own words:
+"Odom is a 73 safety and Dubois at 52 leaves us too thin back there." Each
+answer took 2 to 9 seconds and cost under $0.001.
+
+```powershell
+pytest tests/test_rivals.py    # appraisals, answers, limits, between weeks, the game's API; no API key needed
+```
+
+Done when: a rival accepts, counters or rejects each offer by what it does
+for its team, and rivals trade and make offers between weeks without the owner.
+
+## 2.3: the trade deadline
+
+Trades close after week 9, and the deadline is now a game event. The logic is
+in `agents/deadline.py`.
+
+```
+weeks 7 and 8     the Trade deadline card: weeks left, our biggest weakness, cap space, our trades
+week 9            "Last chance": the card and the GM's briefing lead with it
+Work the deadline the GM finds the weakness, values targets and negotiates  -> moves for you to approve
+                  approve -> the rival's GM answers (2.2) -> accept their counter -> the trade is made
+week 10           the desk closes: waiting moves are void, offers end, the card says what our trades did
+```
+
+- **Working the deadline** saves an order to upgrade our biggest weakness,
+  with terms plain Python writes (no model reads it), and has the GM work it
+  with the G4 search and the negotiation skill. Without an API key the rules'
+  search does it: one-for-one trades for a player who would start for us, which
+  the seller scores above its margin and so do we, keeping every standing
+  order's protected players, up to three moves. Either way nothing moves until
+  the owner approves, and the rival's GM answers each approval.
+- **What our trades changed**: for each position we traded for, the unit we
+  were fixing, its rating and rank before our trades and now, and how far we
+  are from the team just above us now, then and now. Our trades are undone on
+  a copy of the league to get the "before". The card shows it, and it goes into
+  the briefing's facts with the countdown, so the GM can write the example's
+  "up from 48.5 to 66.0, 4.0 behind Mesa Verde instead of 21.5" and pass G3's
+  number check.
+- **Closing the desk**: once the week moves past the deadline, every move still
+  waiting for the owner is void, with the reason. G5's between-weeks step runs
+  first, so our open offers are refused by the rules and the rivals' offers to
+  us expire. The Offers to us card goes away for the rest of the season.
+
+The GM's search now gets each team's name with its id: without them, it called
+Delta Bay "Delaware" and Summit "Summerville". The order and deadline cards now
+show its last message only, with its bold labels and lists, rather than every
+note it wrote between tool calls.
+
+Tried live from week 9 of a seeded season: the GM checked trades with 23 tool
+calls and proposed Tobias Tanaka (LB) for Isaiah Odom (S), which Summit
+scores +0.86, above its margin. The search took about 2.5 minutes and cost
+$0.023. The deadline week's briefing led with the last chance to trade and
+said what the Odom trade did, with every number from the facts. In the game,
+a search at week 7 filed Strickland and Whitfield for Xavier Pruitt. Delta
+Bay's GM asked for Jalen Achebe as well, and accepting the counter made the
+trade.
+
+```powershell
+pytest tests/test_deadline.py    # the countdown, the searches, the facts, closing, the game's API; no API key
+```
+
+Done when: in the weeks before the deadline the owner is warned, one click
+runs the scenario from the weakness to offers the other team will take, a
+legal trade can be completed through the rival GMs, and after week 9 the desk
+is closed.
 
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 

@@ -75,9 +75,9 @@ GM briefing
 | W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7            |
 | W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3 (done early), G7     |
 | W6   | Nov 30 - Dec 6 | 1.5, 2.1 (done early), G8 (done early) |
-| W7   | Dec 7 - 13     | 2.1, G4 (done early), 2.2, G8 (done early) |
-| W8   | Dec 14 - 20    | 2.2, G5                                |
-| W9   | Dec 21 - 27    | 2.3                                    |
+| W7   | Dec 7 - 13     | 2.1, G4, 2.2 (done early), G8 (done early) |
+| W8   | Dec 14 - 20    | 2.2, G5 (done early)                   |
+| W9   | Dec 21 - 27    | 2.3 (done early)                       |
 | W10  | Dec 28 - Jan 3 | 3.2, G6                                |
 | W11  | Jan 4 - 10     | 3.2, 4.2                               |
 | W12  | Jan 11 - 17    | 4.1, 4.3, 4.5                          |
@@ -259,7 +259,7 @@ and a completed trade voids other open offers for the same players. The
 evaluation gives each side's market value (the player-valuation formula),
 payroll change, starters and simulator unit changes, so agents quote numbers
 rather than compute them. Proposals are kept in the save (schema version 5).
-No agent uses it yet; G4 and 2.2 are its first clients.
+G4 and 2.2 are its first clients.
 
 ### G4 Owner orders and approvals (W7) - Done
 The owner gives an order in plain words ("upgrade safety, stay under $5M").
@@ -272,20 +272,41 @@ it files is checked against the 1.2 rules, every standing order and the
 order's limits, and checked again when the owner approves it. An approved
 move goes on the Trade Desk as the Herons' offer. Orders stand all season, so
 part of 4.2's "standing orders" is done here; remembering past decisions is
-still 4.2's. Offers wait there until the rival GMs (2.2) answer them.
+still 4.2's. The rival GMs (2.2) answer them.
 
-### 2.2 Rival GM agents and negotiation skill (W7 - W8)
+### 2.2 Rival GM agents and negotiation skill (W7 - W8) - Done
 AI general managers for the other five teams, who accept, reject or counter our
 offers, and a negotiation skill for our side.
 
-### G5 Rival GMs act on their own (W8)
+Done Nov 19, ahead of W7. Every GM scores a trade by one formula (market value
+gained, half the salary taken on, and unit points), which the Trade Desk's
+evaluation now gives for each side. Plain Python works out the score and up to
+three counteroffers, and the rival's GM chooses within those limits and writes
+the reply; without a key the rules answer. The negotiation skill explains the
+formula to our GM's search (G4), so its proposals clear the other side's margin.
+
+### G5 Rival GMs act on their own (W8) - Done
 Rival GMs make offers to us and trade with each other between weeks, so the
 league changes even when the owner does nothing.
 
-### 2.3 Trade deadline in the game (W9)
+Done Nov 19 with 2.2. After each week, plain Python and the season's seed
+decide whether a rival trades with another (only if both sides score it above
+their margin) or makes us an offer, which lasts a week and shows under Offers
+to us with our GM's read on it. A seeded season has about two rival trades
+and two or three offers to us.
+
+### 2.3 Trade deadline in the game (W9) - Done
 The trade-deadline scenario becomes a game event: find the weakness, value
 targets, negotiate with rival GMs and complete a legal trade. The GM warns the
 owner in the weeks before, and the Trade Desk closes after week 9.
+
+Done Nov 19, ahead of W9. From two weeks out the week screen counts down, and
+the briefing's facts carry the warning and, once we've traded, what our trades
+did to the unit (rating and rank before and now, and the gap to the team
+above). "Work the deadline" saves an order for the biggest weakness and has the
+GM's search work it, or a plain-Python search without a key. The owner
+approves, the rival's GM answers, and a counter can be accepted. Past the
+deadline, waiting moves are void and the offers close.
 
 ## Phase 3: The full season
 
@@ -321,7 +342,9 @@ Load real player data in place of the generated league, if ahead of schedule.
 
 ### 4.5 Difficulty levels: easy, normal, hard (W12)
 No longer a stretch goal, since a game needs it: chosen at "New game", it sets
-how shrewdly rival GMs negotiate and how well rival teams call plays.
+how shrewdly rival GMs negotiate and how well rival teams call plays. The
+negotiation margins for easy, normal and hard are already in
+`agents/negotiation.py` (2.2); 4.5 stores the choice in the save.
 
 ## Phase 5: Testing and submission
 
