@@ -13,8 +13,9 @@ from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 
 from agents import league_db, rules, saves
-from agents.tools import (check_cap_fit, check_trade, compare_to_league, get_roster, list_teams,
-                          validate_cap_compliance)
+from agents.tools import (check_cap_fit, check_trade, compare_to_league, get_depth_chart,
+                          get_injury_report, get_roster, get_team_tendencies, list_teams,
+                          set_depth_chart, validate_cap_compliance)
 from servers.league_office import league_office
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -39,12 +40,14 @@ def list_tools(server=league_office):
 def test_serves_the_league_tools():
     names = {t.name for t in list_tools()}
     assert names == {"list_teams", "get_roster", "compare_to_league", "get_league_rules", "check_trade",
-                     "validate_cap_compliance", "check_cap_fit"}
+                     "validate_cap_compliance", "check_cap_fit", "get_depth_chart", "set_depth_chart",
+                     "get_injury_report", "get_team_tendencies"}
 
 
 def test_tools_are_read_only():
+    """set_depth_chart is the one exception: it's the only tool that changes the league."""
     for tool in list_tools():
-        assert tool.annotations.read_only_hint is True
+        assert tool.annotations.read_only_hint is (tool.name != "set_depth_chart")
         assert tool.annotations.destructive_hint is not True
 
 
@@ -64,6 +67,9 @@ def test_results_match_the_plain_python_tools():
     assert call("check_cap_fit", {"team_id": "HAR", "new_salary": 5.0}) == json.loads(check_cap_fit("HAR", 5.0))
     trade = {"team_a": "HAR", "a_sends": ["HAR-01"], "team_b": "MES", "b_sends": ["MES-01"]}
     assert call("check_trade", trade) == json.loads(check_trade(**trade))
+    assert call("get_depth_chart", {"team_id": "HAR"}) == json.loads(get_depth_chart("HAR"))
+    assert call("get_injury_report") == json.loads(get_injury_report())
+    assert call("get_team_tendencies", {"team_id": "HAR"}) == json.loads(get_team_tendencies("HAR"))
 
 
 def test_check_trade_shows_the_rule_a_trade_breaks(scratch_db):
@@ -82,13 +88,24 @@ def test_bad_arguments_come_back_as_error_json():
     assert "error" in call("get_roster", {"team_id": "XYZ"})
     assert "error" in call("compare_to_league", {"team_id": "XYZ"})
     assert "error" in call("check_cap_fit", {"team_id": "XYZ", "new_salary": 5.0})
+    assert "error" in call("get_depth_chart", {"team_id": "XYZ"})
+    assert "error" in call("get_injury_report", {"team_id": "XYZ"})
+    assert "error" in call("get_team_tendencies", {"team_id": "XYZ"})
+
+
+def test_set_depth_chart_over_mcp_changes_who_starts(scratch_db):
+    safeties = call("get_depth_chart", {"team_id": "HAR", "position": "S"})["depth_chart"]["S"]["players"]
+    new_order = [p["id"] for p in reversed(safeties)]
+    result = call("set_depth_chart", {"team_id": "HAR", "position": "S", "player_order": new_order})
+    assert [p["id"] for p in result["depth_chart"]["S"]["players"]] == new_order
+    assert call("get_depth_chart", {"team_id": "HAR", "position": "S"})["depth_chart"]["S"]["custom_order"] is True
 
 
 def test_runs_over_stdio():
     server = StdioServerParameters(command=sys.executable, args=["-m", "servers.league_office"], cwd=PROJECT_ROOT)
     rules = call("get_league_rules", server=server)
     assert rules["cap_type"] == "hard"
-    assert len(list_tools(server)) == 7
+    assert len(list_tools(server)) == 11
 
 
 def test_serves_a_save_over_stdio(tmp_path, monkeypatch):

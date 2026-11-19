@@ -59,6 +59,57 @@ def test_database_rejects_bad_rows(scratch_db):
     db.close()
 
 
+def test_injuries_and_depth_chart_are_tables(scratch_db):
+    db = league_db.connect()
+    tables = {row["name"] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+    assert {"injuries", "depth_chart"} <= tables
+    assert db.execute("SELECT COUNT(*) FROM injuries").fetchone()[0] == 0
+    assert db.execute("SELECT COUNT(*) FROM depth_chart").fetchone()[0] == 0
+    db.close()
+
+
+def test_depth_chart_order_is_empty_with_no_custom_order(scratch_db):
+    db = league_db.connect()
+    assert league_db.depth_chart_order(db, "HAR") == {}
+    db.close()
+
+
+def test_write_depth_chart_then_read_it_back(scratch_db):
+    db = league_db.connect()
+    roster = [row["id"] for row in db.execute("SELECT id FROM players WHERE team_id = 'HAR' AND position = 'S'")]
+    db.close()
+    new_order = list(reversed(roster))
+    league_db.write_depth_chart("HAR", "S", new_order)
+    db = league_db.connect()
+    assert league_db.depth_chart_order(db, "HAR") == {"S": new_order}
+    db.close()
+
+
+def test_save_injury_then_read_current_injuries(scratch_db):
+    db = league_db.connect()
+    with db:
+        db.execute("UPDATE game SET current_week = 3")
+        league_db.save_injury(db, "HAR-01", "HAR", since_week=2, games_out=1, description="Hamstring.")
+    assert league_db.injured_player_ids(db, "HAR", week=3) == {"HAR-01"}
+    assert league_db.injured_player_ids(db, "HAR", week=4) == set()  # back the week after
+    db.close()
+
+    injuries = league_db.current_injuries("HAR")
+    assert len(injuries) == 1 and injuries[0]["games_remaining"] == 1
+    assert league_db.current_injuries("MES") == []
+    assert {i["player_id"] for i in league_db.current_injuries()} == {"HAR-01"}  # no team filter
+
+
+def test_save_injury_overwrites_the_same_player(scratch_db):
+    db = league_db.connect()
+    with db:
+        league_db.save_injury(db, "HAR-01", "HAR", since_week=1, games_out=1, description="Minor.")
+        league_db.save_injury(db, "HAR-01", "HAR", since_week=1, games_out=6, description="Re-injured, worse.")
+    db.close()
+    injuries = league_db.current_injuries("HAR")
+    assert len(injuries) == 1 and injuries[0]["description"] == "Re-injured, worse."
+
+
 def test_parallel_first_calls_build_the_database_once(tmp_path, monkeypatch):
     """The server runs tool calls in parallel; a missing database once made one of them crash."""
     from concurrent.futures import ThreadPoolExecutor
