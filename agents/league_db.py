@@ -8,7 +8,8 @@ change a database, never the seed.
 Since task G1 a database also holds the game: the current week, the 17-week
 schedule with results, and a log of every move. Standings are a view over the
 results. Since task 3.1 it also keeps every simulated snap and each player's
-stats per game, and since task 2.1 the Trade Desk's trade proposals.
+stats per game, since task 2.1 the Trade Desk's trade proposals, and since G4 the owner's
+orders and the GM's proposed moves.
 
     python -m agents.league_db    # rebuild data/league.db from league.json (undoes all moves)
 
@@ -35,7 +36,8 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 # 3: task G8 adds games in progress, where the owner calls the plays.
 # 4: task G3 adds the GM's weekly briefings.
 # 5: task 2.1 adds the Trade Desk's trade proposals.
-SCHEMA_VERSION = 5
+# 6: task G4 adds the owner's orders and the moves the GM proposes for approval.
+SCHEMA_VERSION = 6
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -203,9 +205,38 @@ CREATE TABLE IF NOT EXISTS trade_proposals (
 CREATE INDEX IF NOT EXISTS open_proposals ON trade_proposals (status, to_team_id);
 """
 
+ORDERS_SCHEMA = """
+-- The owner's orders and the GM's proposed moves (task G4). An order stands until the
+-- owner cancels it. The GM reads it into terms that plain Python enforces, and each move
+-- it proposes waits here for the owner: approved, it goes to the Trade Desk as our offer.
+CREATE TABLE IF NOT EXISTS orders (
+    id      INTEGER PRIMARY KEY,
+    week    INTEGER NOT NULL CHECK (week >= 1),
+    text    TEXT NOT NULL,                              -- the owner's words
+    terms   TEXT NOT NULL,                              -- JSON: what the GM understood (OrderTerms)
+    reply   TEXT,                                       -- the GM's answer to the owner
+    status  TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'cancelled')),
+    cost    REAL                                        -- what the model calls cost, in $
+);
+CREATE TABLE IF NOT EXISTS gm_proposals (
+    id               INTEGER PRIMARY KEY,
+    order_id         INTEGER NOT NULL REFERENCES orders(id),
+    week             INTEGER NOT NULL CHECK (week >= 1),
+    team_id          TEXT NOT NULL REFERENCES teams(id), -- the other team
+    sends            TEXT NOT NULL,                      -- JSON: our player ids
+    receives         TEXT NOT NULL,                      -- JSON: their player ids
+    reason           TEXT NOT NULL,                      -- the GM's case for it
+    status           TEXT NOT NULL DEFAULT 'waiting'
+                     CHECK (status IN ('waiting', 'approved', 'vetoed', 'void')),
+    owner_note       TEXT,                               -- the owner's note, or why it was voided
+    decided_week     INTEGER,
+    desk_proposal_id INTEGER REFERENCES trade_proposals(id)  -- our offer on the Trade Desk, once approved
+);
+"""
+
 # How to bring an older database up to date, by the version it is at. A version not
 # listed here can't be upgraded: data/league.db is rebuilt, and a save is refused.
-MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA}
+MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA, 5: ORDERS_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -231,7 +262,7 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA)
+        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}

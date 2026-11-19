@@ -22,8 +22,8 @@ skill uses it), all computed here so no agent has to do the arithmetic.
 
 Who may act is checked by team id: only the team a proposal is addressed to can
 accept, reject or counter it, and only the team that made it can withdraw it.
-The owner's approval of the Herons' own offers is G4's job, before a proposal
-reaches the desk.
+The owner's approval of the Herons' own offers comes first (agents/orders.py,
+G4): only an approved move is proposed here.
 
 The functions at the bottom wrap these for the MCP server (servers/trade_desk.py):
 they return JSON text and turn mistakes into {"error": ...}, as the League

@@ -29,7 +29,7 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import briefing, game_loop, league_db, live, rules, saves, season, tools
+from agents import briefing, game_loop, league_db, live, orders, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -262,7 +262,8 @@ async def hub(request, body):
         return {"save": None}
     week = game_loop.overview()
     return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
-            "briefing": None if week["season_over"] else briefing.stored(week["week"])}  # G3, once written
+            "briefing": None if week["season_over"] else briefing.stored(week["week"]),  # G3, once written
+            "desk": orders.desk_view()}  # G4: standing orders and the GM's proposed moves
 
 
 def _needs_a_save():
@@ -292,6 +293,30 @@ async def hub_ask(request, body):
     """Ask the front office: the owner talks to the GM, who asks the specialists (1.4)."""
     _needs_a_save()
     return await run_gm(request, body)
+
+
+async def hub_order(request, body):
+    """Give the GM an order (G4): it reads the terms and proposes moves for the owner."""
+    _needs_a_save()
+    if not os.getenv("OPENROUTER_API_KEY"):
+        raise ValueError("Orders need OPENROUTER_API_KEY in .env (then restart the server).")
+    return await orders.give_order(body.get("order") or "", _db_for_agents())
+
+
+async def hub_order_cancel(request, body):
+    _needs_a_save()
+    return orders.cancel_order(int(body.get("order_id") or 0))
+
+
+async def hub_move_approve(request, body):
+    """The owner approves a proposed move: it goes to the Trade Desk as our offer."""
+    _needs_a_save()
+    return orders.approve(int(body.get("move_id") or 0), body.get("note") or "")
+
+
+async def hub_move_veto(request, body):
+    _needs_a_save()
+    return orders.veto(int(body.get("move_id") or 0), body.get("note") or "")
 
 
 async def hub_schedule(request, body):
@@ -333,12 +358,17 @@ class FreshStaticFiles(StaticFiles):
         return response
 
 
+# The pages too: most of the game's code is in game.html, so a cached copy would run
+# old code against a newer server.
+FRESH = {"Cache-Control": "no-cache"}
+
+
 async def game_page(request):
-    return FileResponse(UI_DIR / "game.html")
+    return FileResponse(UI_DIR / "game.html", headers=FRESH)
 
 
 async def bench_page(request):
-    return FileResponse(UI_DIR / "bench.html")
+    return FileResponse(UI_DIR / "bench.html", headers=FRESH)
 
 
 app = Starlette(routes=[
@@ -351,6 +381,10 @@ app = Starlette(routes=[
     Route("/api/hub/schedule", api(hub_schedule)),
     Route("/api/hub/ask", api(hub_ask), methods=["POST"]),
     Route("/api/hub/briefing", api(hub_briefing), methods=["POST"]),
+    Route("/api/hub/order", api(hub_order), methods=["POST"]),
+    Route("/api/hub/order/cancel", api(hub_order_cancel), methods=["POST"]),
+    Route("/api/hub/move/approve", api(hub_move_approve), methods=["POST"]),
+    Route("/api/hub/move/veto", api(hub_move_veto), methods=["POST"]),
     Route("/api/live", api(live_state)),
     Route("/api/live/start", api(live_start), methods=["POST"]),
     Route("/api/live/call", api(live_call), methods=["POST"]),

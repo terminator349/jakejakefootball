@@ -75,7 +75,7 @@ GM briefing
 | W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7            |
 | W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3 (done early), G7     |
 | W6   | Nov 30 - Dec 6 | 1.5, 2.1 (done early), G8 (done early) |
-| W7   | Dec 7 - 13     | 2.1 (done early), G4, 2.2, G8 (done early) |
+| W7   | Dec 7 - 13     | 2.1, G4 (done early), 2.2, G8 (done early) |
 | W8   | Dec 14 - 20    | 2.2, G5                                |
 | W9   | Dec 21 - 27    | 2.3                                    |
 | W10  | Dec 28 - Jan 3 | 3.2, G6                                |
@@ -261,10 +261,18 @@ payroll change, starters and simulator unit changes, so agents quote numbers
 rather than compute them. Proposals are kept in the save (schema version 5).
 No agent uses it yet; G4 and 2.2 are its first clients.
 
-### G4 Owner orders and approvals (W7)
+### G4 Owner orders and approvals (W7) - Done
 The owner gives an order in plain words ("upgrade safety, stay under $5M").
 The GM turns it into proposed moves, and the owner approves or vetoes each one
 before anything goes to the Trade Desk.
+
+Done Nov 19, ahead of W7. The GM reads an order into terms (positions,
+salary limits, players not to trade) that plain Python enforces: every move
+it files is checked against the 1.2 rules, every standing order and the
+order's limits, and checked again when the owner approves it. An approved
+move goes on the Trade Desk as the Herons' offer. Orders stand all season, so
+part of 4.2's "standing orders" is done here; remembering past decisions is
+still 4.2's. Offers wait there until the rival GMs (2.2) answer them.
 
 ### 2.2 Rival GM agents and negotiation skill (W7 - W8)
 AI general managers for the other five teams, who accept, reject or counter our

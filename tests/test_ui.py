@@ -113,7 +113,9 @@ def test_ask_the_front_office_in_the_game(client, monkeypatch):
 
 
 def test_game_and_bench_pages(client):
-    assert "<title>Front Office</title>" in client.get("/").text
+    page = client.get("/")
+    assert "<title>Front Office</title>" in page.text and page.headers["cache-control"] == "no-cache"
+    assert client.get("/bench").headers["cache-control"] == "no-cache"
     assert "Test Bench" in client.get("/bench").text
     script = client.get("/static/common.js")
     assert "class WatchView" in script.text and script.headers["cache-control"] == "no-cache"

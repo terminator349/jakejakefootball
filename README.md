@@ -59,8 +59,10 @@ built.
    deadline and this week's opponent. Without a key, or while the GM writes it,
    plain notes read from the league stand in. **Ask the front office** puts any question to your GM, who asks Analytics,
    Cap & Contracts or Draft and answers you with a recommendation, the numbers
-   behind it and what each specialist said (1.4, below). Orders and proposed
-   moves show what they wait on (G4).
+   behind it and what each specialist said (1.4, below). **Give an order**
+   ("Upgrade safety. Stay under $5M a year.") and your GM proposes trades that
+   follow it; **approve** or **veto** each one under **Proposed moves** (G4,
+   below). Nothing goes to another team until you approve it.
 3. **Play the week.** **Sim it** plays every game and shows the results.
    **Watch it** plays the week, then shows our game drive by drive, with a
    scoreboard and the ball on the field, before any other score. **Call it**
@@ -524,8 +526,9 @@ propose  ->  open  ->  accept    the rules are checked again, then the players m
   can answer it, and only the team that made it can withdraw it. The owner's
   approval of the Herons' own offers comes before the desk, in G4.
 
-No agent uses the desk yet: the GM proposes through it in G4, and the rival
-GMs (2.2) answer through it. On the bench, the **MCP servers** tab can start
+The GM evaluates trades on the desk, and the moves the owner approves are
+proposed on it as the Herons' offers (G4). The rival GMs (2.2) will answer
+them. On the bench, the **MCP servers** tab can start
 either server and call any tool; the Trade Desk's writes change the loaded
 league.
 
@@ -538,6 +541,65 @@ pytest tests/test_trade_desk.py                      # no API key needed
 Done when: a trade can be evaluated, proposed, countered and accepted over
 MCP, every step is checked against the league rules, and only an accepted
 proposal moves players.
+
+## G4: orders and approvals
+
+The owner gives the GM an order in plain words, the GM turns it into proposed
+moves, and the owner approves or vetoes each one. Nothing goes to another team
+until it's approved. The logic is in `agents/orders.py`; orders and proposed
+moves are kept in the save (`orders` and `gm_proposals`, schema version 6).
+
+```
+"Upgrade safety. Stay under $5M a year. Don't trade Okafor."
+  -> the GM reads it into terms        positions S; nobody over $5.00M; don't trade Mateo Okafor (HAR-01)
+  -> the GM searches and files moves   each one checked by plain Python before the owner sees it
+  -> Approve and send                  checked again, then our offer on the Trade Desk (2.1)
+  -> Veto                              dropped
+```
+
+- **The model reads, plain Python holds it to the order.** The GM reads the
+  order into `OrderTerms`: the positions to upgrade, the most an incoming
+  player may earn, the most our payroll may grow, and our players not to
+  trade. The owner sees those terms under the order. A name more than one of
+  our players shares ("Okafor") protects all of them, and the summary names
+  each one.
+- **Every proposed move is checked** (`check_move`) before it's filed: the
+  1.2 rules through the Trade Desk's evaluation, no player that *any* standing
+  order protects, and this order's salary limits and positions. The GM can
+  only file a move through `propose_to_owner`, which hands the problems back
+  so it can fix the move or try another. At most three moves per order.
+- **The GM's search** uses the League Office's `get_roster`,
+  `compare_to_league` and `list_teams`, the Trade Desk's `evaluate_trade`, and
+  `trade_targets` (players at a position on the other teams, under a salary).
+  It can't propose on the Trade Desk itself; only the owner's approval does.
+  Its reasons quote the evaluation's numbers. The scouting team (4.1) takes
+  over finding targets later.
+- **Orders stand all season** until the owner cancels them, so "never trade
+  Okafor" holds for every later order. Cancelling an order voids its moves
+  still waiting. An order that only sets a rule needs no search, and after
+  the trade deadline the GM says there's nothing it can propose.
+- **Approving checks again**: if the league or the orders changed since the
+  move was filed, it's void and nothing is sent. Otherwise it goes on the
+  Trade Desk as the Herons' open offer. The other team answers it there: the
+  rival GMs will from 2.2. Until then it waits, and the bench's **MCP
+  servers** tab can answer for them (`respond_to_proposal`). The week screen
+  shows what became of each offer.
+- **Without a key**, giving an order says it needs one; approving, vetoing and
+  cancelling are plain Python and always work.
+
+Tried live on the example order: the GM checked eight trades with
+`evaluate_trade` and filed one, Quentin Sato (82 overall, coverage 85,
+$3.81M) from Delta Bay for Hunter Dubois, with deep coverage up 8.25 and
+$2.71M of cap space left. Every number in its reason came from the tools. The
+order took 52 seconds and cost under a cent.
+
+```powershell
+pytest tests/test_orders.py    # every check, approval and the game's API, no API key needed
+```
+
+Done when: an order in plain words becomes moves that follow it and the
+league rules, and the owner approves or vetoes each one before anything goes
+to another team.
 
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 
