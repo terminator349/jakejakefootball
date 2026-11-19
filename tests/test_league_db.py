@@ -119,3 +119,22 @@ def test_parallel_first_calls_build_the_database_once(tmp_path, monkeypatch):
         leagues = list(pool.map(lambda _: league_db.load_league(), range(8)))
     assert all(len(league["players"]) == 288 for league in leagues)
     assert not (tmp_path / "league.db.tmp").exists()
+
+
+@pytest.mark.parametrize("dropped", [
+    "DROP TABLE gm_proposals; DROP TABLE orders; DROP TABLE injuries; DROP TABLE depth_chart;",  # 2.1's version 5
+    "DROP TABLE gm_proposals; DROP TABLE orders; DROP TABLE trade_proposals;",                   # 3.2's version 5
+])
+def test_either_branchs_version_5_saves_come_up_to_date(tmp_path, dropped):
+    """Version 5 meant the Trade Desk on one branch and injuries on the other."""
+    path = tmp_path / "v5.db"
+    league_db.build(path)
+    with sqlite3.connect(path) as db:
+        db.executescript(dropped + " PRAGMA user_version = 5;")
+    db.close()
+    league_db.connect(path).close()
+    with sqlite3.connect(path) as db:
+        tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 7
+    db.close()
+    assert {"trade_proposals", "orders", "gm_proposals", "injuries", "depth_chart"} <= tables

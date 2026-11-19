@@ -27,6 +27,7 @@ from pathlib import Path
 from agno.agent import Agent
 from pydantic import BaseModel, Field
 
+from agents import deadline as trade_deadline
 from agents import game_loop, league_db, memo, season, skills, tools
 from agents.analytics import specialist_model
 
@@ -139,9 +140,8 @@ def facts(db_file: Path | None = None) -> dict:
     out["cap"] = {"payroll": f"${team['payroll']:.1f}M", "cap_space": f"${team['cap_space']:.1f}M",
                   "hard_cap": f"${team['salary_cap']:.0f}M", "roster": team["roster_size"],
                   "roster_limit": team["roster_max"]}
-    deadline = week["trade_deadline_week"]
-    out["trade_deadline"] = ({"after_week": deadline, "weeks_left_after_this_one": deadline - week["week"]}
-                             if not week["deadline_passed"] else "passed")
+    # The countdown, and once we've traded, our trades and what they changed (2.3).
+    out.update(trade_deadline.briefing_facts(db_file))
 
     this = week["this_week"]
     if this:

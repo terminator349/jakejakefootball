@@ -130,6 +130,12 @@ def _report(trade: Trade, week: int, violations: list[Violation], after: dict) -
             "violations": [asdict(v) for v in violations], "teams_after": after}
 
 
+def check_trade_in(db: sqlite3.Connection, trade: Trade) -> dict:
+    """check_trade() on a connection the caller holds, e.g. inside its own transaction."""
+    trade = trade.normalized()
+    return _report(trade, *_check(db, trade))
+
+
 def check_trade(trade: Trade, db_file: Path | None = None) -> dict:
     """Every rule the trade would break this week, and each team's roster size, payroll
     and cap space if it went through. Changes nothing."""
@@ -151,19 +157,31 @@ def make_trade(trade: Trade, db_file: Path | None = None) -> dict:
         # Hold the write lock from the checks to the update, so no other move can
         # change the rosters in between and make a checked trade illegal.
         db.execute("BEGIN IMMEDIATE")
-        week, violations, after = _check(db, trade)
-        if violations:
+        try:
+            report = make_trade_in(db, trade)
+        except IllegalMove:
             db.rollback()
-            raise IllegalMove(violations)
-        moved = ([(p, trade.team_a, trade.team_b) for p in trade.a_sends]
-                 + [(p, trade.team_b, trade.team_a) for p in trade.b_sends])
-        db.executemany("UPDATE players SET team_id = ? WHERE id = ?", [(to, p) for p, _, to in moved])
-        move_id = db.execute("INSERT INTO moves (week, kind) VALUES (?, 'trade')", (week,)).lastrowid
-        db.executemany("INSERT INTO move_players VALUES (?, ?, ?, ?)", [(move_id, *m) for m in moved])
+            raise
         db.commit()
-        return {**_report(trade, week, [], after), "move_id": move_id}
+        return report
     finally:
         db.close()
+
+
+def make_trade_in(db: sqlite3.Connection, trade: Trade) -> dict:
+    """make_trade() inside a transaction the caller already holds (BEGIN IMMEDIATE) and
+    commits, so the Trade Desk (task 2.1) can settle a proposal in the same transaction.
+    Raises IllegalMove, having changed nothing, if the trade breaks a rule."""
+    trade = trade.normalized()
+    week, violations, after = _check(db, trade)
+    if violations:
+        raise IllegalMove(violations)
+    moved = ([(p, trade.team_a, trade.team_b) for p in trade.a_sends]
+             + [(p, trade.team_b, trade.team_a) for p in trade.b_sends])
+    db.executemany("UPDATE players SET team_id = ? WHERE id = ?", [(to, p) for p, _, to in moved])
+    move_id = db.execute("INSERT INTO moves (week, kind) VALUES (?, 'trade')", (week,)).lastrowid
+    db.executemany("INSERT INTO move_players VALUES (?, ?, ?, ?)", [(move_id, *m) for m in moved])
+    return {**_report(trade, week, [], after), "move_id": move_id}
 
 
 def move_log(db_file: Path | None = None) -> list[dict]:

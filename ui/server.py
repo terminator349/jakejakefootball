@@ -29,7 +29,7 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import briefing, game_loop, league_db, live, rules, saves, season, tools
+from agents import briefing, deadline, game_loop, league_db, live, orders, rivals, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -170,9 +170,15 @@ async def moves(request, body):
 
 # ---- The League Office over MCP --------------------------------------------
 
-def _league_office() -> StdioServerParameters:
-    """The server as the agents start it: a stdio subprocess, pointed at the loaded save."""
-    args = ["-m", "servers.league_office"]
+MCP_SERVERS = {"league_office": "servers.league_office", "trade_desk": "servers.trade_desk"}  # 1.1, 2.1
+
+
+def _mcp_server(name: str | None) -> StdioServerParameters:
+    """A server as the agents start it: a stdio subprocess, pointed at the loaded save."""
+    name = name or "league_office"
+    if name not in MCP_SERVERS:
+        raise ValueError(f"Unknown MCP server {name!r}. Valid: {', '.join(MCP_SERVERS)}.")
+    args = ["-m", MCP_SERVERS[name]]
     if active_save() is not None:
         args += ["--db", str(league_db.DB_FILE.resolve())]
     return StdioServerParameters(command=sys.executable, args=args, cwd=str(PROJECT_ROOT))
@@ -180,16 +186,17 @@ def _league_office() -> StdioServerParameters:
 
 async def mcp_tools(request, body):
     started = time.perf_counter()
-    async with Client(_league_office()) as client:
+    async with Client(_mcp_server(request.query_params.get("server"))) as client:
         listed = (await client.list_tools()).tools
     return {"elapsed_ms": round((time.perf_counter() - started) * 1000),
             "tools": [{"name": t.name, "description": t.description, "input_schema": t.input_schema,
-                       "read_only": bool(t.annotations and t.annotations.read_only_hint)} for t in listed]}
+                       "read_only": bool(t.annotations and t.annotations.read_only_hint),
+                       "destructive": bool(t.annotations and t.annotations.destructive_hint)} for t in listed]}
 
 
 async def mcp_call(request, body):
     started = time.perf_counter()
-    async with Client(_league_office()) as client:
+    async with Client(_mcp_server(body.get("server"))) as client:
         result = await client.call_tool(body.get("tool", ""), body.get("arguments") or {})
     text = "\n".join(getattr(part, "text", "") for part in result.content)
     try:
@@ -255,7 +262,11 @@ async def hub(request, body):
         return {"save": None}
     week = game_loop.overview()
     return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
-            "briefing": None if week["season_over"] else briefing.stored(week["week"])}  # G3, once written
+            "briefing": None if week["season_over"] else briefing.stored(week["week"]),  # G3, once written
+            "desk": orders.desk_view(),  # G4: standing orders and the GM's proposed moves
+            "offers": rivals.offers_to_us(),  # G5: rival GMs' offers to us, with our GM's read
+            "news": [] if week["season_over"] else rivals.news(week["week"]),  # G5: trades between rivals
+            "deadline": None if week["season_over"] else deadline.status()}  # 2.3: the trade deadline
 
 
 def _needs_a_save():
@@ -269,8 +280,12 @@ async def hub_play(request, body):
 
 
 async def hub_advance(request, body):
+    """On to the next week. Then the rival GMs move (G5): they trade with each other and
+    may make us an offer."""
     _needs_a_save()
-    return {"week": season.advance_week()}
+    week = season.advance_week()
+    news = rivals.between_weeks(_db_for_agents())["news"]
+    return {"week": week, "news": news + deadline.close(_db_for_agents())}  # 2.3: past the deadline, it closes
 
 
 async def hub_briefing(request, body):
@@ -285,6 +300,56 @@ async def hub_ask(request, body):
     """Ask the front office: the owner talks to the GM, who asks the specialists (1.4)."""
     _needs_a_save()
     return await run_gm(request, body)
+
+
+async def hub_order(request, body):
+    """Give the GM an order (G4): it reads the terms and proposes moves for the owner."""
+    _needs_a_save()
+    if not os.getenv("OPENROUTER_API_KEY"):
+        raise ValueError("Orders need OPENROUTER_API_KEY in .env (then restart the server).")
+    return await orders.give_order(body.get("order") or "", _db_for_agents())
+
+
+async def hub_order_cancel(request, body):
+    _needs_a_save()
+    return orders.cancel_order(int(body.get("order_id") or 0))
+
+
+async def hub_move_approve(request, body):
+    """The owner approves a proposed move: it goes to the Trade Desk as our offer."""
+    _needs_a_save()
+    return orders.approve(int(body.get("move_id") or 0), body.get("note") or "")
+
+
+async def hub_move_veto(request, body):
+    _needs_a_save()
+    return orders.veto(int(body.get("move_id") or 0), body.get("note") or "")
+
+
+async def hub_deadline(request, body):
+    """Work the trade deadline (2.3): the GM looks for trades that fix our biggest weakness
+    and that the other team will take. Without an API key the rules' search does it."""
+    _needs_a_save()
+    return await deadline.work(_db_for_agents(), use_model=bool(os.getenv("OPENROUTER_API_KEY")))
+
+
+async def hub_offer_answer(request, body):
+    """The rival GM our offer was made to answers it (2.2): accept, counter or reject.
+    Without an API key the rules answer for them."""
+    _needs_a_save()
+    return await rivals.answer_offer(int(body.get("proposal_id") or 0), _db_for_agents(),
+                                     use_model=bool(os.getenv("OPENROUTER_API_KEY")))
+
+
+async def hub_offer_accept(request, body):
+    """The owner accepts an offer made to us (a rival's offer or counter)."""
+    _needs_a_save()
+    return rivals.accept_offer(int(body.get("proposal_id") or 0), body.get("note") or "", _db_for_agents())
+
+
+async def hub_offer_reject(request, body):
+    _needs_a_save()
+    return rivals.reject_offer(int(body.get("proposal_id") or 0), body.get("note") or "", _db_for_agents())
 
 
 async def hub_schedule(request, body):
@@ -326,12 +391,17 @@ class FreshStaticFiles(StaticFiles):
         return response
 
 
+# The pages too: most of the game's code is in game.html, so a cached copy would run
+# old code against a newer server.
+FRESH = {"Cache-Control": "no-cache"}
+
+
 async def game_page(request):
-    return FileResponse(UI_DIR / "game.html")
+    return FileResponse(UI_DIR / "game.html", headers=FRESH)
 
 
 async def bench_page(request):
-    return FileResponse(UI_DIR / "bench.html")
+    return FileResponse(UI_DIR / "bench.html", headers=FRESH)
 
 
 app = Starlette(routes=[
@@ -344,6 +414,14 @@ app = Starlette(routes=[
     Route("/api/hub/schedule", api(hub_schedule)),
     Route("/api/hub/ask", api(hub_ask), methods=["POST"]),
     Route("/api/hub/briefing", api(hub_briefing), methods=["POST"]),
+    Route("/api/hub/order", api(hub_order), methods=["POST"]),
+    Route("/api/hub/order/cancel", api(hub_order_cancel), methods=["POST"]),
+    Route("/api/hub/move/approve", api(hub_move_approve), methods=["POST"]),
+    Route("/api/hub/move/veto", api(hub_move_veto), methods=["POST"]),
+    Route("/api/hub/deadline", api(hub_deadline), methods=["POST"]),
+    Route("/api/hub/offer/answer", api(hub_offer_answer), methods=["POST"]),
+    Route("/api/hub/offer/accept", api(hub_offer_accept), methods=["POST"]),
+    Route("/api/hub/offer/reject", api(hub_offer_reject), methods=["POST"]),
     Route("/api/live", api(live_state)),
     Route("/api/live/start", api(live_start), methods=["POST"]),
     Route("/api/live/call", api(live_call), methods=["POST"]),

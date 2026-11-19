@@ -27,10 +27,6 @@ header .top .grow { flex: 1; }
 .versus .at { color: var(--muted); font-size: 13px; }
 .versus .ours b { color: var(--accent); }
 ul.notes { margin: 0; padding-left: 18px; } ul.notes li { margin: 5px 0; }
-.soon { display: flex; flex-direction: column; gap: 6px; }
-.soon button { text-align: left; display: flex; justify-content: space-between; gap: 10px; }
-.soon .when { color: var(--muted); font-size: 12px; }
-.soon.inline { flex-direction: row; flex-wrap: wrap; margin-top: 12px; }
 .briefing h3 { font-size: 16px; margin: 2px 0 8px; }
 .briefing p { margin: 0 0 8px; }
 .briefing .watch { color: var(--muted); }
@@ -39,6 +35,20 @@ details.notes-toggle summary { cursor: pointer; color: var(--muted); }
 .ask-examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
 .ask-examples button { font-size: 12px; }
 .gm-answer { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+ul.orders { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+ul.orders li { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.move { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
+.move.done { padding: 6px 10px; margin: 6px 0; }
+.move-head { margin-bottom: 6px; }
+.move p { margin: 6px 0; }
+table.move-sides { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.move-sides th { text-align: left; font-weight: 600; color: var(--muted); width: 70px; }
+table.move-sides td, table.move-sides th { padding: 3px 6px 3px 0; }
+.warn-text { color: var(--warn); }
+ul.news { margin: 0 0 10px; padding-left: 18px; }
+.card.deadline { border-color: var(--warn); }
+p.reply { white-space: pre-line; }
+ul.news li { margin: 3px 0; }
 .gm-answer .lead { font-size: 15px; margin: 6px 0 10px; }
 .gm-answer ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13px; }
 .result-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -199,10 +209,6 @@ function matchup(tw, t) {
   const them = `<div class="team ${tw.home ? "" : "right"}"><b>${o.id}</b><span>${esc(o.city)} ${esc(o.name)}</span><span class="rec">${o.record}</span></div>`;
   return `<div class="versus">${tw.home ? them + `<div class="at">at</div>` + us : us + `<div class="at">at</div>` + them}</div>`;
 }
-const SOON = [
-  ["Give an order", "G4: e.g. \"upgrade safety, stay under $5M\""],
-  ["Review proposed moves", "G4: approve or veto each one"],
-];
 
 // ---- The GM's weekly briefing (G3) -----------------------------------------------
 // Written once a week from the league's facts and kept in the save; the plain notes
@@ -253,7 +259,6 @@ function askCard() {
       <span class="note" id="ask-status">${keyless ? "The front office needs OPENROUTER_API_KEY in .env (then restart the server)."
         : ask.started ? askWaiting() : "Your GM decides which specialists to ask. An answer takes a minute or two."}</span></div>
     <div id="ask-answer">${ask.run ? askAnswer(ask.run) : ""}</div>
-    <div class="soon inline">${SOON.map(([what, when]) => `<button class="btn" disabled><span>${what}</span><span class="when">${esc(when)}</span></button>`).join("")}</div>
   </div>`;
 }
 const askWaiting = () => `<span class="spin"></span> The GM is on it… ${Math.round((Date.now() - ask.started) / 1000)}s`;
@@ -279,7 +284,178 @@ async function askGM() {
   catch (e) { fail(e); }
   finally { clearInterval(tick); ask.started = null; if (currentTab() === "week" && !gameDay && !live) await weekView(); }
 }
-document.addEventListener("input", e => { if (e.target.id === "ask-q") ask.question = e.target.value; });
+document.addEventListener("input", e => {
+  if (e.target.id === "ask-q") ask.question = e.target.value;
+  if (e.target.id === "order-q") order.text = e.target.value;
+});
+
+// ---- Orders and approvals (G4): the owner gives orders, the GM proposes moves ----------
+const ORDER_EXAMPLES = [
+  "Upgrade safety. Stay under $5M a year. Don't trade Okafor.",
+  "Find us a better corner without adding more than $3M to payroll.",
+  "Never trade Mateo Okafor.",
+];
+const order = { text: ORDER_EXAMPLES[0], started: null, last: null };
+const unitName = u => u.replace(/_/g, " ");
+function termsHtml(t) {
+  const bits = [];
+  if (t.positions.length) bits.push(`upgrade ${t.positions.join(", ")}`);
+  if (t.max_incoming_salary != null) bits.push(`nobody over ${money(t.max_incoming_salary)}`);
+  if (t.max_added_payroll != null) bits.push(`payroll up at most ${money(t.max_added_payroll)}`);
+  if (t.protected.length) bits.push(`don't trade ${t.protected.join(", ")}`);
+  if (!t.wants_trades) bits.push("a standing rule, no search");
+  return bits.map(b => `<span class="badge plain">${esc(b)}</span>`).join(" ");
+}
+function orderCard() {
+  const keyless = !H.api_key_set, d = H.desk;
+  const standing = d.orders.length ? `<ul class="orders">${d.orders.map(o => `<li><div>“${esc(o.text)}”
+      <button class="link" data-cancel-order="${o.id}" ${order.started ? "disabled" : ""}>cancel</button></div>
+      <div class="note">${esc(o.terms.summary)}</div><div>${termsHtml(o.terms)}</div></li>`).join("")}</ul>`
+    : `<p class="empty">No standing orders.</p>`;
+  const l = order.last;
+  const last = l ? `<div class="gm-answer"><p class="note">You ordered: “${esc(l.order.text)}”</p>
+      <p class="lead reply">${richText(l.reply)}</p>
+      <p class="note">${l.moves.length} move${l.moves.length === 1 ? "" : "s"} proposed · ${l.seconds}s${l.cost != null ? ` · $${Number(l.cost).toFixed(4)}` : ""}${l.tool_calls.length ? ` · ${l.tool_calls.length} tool calls: ${esc([...new Set(l.tool_calls.map(c => c.tool))].join(", "))}` : ""}</p></div>` : "";
+  return `<div class="card"><h2>Give an order <span class="sub">your GM turns it into moves for you to approve</span></h2>
+    <textarea id="order-q" rows="2" ${order.started ? "disabled" : ""}>${esc(order.text)}</textarea>
+    <div class="ask-examples">${ORDER_EXAMPLES.map(q => `<button class="btn sm" data-order-example ${order.started ? "disabled" : ""}>${esc(q)}</button>`).join("")}</div>
+    <div class="row"><button class="btn primary" data-act="order" ${keyless || order.started ? "disabled" : ""}>Give the order</button>
+      <span class="note" id="order-status">${keyless ? "Orders need OPENROUTER_API_KEY in .env (then restart the server)."
+        : order.started ? orderWaiting() : "Orders stand all season, until you cancel them. A search takes a minute or two."}</span></div>
+    ${last}
+    <h3>Standing orders</h3>${standing}
+  </div>`;
+}
+const orderWaiting = () => `<span class="spin"></span> Your GM is looking for moves… ${Math.round((Date.now() - order.started) / 1000)}s`;
+function sideRows(label, players) {
+  if (!players.length) return `<tr><th>${label}</th><td colspan="4" class="note">nobody</td></tr>`;
+  return players.map((p, i) => `<tr><th>${i ? "" : label}</th><td>${esc(p.name)} <span class="note">${p.position} · ${p.age}</span></td>
+    <td>${p.overall}</td><td>${money(p.salary)}</td><td class="note">${p.years_left} yr${p.years_left === 1 ? "" : "s"}</td></tr>`).join("");
+}
+const OFFER_STATUS = { open: "sent and is waiting for their answer", accepted: "accepted: the trade is done",
+  rejected: "rejected", countered: "countered (their counteroffer is under Offers to us)", withdrawn: "withdrawn", void: "void" };
+function afterHtml(ev) {
+  return `<p class="note">After it: cap space ${money(ev.cap_space_after)}, ${ev.roster_after} players, payroll ${ev.salary_change >= 0 ? "+" : "−"}${money(Math.abs(ev.salary_change))}.
+        ${ev.new_starters.length ? `Starts for us: ${esc(ev.new_starters.map(p => p.name).join(", "))}.` : ""}
+        ${ev.benched.length ? `To the bench: ${esc(ev.benched.map(p => p.name).join(", "))}.` : ""}
+        ${ev.starters_lost.length ? `Starters we lose: ${esc(ev.starters_lost.map(p => p.name).join(", "))}.` : ""}
+        ${ev.unit_changes.length ? `Units: ${ev.unit_changes.map(u => `${unitName(u.unit)} ${u.change > 0 ? "+" : ""}${u.change.toFixed(2)}`).join(", ")}.` : ""}</p>`;
+}
+function moveHtml(m) {
+  if (m.status === "waiting") {
+    const ev = m.evaluation, after = ev ? afterHtml(ev) : "";
+    const stale = m.problems_now.length ? `<p class="warn-text">No longer passes: ${esc(m.problems_now.join(" "))} Approving it will void it.</p>` : "";
+    return `<div class="move"><div class="move-head"><b>Trade with ${m.team_id}</b> <span class="note">move #${m.id}, for “${esc(m.order)}”</span></div>
+      ${ev ? `<table class="move-sides">${sideRows("We send", ev.gives)}${sideRows("We get", ev.gets)}</table>` : ""}
+      <p><b>Why:</b> ${esc(m.reason)}</p>${after}${stale}
+      <div class="row"><button class="btn primary" data-approve="${m.id}">Approve and send</button><button class="btn" data-veto="${m.id}">Veto</button></div></div>`;
+  }
+  const names = ps => ps.map(p => p.name).join(", ") || "nobody";
+  let status;
+  if (m.status === "approved") status = `<span class="badge good">approved</span> Our offer to ${m.team_id} was ${esc(OFFER_STATUS[m.offer?.status] || "sent")}${m.offer?.response ? `: “${esc(m.offer.response)}”` : "."}
+      ${m.offer?.status === "open" && !answering ? `<button class="link" data-answer-offer="${m.desk_proposal_id}" data-team="${m.team_id}">ask for their answer</button>` : ""}`;
+  else if (m.status === "vetoed") status = `<span class="badge plain">vetoed</span>${m.owner_note ? ` ${esc(m.owner_note)}` : ""}`;
+  else status = `<span class="badge bad">void</span> ${esc(m.owner_note || "")}`;
+  return `<div class="move done"><div>${status}</div><div class="note">Week ${m.week}: ${esc(names(m.gives))} for ${esc(names(m.gets))} (${m.team_id})</div></div>`;
+}
+function movesCard() {
+  const d = H.desk, waiting = d.moves.filter(m => m.status === "waiting"), done = d.moves.filter(m => m.status !== "waiting");
+  return `<div class="card"><h2>Proposed moves <span class="sub">${d.waiting} waiting for you</span></h2>
+    <p class="note">Nothing goes to another team until you approve it. Approving checks the move again against the rules and your orders, then offers it on the Trade Desk, and their GM answers: yes, no, or a counteroffer.</p>
+    ${answering ? `<p class="note" id="answer-status">${answerWaiting()}</p>` : ""}
+    ${waiting.length ? waiting.map(moveHtml).join("") : `<p class="empty">Nothing waiting. Give your GM an order to start a search.</p>`}
+    ${done.length ? `<details class="notes-toggle"><summary>Decided (${done.length})</summary>${done.map(moveHtml).join("")}</details>` : ""}
+  </div>`;
+}
+// The GM's replies come with a little markdown: bold labels and "- " lists, one per line.
+const richText = s => esc(s || "").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+// 2.3: the trade deadline. The card shows from two weeks before it.
+const dl = { started: null, last: null };
+const deadlineWaiting = () => `<span class="spin"></span> Your GM is working the deadline… ${Math.round((Date.now() - dl.started) / 1000)}s`;
+function tradesHtml(d) {
+  if (!d.trades.length) return `<p class="note">No trades yet this season.</p>`;
+  return `<ul class="news">${d.trades.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` + d.since.map(s =>
+    `<p class="note">Since then, ${esc(s.unit)}: ${s.before.toFixed(1)} → ${s.now.toFixed(1)}, ${s.rank_before} → ${s.rank_now}${s.against ? `; against ${esc(s.against.team)}, ${s.against.before} → ${s.against.now}` : ""}.</p>`).join("");
+}
+function deadlineCard() {
+  const d = H.deadline;
+  if (!d || d.phase === "open") return "";
+  if (d.phase === "closed") {
+    if (H.week !== d.deadline_week + 1) return "";
+    return `<div class="card deadline"><h2>Trade deadline passed <span class="sub">trades closed after week ${d.deadline_week}</span></h2>
+      <p class="lead">The roster is set for the rest of the season.</p>${tradesHtml(d)}</div>`;
+  }
+  const left = d.weeks_left_after_this_one, w = d.weakness;
+  const when = d.phase === "deadline_week" ? "Last chance: the Trade Desk closes after this week's games."
+    : `Trades close after week ${d.deadline_week}: ${left} more week${left === 1 ? "" : "s"} after this one.`;
+  const l = dl.last && dl.last.order.week === H.week ? dl.last : null;
+  const last = l ? `<div class="gm-answer"><p class="lead reply">${richText(l.reply)}</p>
+      <p class="note">${l.moves.length} move${l.moves.length === 1 ? "" : "s"} under Proposed moves · ${l.by === "rules" ? "found by the rules" : `${l.seconds}s${l.cost != null ? ` · $${Number(l.cost).toFixed(4)}` : ""}`}</p></div>`
+    : d.worked ? `<details class="notes-toggle"><summary>This week's search</summary><p class="reply">${richText(d.worked.reply)}</p></details>` : "";
+  return `<div class="card deadline"><h2>Trade deadline <span class="sub">${d.phase === "deadline_week" ? "this week" : `after week ${d.deadline_week}`}</span></h2>
+    <p class="lead">${when}</p>
+    <p>Our biggest weakness: <b>${esc(w.unit)}</b>, ${w.rank} (${w.our_rating} against a league average of ${w.league_average}). Cap space: ${money(d.cap_space)}.</p>
+    ${tradesHtml(d)}
+    <div class="row"><button class="btn primary" data-act="deadline" ${dl.started ? "disabled" : ""}>Work the deadline</button>
+      <span class="note" id="deadline-status">${dl.started ? deadlineWaiting() : H.api_key_set
+        ? "Your GM looks for trades that fix it and that the other team will take. You approve each one."
+        : "Without an API key your GM searches by the league's rules: trades that fix it and that the other team will take."}</span></div>
+    ${last}</div>`;
+}
+async function workDeadline() {
+  dl.started = Date.now();
+  if (currentTab() === "week") await weekView();
+  const tick = setInterval(() => { const el = $("#deadline-status"); if (el) el.innerHTML = deadlineWaiting(); }, 500);
+  try {
+    dl.last = await call("/api/hub/deadline", {});
+    const n = dl.last.moves.length;
+    toast(n ? `${n} deadline move${n === 1 ? "" : "s"} for you to approve.` : "No deadline move found.", n ? undefined : "bad");
+  } catch (e) { fail(e); }
+  finally { clearInterval(tick); dl.started = null; await refresh(); }
+}
+// 2.2: the rival GM our offer went to answers it.
+let answering = null;
+const answerWaiting = () => `<span class="spin"></span> Waiting for ${esc(answering.team)}'s GM to answer… ${Math.round((Date.now() - answering.started) / 1000)}s`;
+const ANSWERED = { accept: "said yes: the trade is done", counter: "countered", reject: "said no" };
+async function rivalAnswer(proposalId, team) {
+  answering = { team, started: Date.now() };
+  if (currentTab() === "week") await weekView();
+  const tick = setInterval(() => { const el = $("#answer-status"); if (el) el.innerHTML = answerWaiting(); }, 500);
+  try {
+    const r = await call("/api/hub/offer/answer", { proposal_id: proposalId });
+    toast(`${r.team_id} ${ANSWERED[r.decision]}: “${r.message}”`, r.decision === "reject" ? "bad" : undefined);
+  } catch (e) { fail(e); }
+  finally { clearInterval(tick); answering = null; await refresh(); }
+}
+// G5: offers rival GMs make to us between weeks, and counteroffers to ours.
+function offerHtml(o) {
+  const ev = o.evaluation;
+  const head = o.counter_of ? `${esc(o.from_team_id)} countered our offer #${o.counter_of}` : `Offer from ${esc(o.from_team_id)}`;
+  return `<div class="move"><div class="move-head"><b>${head}</b> <span class="note">${o.counter_of ? "counteroffer" : "offer"} #${o.id}, week ${o.week}${o.counter_of ? "" : ", open until the week ends"}</span></div>
+    ${o.note ? `<p>“${esc(o.note)}”</p>` : ""}
+    ${ev ? `<table class="move-sides">${sideRows("We send", ev.gives)}${sideRows("We get", ev.gets)}</table>${afterHtml(ev)}` : ""}
+    ${o.problems.length ? `<p class="warn-text">No longer passes: ${esc(o.problems.join(" "))}</p>` : ""}
+    ${o.advice ? `<p><b>Your GM:</b> ${esc(o.advice)}</p>` : ""}
+    <div class="row"><button class="btn primary" data-accept-offer="${o.id}" ${o.legal_now ? "" : "disabled"}>Accept</button>
+      <button class="btn" data-reject-offer="${o.id}">Reject</button></div></div>`;
+}
+function offersCard() {
+  const offers = H.offers || [];
+  return `<div class="card"><h2>Offers to us <span class="sub">${offers.length} open</span></h2>
+    <p class="note">Rival GMs make offers between weeks, and answer ours with counteroffers. An offer they make lasts until the week ends; accepting makes the trade at once if it still passes the rules.</p>
+    ${offers.length ? offers.map(offerHtml).join("") : `<p class="empty">No offers right now.</p>`}
+  </div>`;
+}
+async function giveOrder() {
+  const text = ($("#order-q")?.value || order.text).trim();
+  if (!text) return toast("Type an order for your GM.", "bad");
+  Object.assign(order, { text, started: Date.now() });
+  if (currentTab() === "week") await weekView();
+  const tick = setInterval(() => { const el = $("#order-status"); if (el) el.innerHTML = orderWaiting(); }, 500);
+  try { order.last = await call("/api/hub/order", { order: text }); }
+  catch (e) { fail(e); }
+  finally { clearInterval(tick); order.started = null; await refresh(); }
+}
 async function weekView() {
   const el = $("#tab-week");
   if (gameDay) return;                       // the game-day view is on screen
@@ -302,9 +478,15 @@ async function weekView() {
       </div>
       <p class="note"><b>Sim it</b> plays the week and goes to the results. <b>Watch it</b> plays the week, then lets you follow our game drive by drive before you see any other score. <b>Call it</b> puts you on the sideline: the game sims until a key moment (a 4th down, the red zone, the two-minute drill, overtime) and hands you the call, or you call every snap.</p>
     </div>
+    ${deadlineCard()}
     ${briefingCard()}
     <div class="card"><h2>Around the league <span class="sub">week ${H.week}</span></h2>
+      ${H.news?.length ? `<ul class="news">${H.news.map(n => `<li>${esc(n)}</li>`).join("")}</ul>` : ""}
       <div class="games">${others.map(g => `<div><span>${g.away_team_id} at ${g.home_team_id}</span><span class="note">${g.home_score === null ? "not played" : `${g.away_score}-${g.home_score}`}</span></div>`).join("")}</div></div>
+    ${H.offers?.length ? offersCard() : ""}
+    ${orderCard()}
+    ${movesCard()}
+    ${H.offers?.length || H.deadline?.phase === "closed" ? "" : offersCard()}
     ${askCard()}
   </div>`;
   writeBriefing();
@@ -553,7 +735,7 @@ $("#new-game").onsubmit = async e => {
   } catch (err) { fail(err); }
 };
 document.addEventListener("click", async e => {
-  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos],[data-call],[data-ask-example]");
+  const t = e.target.closest("[data-act],[data-load],[data-box],[data-replay],[data-pos],[data-call],[data-ask-example],[data-order-example],[data-cancel-order],[data-approve],[data-veto],[data-answer-offer],[data-accept-offer],[data-reject-offer]");
   if (!t || t.disabled) return;
   try {
     if (t.dataset.load) { await call("/api/saves/load", { name: t.dataset.load }); await refresh(); }
@@ -562,6 +744,26 @@ document.addEventListener("click", async e => {
     else if (t.dataset.pos !== undefined) { rosterPos = t.dataset.pos; await rosterView(); }
     else if (t.dataset.askExample !== undefined) { ask.question = t.textContent; $("#ask-q").value = ask.question; }
     else if (t.dataset.act === "ask") await askGM();
+    else if (t.dataset.orderExample !== undefined) { order.text = t.textContent; $("#order-q").value = order.text; }
+    else if (t.dataset.act === "order") await giveOrder();
+    else if (t.dataset.act === "deadline") await workDeadline();
+    else if (t.dataset.cancelOrder) { await call("/api/hub/order/cancel", { order_id: +t.dataset.cancelOrder }); toast("Order cancelled."); await refresh(); }
+    else if (t.dataset.approve) {
+      t.disabled = true;
+      const r = await call("/api/hub/move/approve", { move_id: +t.dataset.approve });
+      if (!r.sent) { toast(`Not sent: ${r.move.owner_note}`, "bad"); return refresh(); }
+      toast(`Offer sent to ${r.move.team_id}.`);
+      await rivalAnswer(r.move.desk_proposal_id, r.move.team_id);
+    }
+    else if (t.dataset.answerOffer) await rivalAnswer(+t.dataset.answerOffer, t.dataset.team);
+    else if (t.dataset.acceptOffer) {
+      t.disabled = true;
+      const r = await call("/api/hub/offer/accept", { proposal_id: +t.dataset.acceptOffer });
+      r.accepted ? toast("Done: the trade is made.") : toast(`Not made: ${r.proposal.response}`, "bad");
+      await refresh();
+    }
+    else if (t.dataset.rejectOffer) { await call("/api/hub/offer/reject", { proposal_id: +t.dataset.rejectOffer }); toast("Turned down."); await refresh(); }
+    else if (t.dataset.veto) { await call("/api/hub/move/veto", { move_id: +t.dataset.veto }); toast("Vetoed."); await refresh(); }
     else if (t.dataset.act === "brief-retry") { brief.failed = null; await weekView(); await writeBriefing(true); }
     else if (t.dataset.act === "sim") await playWeek(false);
     else if (t.dataset.act === "watch") await playWeek(true);
@@ -572,7 +774,7 @@ document.addEventListener("click", async e => {
     else if (t.dataset.act === "advance") {
       t.disabled = true;
       const r = await call("/api/hub/advance", {});
-      toast(r.week > H.season_games ? "That's the regular season." : `On to week ${r.week}.`);
+      toast((r.week > H.season_games ? "That's the regular season." : `On to week ${r.week}.`) + (r.news.length ? " " + r.news.join(" ") : ""));
       await refresh();
     }
   } catch (err) { fail(err); }

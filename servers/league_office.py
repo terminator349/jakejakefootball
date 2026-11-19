@@ -5,8 +5,9 @@ plus check_trade (task 1.2), which says whether a trade is legal and which
 rules it breaks, and validate_cap_compliance/check_cap_fit (task 1.3), which
 the Cap & Contracts agent and the Draft GM use to judge a move against the
 hard cap. Every tool is read-only: making a trade belongs to the Trade Desk
-(task 2.1), which calls agents.rules.make_trade. The functions stay in
-agents/tools.py, and their docstrings become the tool descriptions the model sees.
+(task 2.1, servers/trade_desk.py), which calls agents.rules.make_trade_in. The
+functions stay in agents/tools.py, and their docstrings become the tool
+descriptions the model sees.
 
     python -m servers.league_office                         # the default league, data/league.db
     python -m servers.league_office --db saves/herons.db    # a saved game (task G1)
