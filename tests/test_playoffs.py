@@ -173,7 +173,7 @@ def test_older_saves_leave_the_playoffs_out_of_the_standings(tmp_path):
     league_db.connect(path).close()
     with sqlite3.connect(path) as db:
         view = db.execute("SELECT sql FROM sqlite_master WHERE name = 'standings'").fetchone()[0]
-        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 8
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION
     db.close()
     assert "season_games" in view
 

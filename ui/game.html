@@ -48,6 +48,8 @@ table.move-sides td, table.move-sides th { padding: 3px 6px 3px 0; }
 ul.news { margin: 0 0 10px; padding-left: 18px; }
 .card.deadline { border-color: var(--warn); }
 p.reply { white-space: pre-line; }
+ul.scouted { list-style: none; padding: 0; margin: 6px 0 0; }
+ul.orders ul.scouted li { border: 0; padding: 0; margin: 8px 0; display: block; }
 .bracket { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 .bround h3 { margin: 4px 0 8px; }
 .bgame { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
@@ -314,11 +316,22 @@ function termsHtml(t) {
   if (!t.wants_trades) bits.push("a standing rule, no search");
   return bits.map(b => `<span class="badge plain">${esc(b)}</span>`).join(" ");
 }
+// 4.1: the scouting team finds the targets for an order, graded A, B or C.
+const GRADE_CLASS = { A: "good", B: "plain", C: "bad" };
+function scoutingHtml(r) {
+  if (!r) return "";
+  const rows = r.targets.map(t => `<li><span class="badge ${GRADE_CLASS[t.grade]}">${t.grade}</span> <b>${esc(t.name)}</b>
+      <span class="note">${t.position} · ${esc(t.team)} · ${t.overall} overall · ${money(t.salary)}${t.games_out ? ` · hurt, out ${t.games_out}` : ""}</span>
+      <div class="note">${esc(t.note)}</div></li>`).join("");
+  return `<details class="notes-toggle scouting"><summary>Scouting: ${esc(r.summary)}</summary>
+    <p class="note">Week ${r.week} · graded by ${r.by === "scouts" ? "the pro scouts" : "the rules"}${r.cost != null ? ` · $${Number(r.cost).toFixed(4)}` : ""}</p>
+    ${r.targets.length ? `<ul class="scouted">${rows}</ul>` : ""}</details>`;
+}
 function orderCard() {
   const keyless = !H.api_key_set, d = H.desk;
   const standing = d.orders.length ? `<ul class="orders">${d.orders.map(o => `<li><div>“${esc(o.text)}”
       <button class="link" data-cancel-order="${o.id}" ${order.started ? "disabled" : ""}>cancel</button></div>
-      <div class="note">${esc(o.terms.summary)}</div><div>${termsHtml(o.terms)}</div></li>`).join("")}</ul>`
+      <div class="note">${esc(o.terms.summary)}</div><div>${termsHtml(o.terms)}</div>${scoutingHtml(o.scouting)}</li>`).join("")}</ul>`
     : `<p class="empty">No standing orders.</p>`;
   const l = order.last;
   const last = l ? `<div class="gm-answer"><p class="note">You ordered: “${esc(l.order.text)}”</p>
@@ -334,7 +347,7 @@ function orderCard() {
     <h3>Standing orders</h3>${standing}
   </div>`;
 }
-const orderWaiting = () => `<span class="spin"></span> Your GM is looking for moves… ${Math.round((Date.now() - order.started) / 1000)}s`;
+const orderWaiting = () => `<span class="spin"></span> Scouting finds the targets, then your GM builds the moves… ${Math.round((Date.now() - order.started) / 1000)}s`;
 function sideRows(label, players) {
   if (!players.length) return `<tr><th>${label}</th><td colspan="4" class="note">nobody</td></tr>`;
   return players.map((p, i) => `<tr><th>${i ? "" : label}</th><td>${esc(p.name)} <span class="note">${p.position} · ${p.age}</span></td>

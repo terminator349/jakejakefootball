@@ -7,12 +7,15 @@ no data tools of its own, so every number it gives comes from a specialist.
 
     Owner -> GM -> Analytics        (League Office: rosters, ratings, rankings)
                 -> Cap & Contracts  (League Office: payroll, cap fit, trade checks)
-                -> Draft            (Draft Day results and the draft class)
+                -> Scouting         (a team of its own, 4.1: trade targets, and Draft Day)
+                     -> Pro scout, offense / Pro scout, defense / Draft
 
 Each specialist keeps its own tools and structured report. Analytics and Cap &
 Contracts each start their own League Office server, with their own slice of
 its tools, pointed at the same league. Specialists see what the others said
 earlier in the run, so Cap & Contracts can price the player Analytics found.
+Scouting (agents/scouting.py) is a team itself, so the org chart has a second
+level: its director hands each question to a pro scout or the Draft desk.
 """
 
 import json
@@ -24,7 +27,7 @@ from agno.agent import Agent
 from agno.team import Team, TeamMode
 from pydantic import BaseModel, Field
 
-from agents import analytics, cap_contracts, draft_desk, skills
+from agents import analytics, cap_contracts, draft_desk, scouting, skills
 from agents.analytics import specialist_model
 from agents.tools import list_teams
 
@@ -70,9 +73,9 @@ def ground_report(report: GMReport) -> GMReport:
 
 
 def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RESULTS_FILE,
-                  debug: bool = False) -> Team:
-    """The GM and its three specialists. Pass connected League Office tools for the two
-    League Office specialists (see `front_office()`, which opens them)."""
+                  debug: bool = False, db_file: Path | None = None) -> Team:
+    """The GM and its three specialists, Scouting a team of its own. Pass connected League
+    Office tools for the two League Office specialists (see `front_office()`, which opens them)."""
     return Team(
         name="General Manager",
         role="General manager of the Harbor City Herons, the owner's one point of contact.",
@@ -81,7 +84,7 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
         members=[
             analytics.build_analytics_agent(analytics_office, debug=debug),
             cap_contracts.build_cap_contracts_agent(cap_office, debug=debug),
-            draft_desk.build_draft_desk(draft_file, debug=debug),
+            scouting.build_scouting_team(db_file=db_file, draft_file=draft_file, debug=debug),
         ],
         instructions=[
             "You are the general manager of the Harbor City Herons (team id HAR) in a six-team American "
@@ -91,11 +94,13 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
             "and what kind of player would fix a weakness.",
             "Cap & Contracts: payroll, cap space, whether a signing or trade fits under the hard cap, and "
             "how much salary would have to go back to make it fit.",
-            "Draft: Draft Day, the separate draft of real NFL players - its order, each team's picks, rookie "
-            "salaries and who went undrafted. Its rosters are not the league's rosters.",
+            "Scouting: trade targets - the players at a position on the other five teams who would start for "
+            "us, what each would add, the one-for-one trade his team should take, and a grade. Also Draft Day, the "
+            "separate draft of real NFL players (its order, each team's picks, rookie salaries, who went "
+            "undrafted), through its Draft desk; Draft Day's rosters are not the league's rosters.",
             "Ask only the specialists the question needs. When it needs more than one, ask them in order and "
-            "pass on what you learned: e.g. ask Analytics for the weakness and a target salary, then ask Cap & "
-            "Contracts whether that exact salary fits our cap.",
+            "pass on what you learned: e.g. ask Analytics for the weakness, then Scouting for targets at that "
+            "position, then Cap & Contracts whether the best one's salary fits our cap.",
             "Give each specialist one complete, specific task: the team ids, positions, players and salaries "
             "involved. Ask each specialist at most twice.",
             "Never ask a specialist about something outside its area. If the right specialist can't answer, "
@@ -130,7 +135,7 @@ async def front_office(db_file: Path | None = None, draft_file: Path = draft_des
     Pass a save file to serve that game instead of the default league."""
     async with analytics.league_office_tools(db_file) as analytics_office, \
             cap_contracts.league_office_tools(db_file) as cap_office:
-        yield build_gm_team(analytics_office, cap_office, draft_file, debug)
+        yield build_gm_team(analytics_office, cap_office, draft_file, debug, db_file)
 
 
 # ---- Reading a run ----------------------------------------------------------------
@@ -169,15 +174,26 @@ def gm_text(response) -> str | None:
     return None
 
 
+def _members(response, under: str = ""):
+    """(name, run) for every specialist the GM asked, and every member of a specialist team
+    (Scouting's scouts), named like "Scouting / Pro scout, defense"."""
+    for r in getattr(response, "member_responses", None) or []:
+        name = getattr(r, "agent_name", None) or getattr(r, "team_name", None) or "?"
+        name = f"{under} / {name}" if under else name
+        yield name, r
+        yield from _members(r, name)
+
+
 def summarize(response, seconds: float | None = None, extra_usage: list[dict] = ()) -> dict:
     """Everything the owner (and the test bench) can see about one question: the GM's
     report, each task the GM gave a specialist, and what each specialist did and said.
     `extra_usage` adds model calls made outside the team run (a second parse)."""
-    delegations = [{"member": c["args"].get("member_id"), "task": c["args"].get("task")}
-                   for c in tool_calls(response) if c["tool"] == "delegate_task_to_member"]
-    specialists = [{"name": getattr(r, "agent_name", None) or "?", "report": _content(r.content),
-                    "tool_calls": tool_calls(r), **_usage(r.metrics)}
-                   for r in response.member_responses or []]
+    # The GM's delegations, then those of any specialist team under it (Scouting's director).
+    delegations = [{"member": c["args"].get("member_id"), "task": c["args"].get("task"), "by": by}
+                   for by, run in [("General Manager", response), *_members(response)]
+                   for c in tool_calls(run) if c["tool"] == "delegate_task_to_member"]
+    specialists = [{"name": name, "report": _content(r.content), "tool_calls": tool_calls(r), **_usage(r.metrics)}
+                   for name, r in _members(response)]
     content = response.content
     report = ground_report(content).model_dump() if isinstance(content, GMReport) else None
     # A team run's metrics are the GM's own calls; the specialists' are on their runs.
@@ -188,7 +204,7 @@ def summarize(response, seconds: float | None = None, extra_usage: list[dict] = 
         return sum(values) if values else None
 
     return {"report": report, "text": None if report else (gm_text(response) or str(content)),
-            "consulted": list(dict.fromkeys(s["name"] for s in specialists)),
+            "consulted": list(dict.fromkeys(s["name"].split(" / ")[0] for s in specialists)),
             "delegations": delegations, "specialists": specialists,
             "seconds": None if seconds is None else round(seconds, 1), "model": response.model,
             "input_tokens": total("input_tokens"), "output_tokens": total("output_tokens"),

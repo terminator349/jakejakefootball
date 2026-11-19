@@ -231,8 +231,15 @@ async def run_cap_contracts(request, body):
                                  CapReport, ground_report)
 
 
+async def run_scouting(request, body):
+    """The scouting team on its own (4.1): its director delegates to the pro scouts and Draft."""
+    from agents import scouting
+    return await scouting.ask(_question(body), _db_for_agents())
+
+
 async def run_gm(request, body):
-    """The GM's team (1.4): the GM delegates to Analytics, Cap & Contracts and Draft."""
+    """The GM's team (1.4): the GM delegates to Analytics, Cap & Contracts and Scouting (4.1),
+    whose director delegates to its pro scouts and the Draft desk."""
     from agents import gm
     return await gm.ask(_question(body), _db_for_agents())
 
@@ -454,6 +461,7 @@ app = Starlette(routes=[
     Route("/api/agent/analytics", api(run_analytics), methods=["POST"]),
     Route("/api/agent/cap", api(run_cap_contracts), methods=["POST"]),
     Route("/api/agent/gm", api(run_gm), methods=["POST"]),
+    Route("/api/agent/scouting", api(run_scouting), methods=["POST"]),
 ])
 
 

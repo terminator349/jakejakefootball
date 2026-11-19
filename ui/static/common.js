@@ -185,7 +185,8 @@ const MONEY_FIELDS = ["payroll", "cap_space", "salary_to_clear"];
 
 function reportHtml(rep) {
   if (!rep || typeof rep !== "object") return `<pre>${esc(rep ?? "")}</pre>`;
-  const value = (k, v) => Array.isArray(v) ? `<ul>${v.map(e => `<li>${esc(e)}</li>`).join("")}</ul>`
+  const item = e => e && typeof e === "object" ? Object.values(e).filter(x => x == null || typeof x !== "object").join(" · ") : e;
+  const value = (k, v) => Array.isArray(v) ? `<ul>${v.map(e => `<li>${esc(item(e))}</li>`).join("")}</ul>`
     : typeof v === "boolean" ? (v ? "Yes" : "No") : MONEY_FIELDS.includes(k) ? money(v) : esc(v);
   return `<dl class="report">${Object.entries(rep).filter(([k]) => k !== "team_id").map(([k, v]) =>
     `<dt>${REPORT_LABELS[k] || esc(k)}${k === "answer" && rep.team_id ? ` <span class="pos">${esc(rep.team_id)}</span>` : ""}</dt>
@@ -211,11 +212,13 @@ function frontOfficeHtml(r, withTools = false) {
   if (!r.specialists.length) return `<p class="empty">The GM answered without asking a specialist.</p>`;
   const tasks = r.delegations.slice();
   return r.specialists.map(s => {
-    const i = tasks.findIndex(d => memberKey(d.member) === memberKey(s.name));
+    // A specialist team's members are named "Scouting / Pro scout, defense"; its director asked them.
+    const own = s.name.split(" / ").pop(), boss = s.name.includes(" / ") ? s.name.split(" / ").slice(-2)[0] : "The GM";
+    const i = tasks.findIndex(d => memberKey(d.member) === memberKey(own));
     const task = i >= 0 ? tasks.splice(i, 1)[0].task : null;
     const tools = s.tool_calls.map(c => c.tool).join(", ") || "no tools";
     return `<details class="specialist"><summary><b>${esc(s.name)}</b> <span class="note">${s.tool_calls.length} tool calls: ${esc(tools)}</span></summary>
-      ${task ? `<p class="task"><span class="note">The GM asked:</span> ${esc(task)}</p>` : ""}
+      ${task ? `<p class="task"><span class="note">${esc(boss)} asked:</span> ${esc(task)}</p>` : ""}
       ${reportHtml(s.report)}${withTools ? `<h3>Tool calls</h3>${toolCallsHtml(s.tool_calls)}` : ""}</details>`;
   }).join("");
 }

@@ -80,7 +80,7 @@ GM briefing
 | W9   | Dec 21 - 27    | 2.3 (done early)                       |
 | W10  | Dec 28 - Jan 3 | 3.2 (done early), G6 (done early)      |
 | W11  | Jan 4 - 10     | 3.2 (done early), 4.2                  |
-| W12  | Jan 11 - 17    | 4.1, 4.3, 4.5                          |
+| W12  | Jan 11 - 17    | 4.1 (done early), 4.3, 4.5             |
 | W13  | Jan 18 - 24    | 4.4 (stretch), 5.1                     |
 | W14  | Jan 25 - 31    | 5.1, 5.2                               |
 
@@ -363,9 +363,16 @@ moves and rivals' offers, the final cap position and our season leaders.
 
 ## Phase 4: Hierarchy and polish
 
-### 4.1 Scouting sub-team (W12)
+### 4.1 Scouting sub-team (W12) - Done early (Nov 19)
 A scouting team under the GM, adding a second level to the org chart. It finds
 trade targets for the GM's proposals, and the Draft agent (G7) moves into it.
+
+Done Nov 19, ahead of W12. A Scouting director (an Agno team under the GM) hands
+each position to an offense or defense pro scout. Plain Python lists the players
+who would start for us and the one-for-one offer their team should take; the
+scouts grade them A, B or C with the new scouting skill. Orders and the deadline
+go through Scouting first, and the GM files moves from its report. The Draft desk
+(1.4) reports through Scouting; G7's draft agent will join it there.
 
 ### 4.2 Memory (W11)
 Agents remember past decisions, trades and reports. In the game, the GM

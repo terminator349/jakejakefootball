@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="Front Office: how the agents interact&lt;br&gt;&lt;span style='font-size:12px;font-weight:normal'&gt;As built through task G6 (Nov 19, 2026), branch w5-gm-team. Every agent runs DeepSeek V4.1 Flash through OpenRouter.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="title" value="Front Office: how the agents interact&lt;br&gt;&lt;span style='font-size:12px;font-weight:normal'&gt;As built through task 4.1 (Nov 19, 2026), branch w5-gm-team. Every agent runs DeepSeek V4.1 Flash through OpenRouter.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="80" y="20" width="540" height="90" as="geometry" />
         </mxCell>
         <mxCell id="legend" value="&lt;b&gt;Legend&lt;/b&gt;&lt;table style='font-size:11px'&gt;&lt;tr&gt;&lt;td&gt;&lt;span style='color:#6c8ebf'&gt;&amp;#9632;&lt;/span&gt; LLM agent (model calls)&lt;br&gt;&lt;span style='color:#82b366'&gt;&amp;#9632;&lt;/span&gt; Plain Python, no model&lt;br&gt;&lt;span style='color:#d79b00'&gt;&amp;#9632;&lt;/span&gt; MCP server&lt;br&gt;&lt;span style='color:#d6b656'&gt;&amp;#9632;&lt;/span&gt; Skill (skills/, task 1.5)&lt;/td&gt;&lt;td style='padding-left:24px'&gt;&lt;span style='color:#666666'&gt;&amp;#9632;&lt;/span&gt; UI / storage&lt;br&gt;Dashed box: planned, not built yet&lt;br&gt;Two-headed arrow: task down, report up&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#999999;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;" vertex="1" parent="1">
@@ -25,7 +25,7 @@
         <mxCell id="team_note" value="Agno Team, coordinate mode; specialists see each other's earlier answers" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="95" y="262" width="200" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="orders" value="&lt;b&gt;Orders&lt;/b&gt; (G4), &lt;b&gt;deadline&lt;/b&gt; (2.3)&lt;br&gt;orders.py, deadline.py; as the GM&lt;br&gt;Reads the order into terms; searches with get_roster, trade_targets, evaluate_trade&lt;br&gt;Files moves via propose_to_owner, checked in Python" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="orders" value="&lt;b&gt;Orders&lt;/b&gt; (G4), &lt;b&gt;deadline&lt;/b&gt; (2.3)&lt;br&gt;orders.py, deadline.py; as the GM&lt;br&gt;Reads the order into terms; Scouting finds the targets, then the GM checks them with evaluate_trade&lt;br&gt;Files moves via propose_to_owner, checked in Python" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="660" y="275" width="225" height="140" as="geometry" />
         </mxCell>
         <mxCell id="e_ui_orders" value="Give an order / Work the deadline&lt;br&gt;/api/hub/order, /api/hub/deadline" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.553;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ui" target="orders">
@@ -52,8 +52,20 @@
         <mxCell id="cap_skill" value="skill: salary-cap-rules" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="390" y="556" width="220" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="draft_desk" value="&lt;b&gt;Draft desk&lt;/b&gt; (1.4)&lt;br&gt;agents/draft_desk.py&lt;br&gt;Answers questions about Draft Day's results and class&lt;br&gt;Output: draft report" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="650" y="450" width="230" height="140" as="geometry" />
+        <mxCell id="scouting" value="Scouting team (agents/scouting.py, 4.1)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=3;dashed=0;fillColor=none;strokeColor=#6c8ebf;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#3d5a80;" vertex="1" parent="1">
+          <mxGeometry x="645" y="448" width="245" height="157" as="geometry" />
+        </mxCell>
+        <mxCell id="director" value="&lt;b&gt;Scouting director&lt;/b&gt;: hands each position to a scout&lt;br&gt;Output: ScoutingReport, kept in the save" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="655" y="472" width="225" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="scout_off" value="&lt;b&gt;Pro scout, offense&lt;/b&gt;&lt;br&gt;QB RB WR TE OL K P" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="655" y="514" width="110" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="scout_def" value="&lt;b&gt;Pro scout, defense&lt;/b&gt;&lt;br&gt;DL LB CB S; grade A/B/C" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="770" y="514" width="110" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="draft_desk" value="&lt;b&gt;Draft desk&lt;/b&gt; (1.4), now under Scouting&lt;br&gt;Draft Day's results and class" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="655" y="566" width="225" height="32" as="geometry" />
         </mxCell>
         <mxCell id="e_ui_gm" value="Ask the front office&lt;br&gt;/api/hub/ask" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.25;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="ui" target="gm">
           <mxGeometry relative="1" as="geometry" />
@@ -64,7 +76,10 @@
         <mxCell id="e_gm_cap" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=0.594;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="gm" target="cap">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_gm_dd" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=0.95;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="gm" target="draft_desk">
+        <mxCell id="e_gm_sc" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=0.95;exitY=1;entryX=0.3;entryY=0;" edge="1" parent="1" source="gm" target="director">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_or_sc" value="scout_for_order" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=0.5;exitY=1;entryX=0.8;entryY=0;" edge="1" parent="1" source="orders" target="director">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="briefing" value="&lt;b&gt;Weekly briefing&lt;/b&gt; (G3)&lt;br&gt;agents/briefing.py&lt;br&gt;One agent that writes as the GM&lt;br&gt;facts() &amp;#8594; draft &amp;#8594; number check + style check&lt;br&gt;Up to 3 tries, else the plain notes" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
@@ -91,8 +106,8 @@
         <mxCell id="e_cap_lo" value="6 tools: no compare_to_league,&lt;br&gt;plus the 3 checks" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.765;entryY=0;" edge="1" parent="1" source="cap" target="lo">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="dtools" value="&lt;b&gt;Draft desk tools&lt;/b&gt;&lt;br&gt;Plain Python functions:&lt;br&gt;draft_summary &amp;#183; team_draft &amp;#183; best_undrafted" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="650" y="650" width="230" height="110" as="geometry" />
+        <mxCell id="dtools" value="&lt;b&gt;Scouting and Draft desk tools&lt;/b&gt;&lt;br&gt;Plain Python functions:&lt;br&gt;scout_targets &amp;#183; scout_player: who'd start for us, unit gain, the best one-for-one offer (negotiation's score)&lt;br&gt;draft_summary &amp;#183; team_draft &amp;#183; best_undrafted&lt;br&gt;skill: scouting (grades, always on)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="650" y="650" width="240" height="120" as="geometry" />
         </mxCell>
         <mxCell id="e_dd_dt" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="draft_desk" target="dtools">
           <mxGeometry relative="1" as="geometry" />
@@ -124,7 +139,7 @@
         <mxCell id="e_loop_core" value="writes results" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.93;exitY=1;entryX=0.986;entryY=0;" edge="1" parent="1" source="loop" target="core">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="db" value="&lt;b&gt;SQLite&lt;/b&gt;: data/league.db or saves/&amp;lt;game&amp;gt;.db&lt;br&gt;rosters, contracts, schedule, results, briefings, move log" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="db" value="&lt;b&gt;SQLite&lt;/b&gt;: data/league.db or saves/&amp;lt;game&amp;gt;.db&lt;br&gt;rosters, contracts, schedule, results, briefings, scouting reports, move log" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="620" y="970" width="340" height="90" as="geometry" />
         </mxCell>
         <mxCell id="e_core_db" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.476;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="core" target="db">
@@ -145,16 +160,16 @@
         <mxCell id="e_rv_td" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="rivals" target="tdesk">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="planned" value="Planned: these join under the GM later (not built yet)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;dashed=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+        <mxCell id="planned" value="Planned: these join under the GM later" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;dashed=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
           <mxGeometry x="800" y="1100" width="740" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="p_coach" value="&lt;b&gt;Coaching and Medical&lt;/b&gt; (3.2)&lt;br&gt;Depth chart, game-day calls, injuries; report to the GM" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;dashed=1;fillColor=#ffffff;strokeColor=#999999;fontColor=#555555;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="p_coach" value="&lt;b&gt;Coaching and Medical&lt;/b&gt; (3.2)&lt;br&gt;Built (coaching.py, medical.py) with their League Office tools; not yet in the GM's team" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;dashed=1;fillColor=#ffffff;strokeColor=#999999;fontColor=#555555;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="815" y="1150" width="225" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="p_scout" value="&lt;b&gt;Scouting sub-team&lt;/b&gt; (4.1)&lt;br&gt;Finds trade targets; the Draft agent moves into it" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;dashed=1;fillColor=#ffffff;strokeColor=#999999;fontColor=#555555;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="p_memory" value="&lt;b&gt;Memory&lt;/b&gt; (4.2)&lt;br&gt;Standing orders and past decisions across weeks and saves" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;dashed=1;fillColor=#ffffff;strokeColor=#999999;fontColor=#555555;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1055" y="1150" width="225" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="p_memory" value="&lt;b&gt;Memory&lt;/b&gt; (4.2)&lt;br&gt;Standing orders and past decisions across weeks and saves" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;dashed=1;fillColor=#ffffff;strokeColor=#999999;fontColor=#555555;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="p_org" value="&lt;b&gt;Org-chart screen&lt;/b&gt; (4.3)&lt;br&gt;The hierarchy and what each agent did this week" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;dashed=1;fillColor=#ffffff;strokeColor=#999999;fontColor=#555555;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1295" y="1150" width="225" height="80" as="geometry" />
         </mxCell>
       </root>
