@@ -52,6 +52,13 @@ MATCHUP = {
     "screen":      {"base": -1, "blitz": 7, "cover_2": 0, "deep_zone": 3, "run_stuff": -2},
 }
 
+# Injuries (task 3.2): a small chance that the player central to a play - the ball
+# carrier, the quarterback on a sack or scramble, the receiver on a catch, the pass
+# rusher or the interceptor - gets hurt and leaves the game. Severity sets how many
+# games they go on to miss, starting the week after this one.
+INJURY_CHANCE = 0.005
+INJURY_SEVERITY = [(0.55, (1, 1)), (0.30, (2, 3)), (0.15, (4, 6))]  # weight, (min, max) games out
+
 # Which offensive unit and which defensive unit meet on each play.
 UNITS = {
     "run_inside": ("inside_run", "run_defense"),
@@ -76,24 +83,56 @@ def _mean(players: list[dict], rating: str) -> float:
     return sum(values) / len(values) if values else 50.0
 
 
+def _healthy(group: list[dict], unavailable: set[str], count: int) -> list[dict]:
+    """The best `count` players in `group` who aren't unavailable, best first - unless
+    that leaves fewer than `count` (a position with no healthy backup, e.g. K or P),
+    in which case availability is ignored so the team always has somebody to put in,
+    rather than crashing with nobody at the position."""
+    healthy = [p for p in group if p["id"] not in unavailable]
+    return (healthy if len(healthy) >= count else group)[:count]
+
+
 @dataclass
 class Lineup:
-    """A team's starters and backups by position, best first, and its unit strengths."""
+    """A team's starters and backups by position, best first, and its unit strengths.
+
+    `unavailable` holds the ids of players who can't take the field: hurt before the
+    game (task 3.2) or, mid-game, hurt during it. starters() skips them, so the next
+    player down the depth chart steps in automatically.
+    """
 
     team_id: str
     depth: dict[str, list[dict]]
     units: dict[str, float] = field(default_factory=dict)
+    unavailable: set[str] = field(default_factory=set)
 
     def starters(self, position: str, count: int) -> list[dict]:
-        return self.depth.get(position, [])[:count]
+        return _healthy(self.depth.get(position, []), self.unavailable, count)
 
 
-def build_lineup(team_id: str, players: list[dict], starters_per_position: dict[str, int]) -> Lineup:
-    """Depth charts by overall rating (as get_roster lists them) and unit strengths on a
-    25-99 scale, from the starters only."""
-    depth = {pos: sorted((p for p in players if p["position"] == pos), key=lambda p: -p["overall"])
-             for pos in starters_per_position}
-    s = {pos: depth[pos][:n] for pos, n in starters_per_position.items()}
+def build_lineup(team_id: str, players: list[dict], starters_per_position: dict[str, int],
+                 order: dict[str, list[str]] | None = None, unavailable: set[str] = frozenset()) -> Lineup:
+    """Depth charts and unit strengths (25-99 scale) from the starters only.
+
+    A position named in `order` (task 3.2's depth_chart table) is taken in that exact
+    order as long as it is still exactly this team's current roster there; otherwise,
+    and for every other position, players are ordered by overall rating (as get_roster
+    lists them). `unavailable` player ids (hurt before the game, from the injuries
+    table) are left out of the starters used for unit strength, though they stay in
+    `depth` so a backup-of-a-backup can still be found if someone else gets hurt too.
+    """
+    order = order or {}
+    by_id = {p["id"]: p for p in players}
+
+    def ordered(pos: str) -> list[dict]:
+        ids = order.get(pos)
+        at_position = {p["id"] for p in players if p["position"] == pos}
+        if ids is not None and set(ids) == at_position:
+            return [by_id[pid] for pid in ids]
+        return sorted((p for p in players if p["position"] == pos), key=lambda p: -p["overall"])
+
+    depth = {pos: ordered(pos) for pos in starters_per_position}
+    s = {pos: _healthy(depth[pos], unavailable, n) for pos, n in starters_per_position.items()}
     qb, rb, wr, te, ol = s["QB"], s["RB"], s["WR"], s["TE"], s["OL"]
     dl, lb, cb, saf = s["DL"], s["LB"], s["CB"], s["S"]
     receivers = 0.6 * _mean(wr, "route_running") + 0.4 * _mean(wr, "hands")
@@ -123,7 +162,7 @@ def build_lineup(team_id: str, players: list[dict], starters_per_position: dict[
         "kick_accuracy": _mean(s["K"], "kick_accuracy"),
         "punt_power": _mean(s["P"], "kick_power"),
     }
-    return Lineup(team_id, depth, units)
+    return Lineup(team_id, depth, units, unavailable=set(unavailable))
 
 
 # ---- Game state ------------------------------------------------------------
@@ -275,6 +314,9 @@ class Game:
         self.teams = {home.team_id: home, away.team_id: away}
         self.field_rng = random.Random(f"field-{seed}")
         self.call_rng = random.Random(f"calls-{seed}")
+        # Its own stream, so whether someone gets hurt never shifts the field_rng draws
+        # that decide a play's outcome: the 3.1 tuning stays exactly as tuned.
+        self.injury_rng = random.Random(f"injury-{seed}")
         self.score = {home.team_id: 0, away.team_id: 0}
         self.timeouts = {home.team_id: TIMEOUTS_PER_HALF, away.team_id: TIMEOUTS_PER_HALF}
         self.quarter, self.clock = 1, QUARTER_SECONDS
@@ -287,6 +329,8 @@ class Game:
         self.clock_running = False
         self.pending = 0   # seconds that run off before the next snap if the clock is running
         self.note = ""     # e.g. a timeout, told in the next play's text
+        self.injuries: list[dict] = []
+        self._hurt_this_game: set[str] = set()
         # Coin toss: the winner receives; the other team receives after halftime.
         receiver = home.team_id if self.field_rng.random() < 0.5 else away.team_id
         self.second_half_receiver = self._other(receiver)
@@ -307,6 +351,26 @@ class Game:
     def _stat(self, player: dict, key: str, amount: int = 1) -> None:
         line = self.stats.setdefault(player["id"], {})
         line[key] = line.get(key, 0) + amount
+
+    def _injure(self, player: dict, team_id: str) -> str:
+        """A small chance `player` is hurt on this play and leaves the game, recorded in
+        self.injuries for the season to save once the game is over. Returns extra play
+        text (empty if nothing happened). A player already hurt this game can't be hurt
+        again, and `starters()`'s own fallback keeps a position from ever running empty,
+        so marking someone unavailable here is always safe."""
+        if player["id"] in self._hurt_this_game or self.injury_rng.random() >= INJURY_CHANCE:
+            return ""
+        self._hurt_this_game.add(player["id"])
+        self.teams[team_id].unavailable.add(player["id"])
+        roll, cumulative, games_out = self.injury_rng.random(), 0.0, INJURY_SEVERITY[-1][1][1]
+        for weight, (low, high) in INJURY_SEVERITY:
+            cumulative += weight
+            if roll < cumulative:
+                games_out = self.injury_rng.randint(low, high)
+                break
+        self.injuries.append({"player_id": player["id"], "team_id": team_id, "position": player["position"],
+                              "games_out": games_out, "n": len(self.plays) + 1})
+        return f" {self._name(player)} is injured and leaves the game."
 
     def _pick(self, team_id: str, positions: dict[str, float], rating: str | None = None) -> dict:
         """A player from the starters at the given positions, weighted, and by a rating if given."""
@@ -518,10 +582,11 @@ class Game:
             yards += rng.expovariate(1 / 16)
         yards = max(-4, round(yards))
         self._stat(runner, "rush_att")
+        hurt = self._injure(runner, sit.offense)
         if rng.random() < 0.007:
             self._stat(runner, "fumbles_lost")
             spot = self.yardline + max(0, yards)
-            text = f"{self._name(runner)} {call.replace('_', ' ')[4:]} run, FUMBLE, recovered by {sit.defense}."
+            text = f"{self._name(runner)} {call.replace('_', ' ')[4:]} run, FUMBLE, recovered by {sit.defense}.{hurt}"
             if spot >= 100:
                 spot = 99
             self._turnover(100 - spot)
@@ -534,7 +599,7 @@ class Game:
             self._stat(runner, "rush_td")
         side = "up the middle" if inside else rng.choice(["around left end", "around right end"])
         out_of_bounds = not inside and rng.random() < 0.2
-        return self._advance(call, dcall, yards, sit, f"{self._name(runner)} runs {side} for {{yards}}.", "run",
+        return self._advance(call, dcall, yards, sit, f"{self._name(runner)} runs {side} for {{yards}}.{hurt}", "run",
                              rng.randint(35, 48), out_of_bounds=out_of_bounds)
 
     def _pass(self, call: str, dcall: str, edge: float, sit: Situation) -> dict:
@@ -550,15 +615,17 @@ class Game:
             rusher = self._pick(sit.defense, {"DL": 1.0, "LB": 0.4 if dcall != "blitz" else 1.0}, "pass_rush")
             self._stat(qb, "sacked")
             self._stat(rusher, "def_sacks")
+            hurt = self._injure(qb, sit.offense) + self._injure(rusher, sit.defense)
             return self._advance(call, dcall, loss, sit, f"{self._name(qb)} sacked by {self._name(rusher)} for a loss of "
-                                 f"{-loss}.", "sack", rng.randint(28, 38))
+                                 f"{-loss}.{hurt}", "sack", rng.randint(28, 38))
         if call != "screen" and rng.random() < 0.025 + (offense.units["mobility"] - 70) * 0.002:
             yards = max(-2, round(rng.gauss(5, 4)))
             self._stat(qb, "rush_att")
             self._stat(qb, "rush_yds", min(yards, 100 - self.yardline))
             if self.yardline + yards >= 100:
                 self._stat(qb, "rush_td")
-            return self._advance(call, dcall, yards, sit, f"{self._name(qb)} scrambles for {{yards}}.", "run",
+            hurt = self._injure(qb, sit.offense)
+            return self._advance(call, dcall, yards, sit, f"{self._name(qb)} scrambles for {{yards}}.{hurt}", "run",
                                  rng.randint(28, 38))
 
         targets = {"pass_short": ({"WR": 1.0, "TE": 0.8, "RB": 0.35}, "route_running"),
@@ -579,7 +646,8 @@ class Game:
             self._stat(picker, "def_int")
             spot = min(99, self.yardline + max(air, 1))
             back = max(0, round(rng.gauss(8, 8)))
-            text = f"{self._name(qb)} pass intended for {self._name(target)} INTERCEPTED by {self._name(picker)}."
+            hurt = self._injure(picker, sit.defense)
+            text = f"{self._name(qb)} pass intended for {self._name(target)} INTERCEPTED by {self._name(picker)}.{hurt}"
             self._turnover(100 - spot + back)
             entry = self._log(call, dcall, "interception", 0, text, sit)
             self._run_clock(rng.randint(6, 10), True)
@@ -605,8 +673,9 @@ class Game:
             self._stat(qb, "pass_td")
             self._stat(target, "rec_td")
         out_of_bounds = rng.random() < 0.18
+        hurt = self._injure(target, sit.offense)
         return self._advance(call, dcall, yards, sit, f"{self._name(qb)} pass complete to {self._name(target)} "
-                             f"for {{yards}}.", "complete", rng.randint(35, 48), out_of_bounds=out_of_bounds)
+                             f"for {{yards}}.{hurt}", "complete", rng.randint(35, 48), out_of_bounds=out_of_bounds)
 
     def _special(self, call: str, sit: Situation) -> dict:
         rng = self.field_rng

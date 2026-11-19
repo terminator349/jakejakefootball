@@ -22,26 +22,31 @@ from mcp.server.mcpserver import MCPServer
 from mcp_types import ToolAnnotations
 
 from agents import league_db
-from agents.tools import (check_cap_fit, check_trade, compare_to_league, get_league_rules,
-                          get_roster, list_teams, validate_cap_compliance)
+from agents.tools import (check_cap_fit, check_trade, compare_to_league, get_depth_chart,
+                          get_injury_report, get_league_rules, get_roster, get_team_tendencies,
+                          list_teams, set_depth_chart, validate_cap_compliance)
 
 LEAGUE_TOOLS = [list_teams, get_roster, compare_to_league, get_league_rules, check_trade,
-                validate_cap_compliance, check_cap_fit]
+                validate_cap_compliance, check_cap_fit, get_depth_chart, set_depth_chart,
+                get_injury_report, get_team_tendencies]
 
-# Nothing here changes the league, so clients can call these tools freely.
+# Every tool but set_depth_chart only reads the league, so clients can call those freely.
 READ_ONLY = ToolAnnotations(read_only_hint=True, idempotent_hint=True, open_world_hint=False)
+WRITE = ToolAnnotations(read_only_hint=False, idempotent_hint=True, open_world_hint=False)
 
 league_office = MCPServer(
     name="League Office",
-    instructions="Read-only league data for a fictional American football league: teams, "
-                 "rosters, ratings, contracts, rules, hard-cap checks, and a check of whether "
-                 "a trade is legal. Every tool returns JSON text.",
+    instructions="League data for a fictional American football league: teams, rosters, "
+                 "ratings, contracts, rules, hard-cap checks, a check of whether a trade is "
+                 "legal, the depth chart and injury report, and team tendencies. Every tool "
+                 "but set_depth_chart is read-only; every tool returns JSON text.",
 )
 
 for tool in LEAGUE_TOOLS:
     # structured_output=False sends the JSON string as plain text content, as the
     # agent saw it in task 0.2, instead of wrapping it in {"result": ...}.
-    league_office.add_tool(tool, annotations=READ_ONLY, structured_output=False)
+    annotations = WRITE if tool is set_depth_chart else READ_ONLY
+    league_office.add_tool(tool, annotations=annotations, structured_output=False)
 
 
 if __name__ == "__main__":

@@ -10,8 +10,9 @@ changes, because it still just sees tools. They read the league from SQLite
 """
 
 import json
+from collections import Counter
 
-from agents import rules
+from agents import league_db, rules
 from agents.league_db import load_league
 
 
@@ -185,3 +186,136 @@ def check_trade(team_a: str, a_sends: list[str], team_b: str, b_sends: list[str]
         b_sends: player ids team_b gives up. May be empty, but not both sides.
     """
     return json.dumps(rules.check_trade(rules.Trade(team_a, a_sends, team_b, b_sends)))
+
+
+# ---- Coaching and Medical (task 3.2) ----------------------------------------
+
+def get_depth_chart(team_id: str, position: str = "") -> str:
+    """Get one team's depth chart: the order its players would take the field in at
+    each position, best (starts) first. Each player's rank, overall rating and starter
+    status (yes/no); a player still out hurt instead shows games_remaining. A position
+    is "custom_order": true if the coaching staff has set its order (set_depth_chart);
+    otherwise it's sorted by overall rating.
+
+    Args:
+        team_id: three-letter team id, e.g. "HAR". Use list_teams to find ids.
+        position: optional filter, one of QB, RB, WR, TE, OL, DL, LB, CB, S, K, P.
+            Leave empty for every position.
+    """
+    league = load_league()
+    team_id, position = team_id.upper(), position.upper()
+    if team_id not in _team_ids(league):
+        return _unknown_team(league, team_id)
+    starters = league["rules"]["starters_per_position"]
+    if position and position not in starters:
+        return json.dumps({"error": f"Unknown position {position!r}. Valid positions: {list(starters)}"})
+
+    db = league_db.connect()
+    try:
+        order = league_db.depth_chart_order(db, team_id)
+    finally:
+        db.close()
+    injured = {row["player_id"]: row for row in league_db.current_injuries(team_id)}
+
+    chart = {}
+    for pos in ([position] if position else starters):
+        players = [p for p in league["players"] if p["team_id"] == team_id and p["position"] == pos]
+        by_id = {p["id"]: p for p in players}
+        ids = order.get(pos) or [p["id"] for p in sorted(players, key=lambda p: -p["overall"])]
+        rows = []
+        for rank, pid in enumerate(ids):
+            p = by_id[pid]
+            row = {"rank": rank + 1, "id": pid, "name": p["name"], "overall": p["overall"],
+                  "starter": rank < starters[pos]}
+            if pid in injured:
+                row["games_remaining"] = injured[pid]["games_remaining"]
+            rows.append(row)
+        chart[pos] = {"custom_order": pos in order, "players": rows}
+    return json.dumps({"team_id": team_id, "depth_chart": chart})
+
+
+def set_depth_chart(team_id: str, position: str, player_order: list[str]) -> str:
+    """Set the order a team's players at one position take the field in, best (starts)
+    first. This is the only way to change who starts: list every player currently on
+    the roster at that position, in the new order, or the change is rejected. The new
+    order holds until changed again, even across games - it is ignored automatically
+    (falling back to sorting by overall rating) if a trade or a cut ever changes who
+    plays that position.
+
+    Args:
+        team_id: three-letter team id, e.g. "HAR". Use list_teams to find ids.
+        position: one of QB, RB, WR, TE, OL, DL, LB, CB, S, K, P.
+        player_order: every player id at that position, best (starts) first,
+            e.g. ["HAR-12", "HAR-13"].
+    """
+    league = load_league()
+    team_id, position = team_id.upper(), position.upper()
+    if team_id not in _team_ids(league):
+        return _unknown_team(league, team_id)
+    starters = league["rules"]["starters_per_position"]
+    if position not in starters:
+        return json.dumps({"error": f"Unknown position {position!r}. Valid positions: {list(starters)}"})
+
+    roster = {p["id"] for p in league["players"] if p["team_id"] == team_id and p["position"] == position}
+    order = [pid.strip().upper() for pid in player_order]
+    if len(order) != len(set(order)) or set(order) != roster:
+        return json.dumps({"error": f"player_order must list every one of {team_id}'s {position}s exactly "
+                                    f"once: {sorted(roster)}"})
+
+    league_db.write_depth_chart(team_id, position, order)
+    return get_depth_chart(team_id, position)
+
+
+def get_injury_report(team_id: str = "") -> str:
+    """Every player currently out hurt, across the league or for one team: name,
+    position, team, which week they got hurt, how many more games they'll miss, and a
+    short description. An empty list means nobody of interest is currently hurt.
+
+    Args:
+        team_id: optional three-letter team id to filter to, e.g. "HAR". Leave empty
+            for the whole league.
+    """
+    league = load_league()
+    if team_id:
+        team_id = team_id.upper()
+        if team_id not in _team_ids(league):
+            return _unknown_team(league, team_id)
+    return json.dumps({"injuries": league_db.current_injuries(team_id or None)})
+
+
+def get_team_tendencies(team_id: str) -> str:
+    """How a team has actually called plays so far this season, on offense and on
+    defense: each play type's share of calls, overall and on 3rd/4th down with 7 or
+    more yards to go (an obvious passing situation). Based only on games already
+    played; plays_sampled is 0 before week 1's games are in. Use this to plan a game
+    around an opponent's real tendencies, or to check our own.
+
+    Args:
+        team_id: three-letter team id, e.g. "HAR". Use list_teams to find ids.
+    """
+    from agents.simulator import OFFENSE_PLAYS
+
+    league = load_league()
+    team_id = team_id.upper()
+    if team_id not in _team_ids(league):
+        return _unknown_team(league, team_id)
+
+    db = league_db.connect()
+    try:
+        rows = db.execute(
+            "SELECT pl.call, pl.defense_call, pl.down, pl.distance, pl.offense_team_id FROM plays pl "
+            "JOIN games g ON g.id = pl.game_id WHERE g.home_team_id = ? OR g.away_team_id = ?",
+            (team_id, team_id)).fetchall()
+    finally:
+        db.close()
+
+    def mix(calls: list[str]) -> dict:
+        total = len(calls)
+        return {c: round(n / total, 3) for c, n in Counter(calls).most_common()} if total else {}
+
+    offense = [r["call"] for r in rows if r["offense_team_id"] == team_id and r["call"] in OFFENSE_PLAYS]
+    long_down = [r["call"] for r in rows if r["offense_team_id"] == team_id and r["call"] in OFFENSE_PLAYS
+                and r["down"] >= 3 and r["distance"] >= 7]
+    defense = [r["defense_call"] for r in rows if r["offense_team_id"] != team_id and r["defense_call"]]
+    return json.dumps({"team_id": team_id, "plays_sampled": len(offense), "offense_play_mix": mix(offense),
+                       "offense_mix_3rd_4th_and_7_plus": mix(long_down), "defense_call_mix": mix(defense)})

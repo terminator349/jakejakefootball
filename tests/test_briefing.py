@@ -143,9 +143,10 @@ def test_g8_saves_get_the_briefings_table(tmp_path):
     path = tmp_path / "g8.db"
     league_db.build(path)
     with sqlite3.connect(path) as db:  # turn it back into a G8 database
-        db.executescript("DROP TABLE briefings; PRAGMA user_version = 3;")
+        db.executescript("DROP TABLE briefings; DROP TABLE injuries; DROP TABLE depth_chart; "
+                         "PRAGMA user_version = 3;")
     db.close()
     assert briefing.stored(1, path) is None
     with sqlite3.connect(path) as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 4
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION
     db.close()
