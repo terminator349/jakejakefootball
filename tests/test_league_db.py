@@ -135,6 +135,6 @@ def test_either_branchs_version_5_saves_come_up_to_date(tmp_path, dropped):
     league_db.connect(path).close()
     with sqlite3.connect(path) as db:
         tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
-        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 7
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 8
     db.close()
     assert {"trade_proposals", "orders", "gm_proposals", "injuries", "depth_chart"} <= tables

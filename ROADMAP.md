@@ -78,7 +78,7 @@ GM briefing
 | W7   | Dec 7 - 13     | 2.1, G4, 2.2 (done early), G8 (done early) |
 | W8   | Dec 14 - 20    | 2.2, G5 (done early)                   |
 | W9   | Dec 21 - 27    | 2.3 (done early)                       |
-| W10  | Dec 28 - Jan 3 | 3.2 (done early), G6                   |
+| W10  | Dec 28 - Jan 3 | 3.2 (done early), G6 (done early)      |
 | W11  | Jan 4 - 10     | 3.2 (done early), 4.2                  |
 | W12  | Jan 11 - 17    | 4.1, 4.3, 4.5                          |
 | W13  | Jan 18 - 24    | 4.4 (stretch), 5.1                     |
@@ -353,6 +353,13 @@ until changed again, and a trade or cut silently retires a stale one; and
 ### G6 Playoffs and the end of the season (W10)
 The top teams after week 17 play for the championship. The game ends with a
 season summary: record, playoff result, moves made and final cap position.
+
+Done Nov 19, ahead of W10. The top four by the standings play semifinals in
+week 18 (1 v 4, 2 v 3) and the final in week 19, at the better seed. Playoff
+games are simmed, watched or called like any other but don't count in the
+standings, and they play overtime until someone scores. Week 20 shows the
+season summary: record and standing, how far we went, trades, orders, the GM's
+moves and rivals' offers, the final cap position and our season leaders.
 
 ## Phase 4: Hierarchy and polish
 

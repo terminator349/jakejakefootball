@@ -39,7 +39,8 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 # 6: task G4 adds the owner's orders and the moves the GM proposes for approval.
 # 7: task 3.2 adds injuries and the depth chart. (3.2 was built on a branch where it
 #    was version 5; MIGRATIONS below brings those databases up to date too.)
-SCHEMA_VERSION = 7
+# 8: task G6 leaves the playoffs out of the standings.
+SCHEMA_VERSION = 8
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -88,7 +89,7 @@ CREATE INDEX players_by_team ON players (team_id, position);
 -- The game (task G1). One row.
 CREATE TABLE game (
     id           INTEGER PRIMARY KEY CHECK (id = 1),
-    current_week INTEGER NOT NULL CHECK (current_week >= 1),  -- season_games + 1 once the season is over
+    current_week INTEGER NOT NULL CHECK (current_week >= 1),  -- after season_games, the playoffs (G6)
     seed         INTEGER NOT NULL,                            -- the schedule and simulator draw from this
     created_at   TEXT NOT NULL
 );
@@ -115,11 +116,19 @@ CREATE TABLE move_players (
     to_team_id   TEXT NOT NULL REFERENCES teams(id),
     PRIMARY KEY (move_id, player_id)
 );
+"""
+
+# The regular season's standings. Playoff games (weeks after season_games, task G6) don't
+# count: the seeds come from these, and a record is the regular season's.
+STANDINGS_VIEW = """
 CREATE VIEW standings AS
-WITH sides AS (
-    SELECT home_team_id AS team_id, home_score AS pf, away_score AS pa FROM games WHERE home_score IS NOT NULL
+WITH regular AS (
+    SELECT * FROM games WHERE home_score IS NOT NULL
+                          AND week <= (SELECT CAST(value AS INTEGER) FROM rules WHERE key = 'season_games')
+), sides AS (
+    SELECT home_team_id AS team_id, home_score AS pf, away_score AS pa FROM regular
     UNION ALL
-    SELECT away_team_id, away_score, home_score FROM games WHERE home_score IS NOT NULL
+    SELECT away_team_id, away_score, home_score FROM regular
 )
 SELECT t.id                       AS team_id,
        COALESCE(SUM(s.pf > s.pa), 0) AS wins,
@@ -130,6 +139,9 @@ SELECT t.id                       AS team_id,
 FROM teams t LEFT JOIN sides s ON s.team_id = t.id
 GROUP BY t.id;
 """
+
+# G6: the standings view, rebuilt to leave the playoffs out.
+PLAYOFF_SCHEMA = "DROP VIEW IF EXISTS standings;\n" + STANDINGS_VIEW
 
 GAME_LOG_SCHEMA = """
 -- Simulated games (task 3.1): every snap, and each player's stats per game.
@@ -264,7 +276,7 @@ CREATE TABLE IF NOT EXISTS depth_chart (
 # it the Trade Desk, but on the 3.2 branch it meant injuries, so the step from 5 adds
 # the Trade Desk's table too, and the step from 6 adds injuries whichever way it came.
 MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA,
-              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA}
+              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA, 7: PLAYOFF_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -290,7 +302,7 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
+        db.executescript(SCHEMA + STANDINGS_VIEW + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
                          + INJURY_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])

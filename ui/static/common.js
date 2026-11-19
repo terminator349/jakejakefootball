@@ -3,6 +3,8 @@
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+// Q1-Q4, then OT, 2OT, ... (a playoff game plays overtime periods until someone scores, G6).
+const quarterText = q => q <= 4 ? "Q" + q : q === 5 ? "OT" : `${q - 4}OT`;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 const money = n => n == null ? "" : `$${Number(n).toFixed(2)}M`;
 const POSITIONS = ["QB", "RB", "WR", "TE", "OL", "DL", "LB", "CB", "S", "K", "P"];
@@ -38,7 +40,7 @@ function driveTable(b, drives, ourTeam) {
   return `<table class="drives"><tr><th>#</th><th>Team</th><th>Start</th><th>From</th><th class="num">Plays</th>
     <th class="num">Yds</th><th class="num">Time</th><th>Result</th><th class="num">${a}-${h}</th></tr>
     ${drives.map(d => `<tr class="${d.team === ourTeam ? "ours" : ""}"><td>${d.number}</td><td>${d.team}</td>
-      <td>${d.quarter === 5 ? "OT" : "Q" + d.quarter} ${clockText(d.clock)}</td><td>${spotOf(d.team, other(d.team), d.start_yardline)}</td>
+      <td>${quarterText(d.quarter)} ${clockText(d.clock)}</td><td>${spotOf(d.team, other(d.team), d.start_yardline)}</td>
       <td class="num">${d.plays}</td><td class="num">${d.yards}</td><td class="num">${clockText(d.seconds)}</td>
       <td class="how">${["touchdown", "field_goal", "safety"].includes(d.result) ? `<b>${RESULT_LABEL[d.result]}</b>` : RESULT_LABEL[d.result] || d.result}</td>
       <td class="num">${d.away_score}-${d.home_score}</td></tr>`).join("")}</table>`;
@@ -143,13 +145,13 @@ class WatchView {
     const poss = next?.offense_team_id;
 
     let status, sub;
-    if (done) { status = P[n - 1].quarter === 5 ? "Final (OT)" : "Final"; sub = `${n} plays · ${b.drives.length} drives`; }
+    if (done) { status = P[n - 1].quarter >= 5 ? `Final (${quarterText(P[n - 1].quarter)})` : "Final"; sub = `${n} plays · ${b.drives.length} drives`; }
     else {
-      status = `${next.quarter === 5 ? "OT" : "Q" + next.quarter} ${clockText(next.clock)}`;
+      status = `${quarterText(next.quarter)} ${clockText(next.clock)}`;
       sub = `${poss} ball · ${ORD[next.down]} & ${togoText(next)} at ${spotOf(poss, other(poss), next.yardline)}`;
     }
     const ball = next && { poss, yardline: next.yardline, distance: next.distance, driveTeam: drive.team, driveStart: drive.start_yardline };
-    const lastText = last ? `<span class="sit">${last.offense_team_id} · ${last.quarter === 5 ? "OT" : "Q" + last.quarter} ${clockText(last.clock)}</span> ${esc(last.text)}`
+    const lastText = last ? `<span class="sit">${last.offense_team_id} · ${quarterText(last.quarter)} ${clockText(last.clock)}</span> ${esc(last.text)}`
       : `<span class="sit">Kickoff.</span> ${esc(poss)} receives.`;
     const thisDrive = drive ? P.slice(drive.first_play - 1, idx) : [];
     const finished = b.drives.filter(d => d.last_play <= idx);

@@ -48,6 +48,14 @@ table.move-sides td, table.move-sides th { padding: 3px 6px 3px 0; }
 ul.news { margin: 0 0 10px; padding-left: 18px; }
 .card.deadline { border-color: var(--warn); }
 p.reply { white-space: pre-line; }
+.bracket { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.bround h3 { margin: 4px 0 8px; }
+.bgame { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
+.bteam { display: grid; grid-template-columns: 22px 1fr auto; gap: 6px; padding: 2px 0; }
+.bteam .seed { color: var(--muted); }
+.bteam.won { font-weight: 600; }
+.bteam.lost { color: var(--muted); }
+table.summary th { text-align: left; vertical-align: top; padding-right: 12px; white-space: nowrap; }
 ul.news li { margin: 3px 0; }
 .gm-answer .lead { font-size: 15px; margin: 6px 0 10px; }
 .gm-answer ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13px; }
@@ -178,7 +186,7 @@ async function showTitle() {
   const ok = saves.filter(s => !s.outdated);
   const line = s => `<span>${esc(s.name)}</span><span class="meta">${s.week > 17 ? "season over" : "week " + s.week} · ${s.team_id} ${recordOf(s)}</span>`;
   $("#continue").innerHTML = ok.length ? `<button class="btn primary" data-load="${esc(ok[0].name)}">Continue: ${esc(ok[0].name)}</button>
-      <span class="note">&nbsp;${ok[0].week > 17 ? "season over" : "week " + ok[0].week}, ${recordOf(ok[0])}</span>`
+      <span class="note">&nbsp;${ok[0].week > 19 ? "season over" : ok[0].week > 17 ? "playoffs" : "week " + ok[0].week}, ${recordOf(ok[0])}</span>`
     : `<p class="note">No saved games yet. Start one below.</p>`;
   $("#saves").innerHTML = saves.length ? saves.map(s => s.outdated
       ? `<button class="btn" disabled>${esc(s.name)} <span class="meta">made by an older version</span></button>`
@@ -189,7 +197,7 @@ function header() {
   const t = H.team, played = t.wins + t.losses + t.ties > 0;
   $("#teamline").innerHTML = `<b>${esc(t.city)} ${esc(t.name)}</b> · ${t.record}${played ? ` · ${nth(t.rank)} of ${t.teams}` : ""} · save <b>${esc(H.save)}</b>`;
   $("#chips").innerHTML = `
-    <span class="chip">${H.season_over ? "<b>Season over</b>" : `Week <b>${H.week}</b> of ${H.season_games}`}</span>
+    <span class="chip">${H.season_over ? "<b>Season over</b>" : H.playoff_round ? `Playoffs: <b>${H.playoff_round.toLowerCase()}</b>` : `Week <b>${H.week}</b> of ${H.season_games}`}</span>
     <span class="chip">Cap space <b>$${t.cap_space.toFixed(1)}M</b></span>
     <span class="chip ${H.deadline_passed ? "no" : ""}">${H.deadline_passed ? "Trade deadline passed" : `Deadline: week <b>${H.trade_deadline_week}</b>`}</span>`;
 }
@@ -463,6 +471,7 @@ async function weekView() {
   if (H.live) return liveView(await call(`/api/live?id=${H.live.game_id}`));
   if (H.season_over) return seasonOverView(el);
   const season = await call("/api/season");
+  if (H.playoff_round) return playoffView(el, season);
   if (H.week_played) return resultsView(el, season);
   const tw = H.this_week, t = H.team;
   const others = season.games.filter(g => g.id !== tw.game_id);
@@ -504,7 +513,7 @@ function resultsView(el, season) {
         <button class="btn" data-replay="${tw.game_id}">Watch the replay</button>
         <button class="btn" data-box="${tw.game_id}">Box score</button>
       </div>
-      <div class="row"><button class="btn primary" data-act="advance">${last ? "Finish the regular season" : `Go to week ${H.week + 1}`}</button></div>
+      <div class="row"><button class="btn primary" data-act="advance">${last ? "On to the playoffs" : `Go to week ${H.week + 1}`}</button></div>
     </div>
     <div class="card"><h2>All of week ${H.week}</h2>
       <div class="games">${season.games.map(g => `<div class="${g.id === tw.game_id ? "ours" : ""}">
@@ -513,15 +522,76 @@ function resultsView(el, season) {
     <div class="card"><h2>Standings <span class="sub">after week ${H.week}</span></h2>${standingsTable(season.standings)}</div>
   </div>`;
 }
+// ---- The playoffs and the season summary (G6) -------------------------------------
+const roundWeekName = w => w === H.season_games + 1 ? "Semifinal" : w === H.season_games + 2 ? "Final" : w;
+function bracketGame(g) {
+  const line = (s, score) => `<div class="bteam ${g.winner === s.team_id ? "won" : g.winner ? "lost" : ""}">
+      <span class="seed">${s.seed}</span><span>${esc(s.city)} ${esc(s.name)}</span><b>${score ?? ""}</b></div>`;
+  return `<div class="bgame">${line(g.away, g.away_score)}${line(g.home, g.home_score)}
+    <div class="note">${g.home_score === null ? `at ${esc(g.home.city)}` : `Final${g.overtimes ? ` (${quarterText(4 + g.overtimes)})` : ""} · <button class="link" data-box="${g.id}">box score</button> · <button class="link" data-replay="${g.id}">replay</button>`}</div></div>`;
+}
+function bracketCard(b) {
+  const rounds = b.rounds.map(r => `<div class="bround"><h3>${r.name} <span class="note">week ${r.week}</span></h3>
+    ${r.games.length ? r.games.map(bracketGame).join("") : `<p class="empty">The semifinal winners, at the better seed.</p>`}</div>`).join("");
+  return `<div class="card"><h2>Playoff bracket <span class="sub">the top ${b.seeds.length} of the regular season</span></h2>
+    <div class="bracket">${rounds}</div>
+    ${b.champion ? `<p class="lead">🏆 ${esc(b.champion.city)} ${esc(b.champion.name)} win the championship.</p>` : ""}
+    <p class="note">Seeds: ${b.seeds.map(s => `${s.seed}. ${esc(s.city)} (${s.record})`).join(" · ")}. The better seed is at home, and a playoff game plays overtime until someone scores.</p></div>`;
+}
+async function playoffView(el, season) {
+  const b = H.playoffs, tw = H.this_week, t = H.team, round = H.playoff_round;
+  const next = H.week === H.season_games + 1 ? "Go to the final" : "See how the season ended";
+  let main;
+  if (H.week_played && tw) {
+    const o = tw.opponent, won = tw.outcome === "win";
+    main = `<div class="card"><h2>The ${round.toLowerCase()} <span class="sub">${won ? "we're through" : "our season is over"}</span></h2>
+      <div class="result-head"><span class="badge ${won ? "good" : "bad"}">${won ? "Win" : "Loss"}</span>
+        <div class="scoreline">${t.id} ${tw.our_score}, ${o.id} ${tw.their_score}</div></div>
+      <p class="note">${tw.home ? "At home against" : "At"} ${esc(o.city)} ${esc(o.name)}.</p>
+      <div class="row"><button class="btn" data-replay="${tw.game_id}">Watch the replay</button><button class="btn" data-box="${tw.game_id}">Box score</button></div>
+      <div class="row"><button class="btn primary" data-act="advance">${next}</button></div></div>`;
+  } else if (H.week_played) {
+    main = `<div class="card"><h2>The ${round.toLowerCase()} ${round === "Final" ? "is" : "are"} played</h2><p>${esc(H.notes.find(n => n.startsWith("The playoffs")) || "")}</p>
+      <div class="row"><button class="btn primary" data-act="advance">${next}</button></div></div>`;
+  } else if (tw) {
+    main = `<div class="card"><h2>The ${round.toLowerCase()} <span class="sub">win or go home</span></h2>
+      ${matchup(tw, t)}
+      <div class="row">
+        <button class="btn primary" data-act="sim">Sim it</button>
+        <button class="btn" data-act="watch">Watch it</button>
+        <button class="btn" data-act="call">Call it</button>
+        <select id="call-level" title="How much of the game you call">
+          <option value="key">at key moments</option><option value="every">every snap</option></select>
+      </div>
+      <p class="note">${esc(H.notes.find(n => n.startsWith("The playoffs")) || "")} A playoff game can't end in a tie: overtime goes on until someone scores.</p></div>`;
+  } else {
+    main = `<div class="card"><h2>The ${round.toLowerCase()} <span class="sub">without us</span></h2>
+      <p>${esc(H.notes.find(n => n.startsWith("The playoffs")) || "")}</p>
+      <div class="row"><button class="btn primary" data-act="sim">Sim the ${round.toLowerCase()}</button></div></div>`;
+  }
+  el.innerHTML = `<div class="grid">${main}${bracketCard(b)}
+    <div class="card"><h2>Final regular-season standings</h2>${standingsTable(season.standings)}</div></div>`;
+}
 async function seasonOverView(el) {
-  const season = await call("/api/season"), t = H.team;
+  const season = await call("/api/season"), s = H.summary, champs = s.playoffs === "won the championship";
+  const c = s.cap, m = s.gm_moves, o = s.offers_to_us;
+  const count = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
   el.innerHTML = `<div class="grid">
-    <div class="card"><h2>The regular season is over</h2>
-      <div class="big">${t.record}</div>
-      <p>${esc(t.city)} ${esc(t.name)} finish ${nth(t.rank)} of ${t.teams}, scoring ${t.points_for} and allowing ${t.points_against}.</p>
-      <p class="note">The playoffs and the season summary arrive with G6. Every game stays in the schedule with its box score and replay.</p>
+    <div class="card"><h2>Season summary <span class="sub">${esc(s.team)}</span></h2>
+      <div class="big">${champs ? "Champions" : s.record}</div>
+      <table class="summary">
+        <tr><th>Record</th><td>${s.record}, ${s.standing} (scored ${s.points_for}, allowed ${s.points_against})</td></tr>
+        <tr><th>Playoffs</th><td>We ${esc(s.playoffs)}.${!champs && s.champion ? ` ${esc(s.champion.city)} ${esc(s.champion.name)} won it.` : ""}</td></tr>
+        <tr><th>Moves</th><td>${s.trades.length ? `<ul class="news">${s.trades.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "No trades. "}
+          ${count(s.orders_given, "order")} given; your GM's moves: ${m.approved} approved, ${m.vetoed} vetoed${m.void ? `, ${m.void} void` : ""}.
+          Rivals' offers to us: ${o.accepted} accepted, ${o.rejected} turned down, ${o.expired} expired.</td></tr>
+        <tr><th>Final cap</th><td>Payroll ${money(c.payroll)}, cap space ${money(c.cap_space)} under the ${money(c.hard_cap)} hard cap, ${c.roster} players.${c.under_the_cap ? " Never over the hard cap: the league rules refuse any move that breaks it." : ""}</td></tr>
+      </table>
       <div class="row"><button class="btn" id="to-title">Back to the title screen</button></div></div>
-    <div class="card"><h2>Final standings</h2>${standingsTable(season.standings)}</div>
+    <div class="card"><h2>Season leaders <span class="sub">regular season and playoffs</span></h2>
+      ${s.leaders.length ? `<table>${s.leaders.map(l => `<tr><th>${l.stat}</th><td>${esc(l.name)} <span class="note">${l.position}</span></td><td class="num">${l.total.toLocaleString()}</td></tr>`).join("")}</table>` : `<p class="empty">No stats recorded.</p>`}</div>
+    ${bracketCard(H.playoffs)}
+    <div class="card"><h2>Final regular-season standings</h2>${standingsTable(season.standings)}</div>
   </div>`;
   $("#to-title").onclick = quit;
 }
@@ -548,7 +618,7 @@ const DRIVE_ENDS = ["touchdown", "field_goal", "field_goal_missed", "punt", "int
 const halfOf = q => q <= 2 ? 1 : q <= 4 ? 2 : 3;
 const signed = e => { const r = Math.round(e); return r > 0 ? `+${r}` : r < 0 ? `${r}` : "even"; };
 const edgeHtml = e => `<span class="edge ${e >= 2 ? "good" : e <= -2 ? "bad" : "even"}" title="Our players against theirs for this play, in rating points">${signed(e)}</span>`;
-const momentOf = s => s.quarter === 5 ? "overtime" : s.down === 4 && s.side === "offense" ? "4th down"
+const momentOf = s => s.quarter >= 5 ? "overtime" : s.down === 4 && s.side === "offense" ? "4th down"
   : s.yardline >= 80 ? "red zone" : s.clock <= 120 && [2, 4].includes(s.quarter) ? "two-minute drill" : "";
 
 function liveView(v) {
@@ -557,13 +627,13 @@ function liveView(v) {
   const el = $("#tab-week"), h = v.home, a = v.away, s = v.situation, P = v.plays, last = P[P.length - 1];
   let status, sub, ball = null, panel;
   if (v.over) {
-    status = last?.quarter === 5 ? "Final (OT)" : "Final";
+    status = last?.quarter >= 5 ? `Final (${quarterText(last.quarter)})` : "Final";
     const ours = v.score[v.team], theirs = v.score[v.team === h ? a : h];
     sub = ours > theirs ? "You won" : ours < theirs ? "You lost" : "A tie";
     panel = `<p>${sub} ${ours}-${theirs}. The rest of the week has been played.</p>
       <div class="row"><button class="btn primary" data-act="results">See the week's results</button></div>`;
   } else {
-    status = `${s.quarter === 5 ? "OT" : "Q" + s.quarter} ${clockText(s.clock)}`;
+    status = `${quarterText(s.quarter)} ${clockText(s.clock)}`;
     sub = `${s.offense} ball · ${ORD[s.down]} & ${togoText(s)} at ${spotOf(s.offense, s.defense, s.yardline)}`;
     const sameDrive = last && last.offense === s.offense && !DRIVE_ENDS.includes(last.result) && halfOf(last.quarter) === halfOf(s.quarter);
     const drive = v.drives[v.drives.length - 1];
@@ -573,14 +643,14 @@ function liveView(v) {
   }
   const since = P.slice(v.first_new);
   const sinceHtml = since.length ? `<h3>${v.first_new === 0 ? "So far" : "Since your last call"} <span class="sub">${since.length} play${since.length === 1 ? "" : "s"}</span></h3>
-    <div class="since">${since.map(p => `<div class="${playClassOf(p)}"><span class="sit">${p.offense} · ${p.quarter === 5 ? "OT" : "Q" + p.quarter} ${clockText(p.clock)} · ${ORD[p.down]} & ${togoText(p)}</span> ${esc(p.text)}</div>`).join("")}</div>` : "";
+    <div class="since">${since.map(p => `<div class="${playClassOf(p)}"><span class="sit">${p.offense} · ${quarterText(p.quarter)} ${clockText(p.clock)} · ${ORD[p.down]} & ${togoText(p)}</span> ${esc(p.text)}</div>`).join("")}</div>` : "";
   const timeouts = s ? `Timeouts: ${a} ${s.timeouts[a]}, ${h} ${s.timeouts[h]} · clock ${s.clock_running ? "<b>running</b>" : "stopped"}` : "";
   el.innerHTML = `<div class="card">
     <h2>Game day: you call it <span class="sub">week ${v.week} · ${a} at ${h}</span></h2>
     ${boardHtml(a, h, v.score[a], v.score[h], s?.offense, status, sub)}
     ${fieldHtml(h, a, ball)}
     <div class="situation">${timeouts}</div>
-    ${last ? `<div class="lastplay ${playClassOf(last)}"><span class="sit">${last.offense} · ${last.quarter === 5 ? "OT" : "Q" + last.quarter} ${clockText(last.clock)}</span> ${esc(last.text)}</div>` : ""}
+    ${last ? `<div class="lastplay ${playClassOf(last)}"><span class="sit">${last.offense} · ${quarterText(last.quarter)} ${clockText(last.clock)}</span> ${esc(last.text)}</div>` : ""}
     ${panel}
     ${v.over ? "" : `<div class="row" style="margin-top:14px">
       <label class="note">Calling <select id="live-level"><option value="key" ${v.level === "key" ? "selected" : ""}>at key moments</option>
@@ -667,7 +737,7 @@ async function scheduleView() {
     const o = g.opponent, now = g.week === H.week && !H.season_over;
     const res = !g.played ? (now ? `<span class="badge warn">this week</span>` : "")
       : `<span class="badge ${g.outcome === "win" ? "good" : g.outcome === "loss" ? "bad" : "plain"}">${g.outcome[0].toUpperCase()}</span> ${g.our_score}-${g.their_score}`;
-    return `<tr class="${now ? "ours" : ""}"><td>${g.week}${g.week === H.trade_deadline_week ? ` <span class="note">deadline</span>` : ""}</td>
+    return `<tr class="${now ? "ours" : ""}"><td>${roundWeekName(g.week)}${g.week === H.trade_deadline_week ? ` <span class="note">deadline</span>` : ""}</td>
       <td>${g.home ? "vs" : "at"} ${esc(o.city)} ${esc(o.name)}</td><td>${res}</td>
       <td class="num">${g.played ? `<button class="btn sm" data-replay="${g.game_id}">Replay</button> <button class="btn sm" data-box="${g.game_id}">Box score</button>` : ""}</td></tr>`;
   }).join("")}</table>`;
@@ -774,7 +844,9 @@ document.addEventListener("click", async e => {
     else if (t.dataset.act === "advance") {
       t.disabled = true;
       const r = await call("/api/hub/advance", {});
-      toast((r.week > H.season_games ? "That's the regular season." : `On to week ${r.week}.`) + (r.news.length ? " " + r.news.join(" ") : ""));
+      const where = r.week === H.season_games + 1 ? "That's the regular season. On to the playoffs."
+        : r.week === H.season_games + 2 ? "On to the final." : r.week > H.season_games ? "That's the season." : `On to week ${r.week}.`;
+      toast(where + (r.news.length ? " " + r.news.join(" ") : ""));
       await refresh();
     }
   } catch (err) { fail(err); }

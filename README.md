@@ -78,12 +78,16 @@ answer by the rules alone. The other agents join the game as they are built.
 4. **Results**: our score, every game of the week with its box score, the
    standings, and a replay of our game. Then go on to the next week.
 5. **Roster, Standings, Schedule and Cap** tabs: any team's roster with
-   ratings, contracts and starters; our 17 games with results, box scores and
-   replays; payroll, cap space, the biggest contracts and who is in a final year.
+   ratings, contracts and starters; our games, playoffs included, with results,
+   box scores and replays; payroll, cap space, the biggest contracts and who is in a final year.
 6. **Save & quit** goes back to the title screen. The save already holds
    everything; load it to carry on from the same week.
 
-After week 17 the game shows the final standings; the playoffs are G6.
+7. **The playoffs**: after week 17 the top four play the semifinals, then the
+   final. Win or go home, and a playoff game can't end in a tie. The game ends
+   with the **season summary**: record, playoff result, moves made, final cap
+   position and our season leaders (G6, below).
+
 `agents/game_loop.py` builds the week in plain Python, and
 `pytest tests/test_game_loop.py tests/test_ui.py` checks it and the page's API.
 
@@ -233,7 +237,7 @@ Standings are an SQL view over the results, so they can't drift from them.
 - **Season**: `record_result` writes a score for a game in the current week
   (the simulator, 3.1, will call it). `advance_week` moves on only once every
   game that week has a result. After week 17 the current week is 18 and the
-  regular season is over. `standings` ranks teams by win percentage (a tie is
+  regular season is over; weeks 18 and 19 are the playoffs (G6). `standings` ranks teams by win percentage (a tie is
   half a win), then point difference, then points scored.
 - **Saves** (`agents/saves.py`): `new_game(name)` builds `saves/<name>.db` from
   the `league.json` seed with its own season seed. `load_game(name)` makes a
@@ -724,6 +728,51 @@ Done when: in the weeks before the deadline the owner is warned, one click
 runs the scenario from the weakness to offers the other team will take, a
 legal trade can be completed through the rival GMs, and after week 9 the desk
 is closed.
+
+## G6: the playoffs and the end of the season
+
+After week 17 the top four teams play for the championship, and the game ends
+with a season summary. The schedule is in `agents/season.py`, and the bracket
+and summary are in `agents/playoffs.py`, all plain Python.
+
+```
+week 18   Semifinals   1st seed v 4th, 2nd v 3rd, at the better seed
+week 19   Final        the two winners, at the better seed
+week 20   season over  the season summary: record, playoff result, moves made, final cap
+```
+
+- **Seeds** come from the regular season's standings (win percentage, then
+  point difference, then points scored). Each round goes on the schedule when
+  the week moves on to it, so the final is set once both semifinals are played.
+- **Playoff games are ordinary games.** Sim it, Watch it and Call it all work,
+  with box scores and replays, and the Schedule tab lists them as Semifinal and
+  Final. They don't count in the standings: the view only reads weeks up to
+  `season_games` (schema version 8; older saves are moved up when they load).
+- **No ties.** A playoff game tied after four quarters plays sudden-death
+  overtime periods (OT, 2OT, ...) until someone scores, up to six. A tie after
+  that goes to the better seed. In 300 simulated playoff games, 16 needed one
+  overtime, 2 needed two and none got past that.
+- **The playoff screen** shows our game (win or go home), or the round without
+  us, then the bracket with seeds, scores, overtimes, box scores and replays,
+  and the final regular-season standings. The GM's briefing and the trade
+  deadline card stop after week 17.
+- **The season summary** (`playoffs.summary()`): record and standing, points
+  for and against, how far we went and who won, our trades, the orders given,
+  the GM's moves approved, vetoed and void, rivals' offers accepted, turned down
+  and expired, the final payroll and cap space under the hard cap, and our
+  season leaders in passing, rushing and receiving yards, sacks and
+  interceptions.
+
+Played through a seeded season (seed 11): Harbor City finished 10-7, 2nd of 6,
+and were the 2nd seed. They lost the semifinal 24-28 at home to Summit (3rd),
+and Summit beat Iron Falls (15-2) 23-14 in the final.
+
+```powershell
+pytest tests/test_playoffs.py    # overtime, seeds, the bracket, how far we went, the summary, older saves, the game's API; no API key
+```
+
+Done when: after week 17 the top four play two rounds to a champion, no
+playoff game ends in a tie, and the game ends with the season summary.
 
 ## 3.2: Coaching and Medical agents (built ahead of schedule)
 

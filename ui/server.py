@@ -29,7 +29,8 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import briefing, deadline, game_loop, league_db, live, orders, rivals, rules, saves, season, tools
+from agents import (briefing, deadline, game_loop, league_db, live, orders, playoffs, rivals, rules, saves, season,
+                    tools)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -72,7 +73,7 @@ async def status(request, body):
         db_file = db_file.relative_to(PROJECT_ROOT.resolve())
     return {"save": active_save(), "db_file": db_file.as_posix(),
             "week": week, "season_games": league_rules["season_games"],
-            "season_over": week > league_rules["season_games"],
+            "season_over": season.season_over(), "regular_season_over": season.regular_season_over(),
             "trade_deadline_week": league_rules["trade_deadline_week"],
             "our_team": json.loads(tools.list_teams())["our_team"],
             "api_key_set": bool(os.getenv("OPENROUTER_API_KEY"))}
@@ -262,11 +263,13 @@ async def hub(request, body):
         return {"save": None}
     week = game_loop.overview()
     return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
-            "briefing": None if week["season_over"] else briefing.stored(week["week"]),  # G3, once written
+            "briefing": None if week["regular_season_over"] else briefing.stored(week["week"]),  # G3
             "desk": orders.desk_view(),  # G4: standing orders and the GM's proposed moves
             "offers": rivals.offers_to_us(),  # G5: rival GMs' offers to us, with our GM's read
             "news": [] if week["season_over"] else rivals.news(week["week"]),  # G5: trades between rivals
-            "deadline": None if week["season_over"] else deadline.status()}  # 2.3: the trade deadline
+            "deadline": None if week["regular_season_over"] else deadline.status(),  # 2.3: the trade deadline
+            "playoffs": playoffs.bracket(),  # G6: the bracket, from week 18
+            "summary": playoffs.summary() if week["season_over"] else None}  # G6: how the season went
 
 
 def _needs_a_save():

@@ -111,10 +111,28 @@ def test_an_injured_starter_sits_out_until_their_return_week(scratch_db):
     assert week_3_qb["id"] == starter["id"]  # back for week 3 (hurt week 1, out 1 game)
 
 
-def test_season_ends_after_week_17(scratch_db):
+def test_the_regular_season_ends_after_week_17_and_the_playoffs_follow(scratch_db):
     for _ in range(17):
         play_week()
-    assert season.current_week() == 18 and season.season_over()
+    assert season.current_week() == 18 and season.regular_season_over() and not season.season_over()
     assert all(row["wins"] + row["losses"] == 17 for row in season.standings())
-    with pytest.raises(ValueError, match="over"):
+
+    # Week 18, the semifinals: 1st v 4th and 2nd v 3rd, the better seed at home.
+    seeded = season.seeds()
+    assert seeded == [row["team_id"] for row in season.standings()[:4]]
+    assert [(g["home_team_id"], g["away_team_id"]) for g in season.games(18)] == [
+        (seeded[0], seeded[3]), (seeded[1], seeded[2])]
+    play_week((17, 24))  # the away teams win: the 4th and 3rd seeds go through
+    # Week 19, the final, at the better of the two seeds left. The playoffs don't count
+    # in the standings.
+    assert [(g["home_team_id"], g["away_team_id"]) for g in season.games(19)] == [(seeded[2], seeded[3])]
+    assert all(row["wins"] + row["losses"] == 17 for row in season.standings())
+    assert season.playoff_round(18, 17) == "Semifinals" and season.playoff_round(19, 17) == "Final"
+    assert season.playoff_round(17, 17) is None and season.playoff_round(20, 17) is None
+
+    play_week()
+    assert season.current_week() == 20 and season.season_over()
+    with pytest.raises(ValueError, match="season is over"):
         season.advance_week()
+    with pytest.raises(ValueError, match="season is over"):
+        season.play_week()

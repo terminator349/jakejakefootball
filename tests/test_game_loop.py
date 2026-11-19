@@ -35,14 +35,25 @@ def test_play_the_week_then_move_on(scratch_db):
     assert week2["notes"][0].startswith("Last week: ")
 
 
-def test_the_season_ends_after_week_17(scratch_db):
+def test_the_regular_season_ends_after_week_17_then_the_playoffs(scratch_db):
     for _ in range(17):
         game_loop.play_week()
         season.advance_week()
     week = game_loop.overview()
-    assert week["season_over"] and week["this_week"] is None and week["deadline_passed"]
+    assert week["regular_season_over"] and not week["season_over"] and week["deadline_passed"]
+    assert week["playoff_round"] == "Semifinals"
     assert sum(int(n) for n in week["team"]["record"].split("-")) == 17
-    assert any("playoffs" in note for note in week["notes"])
+    assert any(note.startswith("The playoffs, the semifinals") for note in week["notes"])
+    in_it = "HAR" in season.seeds()
+    assert (week["this_week"] is not None) == in_it  # our semifinal, if we made it
+
+    for _ in range(2):
+        game_loop.play_week()
+        season.advance_week()
+    week = game_loop.overview()
+    assert week["season_over"] and week["this_week"] is None and week["playoff_round"] is None
+    assert any(note.startswith("The season is over:") for note in week["notes"])
+    assert sum(int(n) for n in week["team"]["record"].split("-")) == 17  # the playoffs don't count
 
 
 def test_our_schedule(scratch_db):

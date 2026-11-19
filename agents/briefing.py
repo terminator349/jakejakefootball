@@ -94,7 +94,7 @@ def _result_line(game: dict, table: dict) -> str:
 
 def facts(db_file: Path | None = None) -> dict:
     """Everything this week's briefing may say, read from the loaded league."""
-    if season.season_over():
+    if season.regular_season_over():
         raise ValueError("The regular season is over: there's no weekly briefing.")
     week = game_loop.overview()
     team = week["team"]
