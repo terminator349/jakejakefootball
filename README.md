@@ -24,10 +24,12 @@ tests/      checks that run without an API key
 ui/         the game (game.html), the test bench (bench.html) and what they share (static/)
 private/    slides, scripts, proposal, schedule exports (git-ignored, never posted)
 ROADMAP.md  the build plan, task by task
-run.py      entry point (Analytics agent)
-check_cap.py entry point (Cap & Contracts agent)
-ask_gm.py   entry point (the GM and its specialists)
-draft_day.py entry point (draft simulator)
+run.py            entry point (Analytics agent)
+check_cap.py      entry point (Cap & Contracts agent)
+check_coaching.py entry point (Coaching agent)
+check_medical.py  entry point (Medical agent)
+ask_gm.py         entry point (the GM and its specialists)
+draft_day.py      entry point (draft simulator)
 ```
 
 ## Setup (0.1)
@@ -722,6 +724,45 @@ Done when: in the weeks before the deadline the owner is warned, one click
 runs the scenario from the weakness to offers the other team will take, a
 legal trade can be completed through the rival GMs, and after week 9 the desk
 is closed.
+
+## 3.2: Coaching and Medical agents (built ahead of schedule)
+
+Two more specialists, following the same pattern as Cap & Contracts: `agents/coaching.py`
+(the depth chart and the game plan) and `agents/medical.py` (who's hurt and what it
+costs the roster). Built early, alongside 1.3/G2/G7, at the owner's request - see
+`ROADMAP.md`'s 3.2 entry for the full story. Built before the GM's team (1.4) and
+game-day calling (G8) landed, so neither is wired into either yet: the GM doesn't
+delegate to them, and Call It (G8) doesn't ask Coaching for a suggested call. Both
+run standalone for now, like Analytics and Cap & Contracts before 1.4.
+
+The 3.1 simulator now rolls injuries: a small, independent chance (its own random
+stream, so the 3.1 tuning and G8's clock management are unaffected) that the player
+central to a run, sack, scramble, catch or interception gets hurt and leaves the
+game, out for 1-6 games starting the next one. A hurt starter is replaced by the
+next healthy player on the depth chart automatically; a position with no healthy
+backup (K, P) plays its one option hurt rather than fielding nobody.
+
+Four new League Office tools, all in `agents/tools.py`:
+- `get_depth_chart`/`set_depth_chart`: the order a team's players take the field in at
+  one position. `set_depth_chart` is the only tool in the server that isn't read-only;
+  an order it sets sticks until changed again, but is ignored automatically (falling
+  back to sorting by overall rating) the moment it no longer names exactly that
+  position's current roster - a trade or a cut retires a stale chart on its own.
+- `get_injury_report`: every player currently out hurt, league-wide or for one team,
+  with how many more games they'll miss.
+- `get_team_tendencies`: a team's actual play-call mix so far this season, on offense
+  and defense, overall and on 3rd/4th-and-7-plus, from the 3.1 play log.
+
+`agents/league_db.py` gained an `injuries` table and a `depth_chart` table (schema
+version 7 once merged with 2.1 and G4's tables; it was 5 on its own branch); an older save is upgraded in place,
+the same as G1's saves were.
+
+```powershell
+python check_coaching.py                                              # game plan + depth chart for our team
+python check_coaching.py "Our starting safety is hurt. Who starts instead?"
+python check_medical.py                                               # who's hurt, and how it thins us out
+pytest tests/test_coaching.py tests/test_medical.py                    # agent checks, no API key needed
+```
 
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 

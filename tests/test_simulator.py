@@ -149,6 +149,63 @@ def test_called_plays_are_run_as_called():
         game.step()
 
 
+def test_injuries_happen_sometimes_and_are_recorded(sample):
+    """Rare, but 300 games across the league is enough to see a few."""
+    total = sum(len(g.injuries) for g in sample)
+    assert 0 < total < 250  # not never, not constantly - about one every other game per team
+    for game in sample:
+        for injury in game.injuries:
+            assert injury["team_id"] in game.score
+            assert 1 <= injury["games_out"] <= 6
+            assert 1 <= injury["n"] <= len(game.plays)
+            assert "injured and leaves the game" in game.plays[injury["n"] - 1]["text"]
+
+
+def test_a_hurt_starter_is_replaced_by_the_next_man_down(sample):
+    for game in sample:
+        for injury in game.injuries:
+            lineup = game.teams[injury["team_id"]]
+            assert injury["player_id"] in lineup.unavailable
+            # Someone can still be fielded at the position (K/P have no backup, so
+            # starters() falls back to playing them hurt rather than leaving nobody).
+            assert lineup.starters(injury["position"], 1)
+
+
+def test_an_only_option_plays_through_an_injury():
+    """A team with no backup kicker keeps fielding its one kicker even after it's
+    marked unavailable, instead of starters() crashing with an empty list."""
+    from agents.simulator import Lineup
+
+    lineup = lineups()["HAR"]
+    kicker = lineup.starters("K", 1)[0]
+    hurt = Lineup(lineup.team_id, lineup.depth, lineup.units, unavailable={kicker["id"]})
+    assert hurt.starters("K", 1) == [kicker]
+
+
+def test_build_lineup_honors_an_explicit_order():
+    har_cbs = [p["id"] for p in SEED["players"] if p["team_id"] == "HAR" and p["position"] == "CB"]
+    lineup = build_lineup("HAR", [p for p in SEED["players"] if p["team_id"] == "HAR"], STARTERS,
+                          order={"CB": list(reversed(har_cbs))})
+    assert [p["id"] for p in lineup.depth["CB"]] == list(reversed(har_cbs))
+
+
+def test_build_lineup_ignores_a_stale_order():
+    """An order that no longer matches exactly who plays a position (a player left
+    off, or one added who isn't there) falls back to sorting by overall."""
+    har_cbs = [p["id"] for p in SEED["players"] if p["team_id"] == "HAR" and p["position"] == "CB"]
+    players = [p for p in SEED["players"] if p["team_id"] == "HAR"]
+    stale = build_lineup("HAR", players, STARTERS, order={"CB": har_cbs[:-1]})
+    overall_sorted = build_lineup("HAR", players, STARTERS)
+    assert [p["id"] for p in stale.depth["CB"]] == [p["id"] for p in overall_sorted.depth["CB"]]
+
+
+def test_build_lineup_excludes_unavailable_players():
+    players = [p for p in SEED["players"] if p["team_id"] == "HAR"]
+    cbs = sorted((p for p in players if p["position"] == "CB"), key=lambda p: -p["overall"])
+    lineup = build_lineup("HAR", players, STARTERS, unavailable={cbs[0]["id"]})
+    assert lineup.starters("CB", STARTERS["CB"])[0]["id"] == cbs[1]["id"]
+
+
 def test_soften_caps_mismatches():
     assert soften(0) == 0 and abs(soften(3) - 3) < 0.1
     assert 9 < soften(17) < 10 and soften(100) <= 10 and soften(-17) == -soften(17)
@@ -188,6 +245,17 @@ def test_same_season_seed_same_results(tmp_path):
     assert results[0] == results[1]
 
 
+def test_play_week_persists_injuries(scratch_db, monkeypatch):
+    from agents import simulator
+    monkeypatch.setattr(simulator, "INJURY_CHANCE", 1.0)  # force injuries, so the test is deterministic
+    played = season.play_week()
+    assert any(game["injuries"] for game in played)
+    db = league_db.connect()
+    total = db.execute("SELECT COUNT(*) FROM injuries").fetchone()[0]
+    db.close()
+    assert total > 0
+
+
 def test_a_trade_changes_who_plays(scratch_db):
     """Games use the rosters as they stand when they're played."""
     from agents.rules import Trade, make_trade
@@ -218,7 +286,21 @@ def test_g1_saves_are_upgraded_not_refused(tmp_path):
     path = tmp_path / "g1.db"
     league_db.build(path)
     with sqlite3.connect(path) as db:  # turn it back into a G1 database
-        db.executescript("DROP TABLE plays; DROP TABLE player_game_stats; PRAGMA user_version = 1;")
+        db.executescript("DROP TABLE plays; DROP TABLE player_game_stats; DROP TABLE injuries; "
+                         "DROP TABLE depth_chart; PRAGMA user_version = 1;")
+    db.close()
+    played = season.play_week(path)
+    assert len(played) == 3
+    with sqlite3.connect(path) as db:
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION
+    db.close()
+
+
+def test_a_3_1_save_is_upgraded_too(tmp_path):
+    path = tmp_path / "pre32.db"
+    league_db.build(path)
+    with sqlite3.connect(path) as db:  # turn it back into a pre-3.2 database
+        db.executescript("DROP TABLE injuries; DROP TABLE depth_chart; PRAGMA user_version = 2;")
     db.close()
     played = season.play_week(path)
     assert len(played) == 3

@@ -78,8 +78,8 @@ GM briefing
 | W7   | Dec 7 - 13     | 2.1, G4, 2.2 (done early), G8 (done early) |
 | W8   | Dec 14 - 20    | 2.2, G5 (done early)                   |
 | W9   | Dec 21 - 27    | 2.3 (done early)                       |
-| W10  | Dec 28 - Jan 3 | 3.2, G6                                |
-| W11  | Jan 4 - 10     | 3.2, 4.2                               |
+| W10  | Dec 28 - Jan 3 | 3.2 (done early), G6                   |
+| W11  | Jan 4 - 10     | 3.2 (done early), 4.2                  |
 | W12  | Jan 11 - 17    | 4.1, 4.3, 4.5                          |
 | W13  | Jan 18 - 24    | 4.4 (stretch), 5.1                     |
 | W14  | Jan 25 - 31    | 5.1, 5.2                               |
@@ -310,13 +310,45 @@ deadline, waiting moves are void and the offers close.
 
 ## Phase 3: The full season
 
-### 3.2 Coaching and Medical agents (W10 - W11)
-Specialists for depth charts and game plans (Coaching) and injuries and games
-missed (Medical), reporting to the GM. The simulator adds injuries; Medical
-reports them in the briefing, and Coaching resets the depth chart around them.
-On game day (G8) Coaching suggests a call at key moments or when the owner
-asks, using the play log for the opponent's tendencies. That is about 5 - 10
-model calls a game, never one per snap.
+### 3.2 Coaching and Medical agents (W10 - W11) - Done early (built W4, Nov 19)
+Built ahead of schedule, alongside 1.3/G2/G7, at the owner's request. Two new
+specialists, `agents/coaching.py` and `agents/medical.py`, read the same League
+Office server with their own tool slices, the same DeepSeek + parser-model
+pattern as Analytics and Cap & Contracts.
+
+The simulator (3.1) now rolls a small, independent chance (its own random
+stream, so the 3.1 tuning is untouched) that the player central to a run, sack,
+scramble, catch or interception is hurt and leaves the game - about 4-5 games
+missed per team per season. `agents/league_db.py` gained an `injuries` table
+(who, since which week, back which week) and a `depth_chart` table (an
+explicit order Coaching can set at one position, ignored automatically the
+moment it no longer names exactly that roster there, e.g. after a trade).
+Four new League Office tools: `get_depth_chart`/`set_depth_chart` (the only
+one that isn't read-only) and `get_injury_report`/`get_team_tendencies` (each
+play type's share of an opponent's calls so far this season, from the 3.1 play
+log). A hurt starter is replaced by the next healthy player down the chart
+automatically, in `build_lineup`/`Lineup.starters`; a position with no healthy
+backup (K, P) plays its one option hurt rather than fielding nobody.
+
+Medical reports who's out and how much longer, and which position it leaves
+thinnest; Coaching sets the depth chart around that and plans the next game
+around the opponent's tendencies. Built before this merge caught up with 1.4,
+G3, G8 and 1.5, already landed on `main` in the meantime - so neither agent is
+wired into the GM's Team yet, and Call It (G8) doesn't ask Coaching for a
+suggested call. Both run standalone for now, like Analytics and Cap & Contracts
+before 1.4.
+
+```powershell
+python check_coaching.py                                              # game plan + depth chart for our team
+python check_coaching.py "Our starting safety is hurt. Who starts instead?"
+python check_medical.py                                               # who's hurt, and how it thins us out
+pytest tests/test_coaching.py tests/test_medical.py                    # agent checks, no API key needed
+```
+
+Done when: a hurt player sits out exactly as many games as the simulator
+rolled and the next man up starts automatically; a depth chart change sticks
+until changed again, and a trade or cut silently retires a stale one; and
+`get_team_tendencies` reflects only games actually played.
 
 ### G6 Playoffs and the end of the season (W10)
 The top teams after week 17 play for the championship. The game ends with a

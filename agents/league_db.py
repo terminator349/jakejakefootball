@@ -37,7 +37,9 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 # 4: task G3 adds the GM's weekly briefings.
 # 5: task 2.1 adds the Trade Desk's trade proposals.
 # 6: task G4 adds the owner's orders and the moves the GM proposes for approval.
-SCHEMA_VERSION = 6
+# 7: task 3.2 adds injuries and the depth chart. (3.2 was built on a branch where it
+#    was version 5; MIGRATIONS below brings those databases up to date too.)
+SCHEMA_VERSION = 7
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -234,9 +236,35 @@ CREATE TABLE IF NOT EXISTS gm_proposals (
 );
 """
 
+INJURY_SCHEMA = """
+-- Injuries and the depth chart (task 3.2).
+CREATE TABLE IF NOT EXISTS injuries (
+    player_id   TEXT PRIMARY KEY REFERENCES players(id),
+    team_id     TEXT NOT NULL REFERENCES teams(id),
+    since_week  INTEGER NOT NULL,   -- the week the injury happened
+    return_week INTEGER NOT NULL,   -- the first week the player is available again
+    description TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS injuries_by_team ON injuries (team_id);
+-- An explicit playing order the Coaching staff set for one team at one position. A
+-- position with no rows here, or whose rows no longer match the roster there exactly
+-- (a trade or a cut moved on), falls back to sorting by overall rating.
+CREATE TABLE IF NOT EXISTS depth_chart (
+    team_id   TEXT NOT NULL REFERENCES teams(id),
+    position  TEXT NOT NULL REFERENCES positions(position),
+    player_id TEXT NOT NULL REFERENCES players(id),
+    rank      INTEGER NOT NULL,
+    PRIMARY KEY (team_id, position, player_id)
+);
+"""
+
 # How to bring an older database up to date, by the version it is at. A version not
 # listed here can't be upgraded: data/league.db is rebuilt, and a save is refused.
-MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA, 5: ORDERS_SCHEMA}
+# Every step is safe to run again (IF NOT EXISTS). That matters for version 5: 2.1 made
+# it the Trade Desk, but on the 3.2 branch it meant injuries, so the step from 5 adds
+# the Trade Desk's table too, and the step from 6 adds injuries whichever way it came.
+MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA,
+              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -262,7 +290,8 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA)
+        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
+                         + INJURY_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}
@@ -350,6 +379,76 @@ def load_league(db_file: Path | None = None) -> dict:
 
     return {"sport": settings["sport"], "our_team": settings["our_team"], "rules": rules,
             "teams": teams, "players": players}
+
+
+# ---- Injuries and the depth chart (task 3.2) -------------------------------
+
+def depth_chart_order(db: sqlite3.Connection, team_id: str) -> dict[str, list[str]]:
+    """Every position where this team has an explicit order the Coaching staff set that
+    still matches its roster there exactly, best first. A position left out means fall
+    back to sorting by overall rating. Takes an open connection: callers (the simulator,
+    mid-transaction) already have one."""
+    by_position: dict[str, list[str]] = {}
+    for row in db.execute("SELECT position, player_id FROM depth_chart WHERE team_id = ? ORDER BY position, rank",
+                          (team_id,)):
+        by_position.setdefault(row["position"], []).append(row["player_id"])
+
+    valid = {}
+    for position, order in by_position.items():
+        roster = {row["id"] for row in db.execute(
+            "SELECT id FROM players WHERE team_id = ? AND position = ?", (team_id, position))}
+        if set(order) == roster:
+            valid[position] = order
+    return valid
+
+
+def write_depth_chart(team_id: str, position: str, player_ids: list[str], db_file: Path | None = None) -> None:
+    """Replace one team's playing order at one position. Does not check it against the
+    roster; callers validate that first."""
+    db = connect(db_file)
+    try:
+        with db:
+            db.execute("DELETE FROM depth_chart WHERE team_id = ? AND position = ?", (team_id, position))
+            db.executemany("INSERT INTO depth_chart (team_id, position, player_id, rank) VALUES (?, ?, ?, ?)",
+                           [(team_id, position, pid, rank) for rank, pid in enumerate(player_ids)])
+    finally:
+        db.close()
+
+
+def injured_player_ids(db: sqlite3.Connection, team_id: str, week: int) -> set[str]:
+    """This team's players still out hurt in the given week. Takes an open connection."""
+    return {row["player_id"] for row in db.execute(
+        "SELECT player_id FROM injuries WHERE team_id = ? AND return_week > ?", (team_id, week))}
+
+
+def save_injury(db: sqlite3.Connection, player_id: str, team_id: str, since_week: int, games_out: int,
+               description: str) -> None:
+    """Record (or update) a player's injury: out for `games_out` games starting the week
+    after `since_week`. Takes an open connection: the season simulator calls this inside
+    the transaction that saves a game."""
+    return_week = since_week + games_out + 1
+    db.execute(
+        "INSERT INTO injuries (player_id, team_id, since_week, return_week, description) VALUES (?, ?, ?, ?, ?) "
+        "ON CONFLICT(player_id) DO UPDATE SET team_id = excluded.team_id, since_week = excluded.since_week, "
+        "return_week = excluded.return_week, description = excluded.description",
+        (player_id, team_id, since_week, return_week, description))
+
+
+def current_injuries(team_id: str | None = None, db_file: Path | None = None) -> list[dict]:
+    """Every player still out hurt as of the current week: team, name, position, since
+    which week, how many more games they'll miss, and a plain-English description.
+    Optionally filtered to one team."""
+    db = connect(db_file)
+    try:
+        week = db.execute("SELECT current_week FROM game").fetchone()[0]
+        sql = ("SELECT i.*, p.name, p.position FROM injuries i JOIN players p ON p.id = i.player_id "
+              "WHERE i.return_week > ?" + (" AND i.team_id = ?" if team_id else "") + " ORDER BY i.team_id, p.rowid")
+        rows = db.execute(sql, (week, team_id) if team_id else (week,)).fetchall()
+    finally:
+        db.close()
+    return [{"player_id": row["player_id"], "name": row["name"], "position": row["position"],
+            "team_id": row["team_id"], "since_week": row["since_week"], "games_remaining": row["return_week"] - week,
+            "description": row["description"]} for row in rows]
 
 
 if __name__ == "__main__":

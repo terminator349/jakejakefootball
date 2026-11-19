@@ -99,6 +99,18 @@ def test_ties_count_as_half_a_win(scratch_db):
     assert all((row["ties"], row["win_pct"]) == (1, 0.5) for row in table)
 
 
+def test_an_injured_starter_sits_out_until_their_return_week(scratch_db):
+    db = league_db.connect()
+    starter = season._lineup(db, "HAR", week=1).starters("QB", 1)[0]
+    with db:
+        league_db.save_injury(db, starter["id"], "HAR", since_week=1, games_out=1, description="Test injury.")
+    week_2_qb = season._lineup(db, "HAR", week=2).starters("QB", 1)[0]
+    week_3_qb = season._lineup(db, "HAR", week=3).starters("QB", 1)[0]
+    db.close()
+    assert week_2_qb["id"] != starter["id"]  # still out in week 2
+    assert week_3_qb["id"] == starter["id"]  # back for week 3 (hurt week 1, out 1 game)
+
+
 def test_season_ends_after_week_17(scratch_db):
     for _ in range(17):
         play_week()

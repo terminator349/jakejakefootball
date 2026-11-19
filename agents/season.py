@@ -16,6 +16,7 @@ import json
 import random
 from pathlib import Path
 
+from agents import league_db
 from agents.league_db import connect
 from agents.simulator import Game, Lineup, build_lineup, drives
 
@@ -212,7 +213,7 @@ def standings(db_file: Path | None = None) -> list[dict]:
 
 # ---- Simulated games (task 3.1) --------------------------------------------
 
-def _lineup(db, team_id: str) -> Lineup:
+def _lineup(db, team_id: str, week: int | None = None) -> Lineup:
     ratings: dict[str, dict] = {}
     for row in db.execute("SELECT r.* FROM ratings r JOIN players p ON p.id = r.player_id WHERE p.team_id = ? "
                           "ORDER BY r.rowid", (team_id,)):
@@ -221,13 +222,17 @@ def _lineup(db, team_id: str) -> Lineup:
                for row in db.execute("SELECT id, name, position, overall FROM players WHERE team_id = ? "
                                      "ORDER BY rowid", (team_id,))]
     starters = {row["position"]: row["starters"] for row in db.execute("SELECT * FROM positions ORDER BY sort_order")}
-    return build_lineup(team_id, players, starters)
+    week = week if week is not None else _current_week(db)
+    unavailable = league_db.injured_player_ids(db, team_id, week)
+    order = league_db.depth_chart_order(db, team_id)
+    return build_lineup(team_id, players, starters, order=order, unavailable=unavailable)
 
 
 def new_game(db, game) -> Game:
     """A scheduled game, ready to play: the rosters as they stand and the game's own seed."""
     seed = db.execute("SELECT seed FROM game").fetchone()[0]
-    return Game(_lineup(db, game["home_team_id"]), _lineup(db, game["away_team_id"]), seed=f"{seed}-{game['id']}")
+    return Game(_lineup(db, game["home_team_id"], game["week"]), _lineup(db, game["away_team_id"], game["week"]),
+               seed=f"{seed}-{game['id']}")
 
 
 def _play(db, game) -> dict:
@@ -236,7 +241,8 @@ def _play(db, game) -> dict:
 
 
 def save_result(db, game, result: Game) -> dict:
-    """Save a finished game: the score, every snap and every player's stats."""
+    """Save a finished game: the score, every snap, every player's stats, and any injury
+    (task 3.2) - out starting next week, for as many games as the simulator rolled."""
     home, away = result.score[game["home_team_id"]], result.score[game["away_team_id"]]
     db.execute("UPDATE games SET home_score = ?, away_score = ? WHERE id = ?", (home, away, game["id"]))
     db.executemany("INSERT INTO plays VALUES (:game_id, :n, :drive, :quarter, :clock, :offense, :down, :distance, "
@@ -246,10 +252,14 @@ def save_result(db, game, result: Game) -> dict:
                    [(game["id"], line["player_id"], line["team_id"], stat, value)
                     for line in result.player_stats() for stat, value in line.items()
                     if stat not in ("player_id", "team_id")])
+    for injury in result.injuries:
+        description = f"{'Minor' if injury['games_out'] <= 1 else 'Moderate' if injury['games_out'] <= 3 else 'Severe'} " \
+                      f"injury suffered in week {game['week']}, out {injury['games_out']} game(s)."
+        league_db.save_injury(db, injury["player_id"], injury["team_id"], game["week"], injury["games_out"], description)
     db.execute("DELETE FROM live_games WHERE game_id = ?", (game["id"],))  # a called game is over too
     return {"game_id": game["id"], "week": game["week"], "home_team_id": game["home_team_id"],
             "away_team_id": game["away_team_id"], "home_score": home, "away_score": away,
-            "plays": len(result.plays)}
+            "plays": len(result.plays), "injuries": result.injuries}
 
 
 def play_game(game_id: int, db_file: Path | None = None) -> dict:

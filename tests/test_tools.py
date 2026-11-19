@@ -6,9 +6,11 @@ import json
 import pytest
 from agno.tools.mcp import MCPTools
 
+from agents import league_db
 from agents.analytics import build_analytics_agent, league_office_tools
-from agents.tools import (check_cap_fit, compare_to_league, get_league_rules, get_roster,
-                          list_teams, load_league, validate_cap_compliance)
+from agents.tools import (check_cap_fit, compare_to_league, get_depth_chart, get_injury_report,
+                          get_league_rules, get_roster, get_team_tendencies, list_teams,
+                          load_league, set_depth_chart, validate_cap_compliance)
 
 
 def test_every_team_has_a_legal_roster():
@@ -164,3 +166,89 @@ def test_ground_report_takes_facts_from_the_league():
     assert (grounded.team_id, grounded.payroll, grounded.cap_space) == ("HAR", 249.5, 5.5)
     assert grounded.answer == "a"
     assert ground_report(report.model_copy(update={"team_id": "nobody"})).team_id == "nobody"
+
+
+# ---- Depth chart, injuries and tendencies (task 3.2) ------------------------
+
+def test_get_depth_chart_defaults_to_sorting_by_overall():
+    data = json.loads(get_depth_chart("har", "cb"))
+    cbs = data["depth_chart"]["CB"]["players"]
+    assert data["depth_chart"]["CB"]["custom_order"] is False
+    assert [p["overall"] for p in cbs] == sorted((p["overall"] for p in cbs), reverse=True)
+    assert [p["starter"] for p in cbs] == [True, True] + [False] * (len(cbs) - 2)
+
+
+def test_get_depth_chart_rejects_unknown_team_or_position():
+    assert "error" in json.loads(get_depth_chart("XYZ"))
+    assert "error" in json.loads(get_depth_chart("HAR", "PG"))
+
+
+def test_set_depth_chart_changes_the_order(scratch_db):
+    before = json.loads(get_depth_chart("HAR", "S"))["depth_chart"]["S"]["players"]
+    new_order = [p["id"] for p in reversed(before)]
+    result = json.loads(set_depth_chart("HAR", "S", new_order))
+    safeties = result["depth_chart"]["S"]["players"]
+    assert [p["id"] for p in safeties] == new_order
+    assert safeties[0]["starter"] is True
+    assert result["depth_chart"]["S"]["custom_order"] is True
+    # The new order sticks for later reads too.
+    assert [p["id"] for p in json.loads(get_depth_chart("HAR", "S"))["depth_chart"]["S"]["players"]] == new_order
+
+
+def test_set_depth_chart_rejects_an_incomplete_or_foreign_roster(scratch_db):
+    current = [p["id"] for p in json.loads(get_depth_chart("HAR", "S"))["depth_chart"]["S"]["players"]]
+    assert "error" in json.loads(set_depth_chart("HAR", "S", current[:-1]))  # leaves someone out
+    assert "error" in json.loads(set_depth_chart("HAR", "S", current + ["MES-01"]))  # not a HAR safety
+    assert "error" in json.loads(set_depth_chart("XYZ", "S", current))
+
+
+def test_a_stale_depth_chart_falls_back_to_overall(scratch_db):
+    """A trade changes who plays a position; an order set before the trade no longer
+    names exactly that roster, so it's ignored rather than used anyway."""
+    from agents.rules import Trade, make_trade
+
+    before = [p["id"] for p in json.loads(get_depth_chart("HAR", "S"))["depth_chart"]["S"]["players"]]
+    set_depth_chart("HAR", "S", list(reversed(before)))
+    make_trade(Trade("HAR", ["HAR-46"], "SUM", ["SUM-45"]))
+    assert json.loads(get_depth_chart("HAR", "S"))["depth_chart"]["S"]["custom_order"] is False
+
+
+def test_get_injury_report_starts_empty(scratch_db):
+    assert json.loads(get_injury_report())["injuries"] == []
+    assert json.loads(get_injury_report("HAR"))["injuries"] == []
+
+
+def test_get_injury_report_shows_games_remaining(scratch_db):
+    db = league_db.connect()
+    with db:
+        db.execute("UPDATE game SET current_week = 5")
+        league_db.save_injury(db, "HAR-01", "HAR", since_week=4, games_out=2, description="Ankle sprain.")
+    db.close()
+    injuries = json.loads(get_injury_report("HAR"))["injuries"]
+    assert len(injuries) == 1
+    assert injuries[0] == {"player_id": "HAR-01", "name": injuries[0]["name"], "position": injuries[0]["position"],
+                           "team_id": "HAR", "since_week": 4, "games_remaining": 2, "description": "Ankle sprain."}
+    assert json.loads(get_injury_report("MES"))["injuries"] == []
+
+
+def test_get_injury_report_rejects_unknown_team():
+    assert "error" in json.loads(get_injury_report("XYZ"))
+
+
+def test_get_team_tendencies_before_any_games(scratch_db):
+    data = json.loads(get_team_tendencies("HAR"))
+    assert data == {"team_id": "HAR", "plays_sampled": 0, "offense_play_mix": {},
+                    "offense_mix_3rd_4th_and_7_plus": {}, "defense_call_mix": {}}
+
+
+def test_get_team_tendencies_after_a_week_of_games(scratch_db):
+    from agents import season
+    season.play_week()
+    data = json.loads(get_team_tendencies("HAR"))
+    assert data["plays_sampled"] > 0
+    assert abs(sum(data["offense_play_mix"].values()) - 1.0) < 0.01
+    assert abs(sum(data["defense_call_mix"].values()) - 1.0) < 0.01
+
+
+def test_get_team_tendencies_rejects_unknown_team():
+    assert "error" in json.loads(get_team_tendencies("XYZ"))
