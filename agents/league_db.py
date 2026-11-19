@@ -8,7 +8,7 @@ change a database, never the seed.
 Since task G1 a database also holds the game: the current week, the 17-week
 schedule with results, and a log of every move. Standings are a view over the
 results. Since task 3.1 it also keeps every simulated snap and each player's
-stats per game.
+stats per game, and since task 2.1 the Trade Desk's trade proposals.
 
     python -m agents.league_db    # rebuild data/league.db from league.json (undoes all moves)
 
@@ -34,7 +34,8 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 # 2: task 3.1 adds play logs and player game stats.
 # 3: task G8 adds games in progress, where the owner calls the plays.
 # 4: task G3 adds the GM's weekly briefings.
-SCHEMA_VERSION = 4
+# 5: task 2.1 adds the Trade Desk's trade proposals.
+SCHEMA_VERSION = 5
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -179,9 +180,32 @@ CREATE TABLE IF NOT EXISTS briefings (
 );
 """
 
+TRADE_DESK_SCHEMA = """
+-- Trade proposals on the Trade Desk (task 2.1). A proposal is one team's offer to
+-- another; it is checked against the 1.2 rules when it is made and again when the
+-- other team accepts it, and only an accepted proposal moves players (via moves).
+CREATE TABLE IF NOT EXISTS trade_proposals (
+    id           INTEGER PRIMARY KEY,
+    week         INTEGER NOT NULL CHECK (week >= 1),       -- the week it was proposed
+    from_team_id TEXT NOT NULL REFERENCES teams(id),        -- the team making the offer
+    to_team_id   TEXT NOT NULL REFERENCES teams(id),        -- the team that answers it
+    sends        TEXT NOT NULL,                             -- JSON: player ids from_team gives up
+    receives     TEXT NOT NULL,                             -- JSON: player ids to_team gives up
+    note         TEXT NOT NULL DEFAULT '',                  -- the proposer's pitch
+    status       TEXT NOT NULL DEFAULT 'open'
+                 CHECK (status IN ('open', 'accepted', 'rejected', 'countered', 'withdrawn', 'void')),
+    counter_of   INTEGER REFERENCES trade_proposals(id),    -- the proposal this one answers
+    response     TEXT,                                      -- the answer's reason, or why it was voided
+    decided_week INTEGER,
+    move_id      INTEGER REFERENCES moves(id),              -- set once accepted
+    CHECK (from_team_id <> to_team_id)
+);
+CREATE INDEX IF NOT EXISTS open_proposals ON trade_proposals (status, to_team_id);
+"""
+
 # How to bring an older database up to date, by the version it is at. A version not
 # listed here can't be upgraded: data/league.db is rebuilt, and a save is refused.
-MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA}
+MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -207,7 +231,7 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA)
+        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}

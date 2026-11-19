@@ -147,5 +147,5 @@ def test_g8_saves_get_the_briefings_table(tmp_path):
     db.close()
     assert briefing.stored(1, path) is None
     with sqlite3.connect(path) as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 4
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION
     db.close()

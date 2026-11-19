@@ -15,7 +15,7 @@ space and a weak secondary.
 
 ```
 agents/     agent + team definitions, and the plain-Python tools they call
-servers/    MCP servers (League Office, Trade Desk, Simulator) - from 1.1
+servers/    MCP servers: League Office (1.1), Trade Desk (2.1)
 skills/     markdown know-how + helper scripts - from 1.5
 data/       league.json (generated season start), league.db (SQLite, the default league), draft_results.json
 saves/      one SQLite database per saved game (git-ignored) - from G1
@@ -123,8 +123,8 @@ http://127.0.0.1:8765/bench on the same server as the game:
   from `compare_to_league`; the rules.
 - **Trades**: pick players on both sides, check the trade against the 1.2 rules
   or make it, and see the move log.
-- **League Office (MCP)**: starts the server over stdio, as the agents do, lists
-  its tools and calls any of them with your arguments.
+- **MCP servers**: starts the League Office or the Trade Desk over stdio, as
+  the agents do, lists its tools and calls any of them with your arguments.
 - **Agents**: asks the GM's team, Analytics or Cap & Contracts a question
   (needs `OPENROUTER_API_KEY` in `.env`) and shows the report, every tool call
   and the run's tokens and cost. For the GM: each task it gave a specialist, and
@@ -477,6 +477,67 @@ pytest tests/test_skills.py        # every skill, script and assignment, no API 
 Done when: each specialist loads its skills and runs their scripts when a
 question calls for it, and everything written to the owner follows the house
 style.
+
+## 2.1: the Trade Desk MCP server
+
+The League Office only reads the league. `servers/trade_desk.py` is the second
+MCP server, and the one place trades happen: a team evaluates a trade,
+proposes it, and the team it's offered to accepts, rejects or counters it.
+The logic is plain Python in `agents/trade_desk.py`, and proposals are kept in
+the league database (`trade_proposals`, schema version 5; older saves are
+upgraded when they're opened).
+
+```
+propose  ->  open  ->  accept    the rules are checked again, then the players move
+                   ->  reject
+                   ->  counter   a new open proposal the other way; the first is "countered"
+                   ->  withdraw  by the team that made it
+                   ->  void      it broke a rule when accepted, or one of its players was traded
+```
+
+| Tool                  | What it does                                                   | Annotation      |
+|-----------------------|----------------------------------------------------------------|-----------------|
+| `evaluate_trade`      | the rule check, plus each side's value, payroll and unit changes | read-only     |
+| `list_proposals`      | proposals by team and status                                   | read-only       |
+| `get_proposal`        | one proposal, and whether it would pass the rules right now    | read-only       |
+| `trade_log`           | every trade made this season                                   | read-only       |
+| `propose_trade`       | offer a trade; an illegal one is refused and not stored        | writes          |
+| `counter_proposal`    | answer an offer with other terms                               | writes          |
+| `withdraw_proposal`   | take back your own offer                                       | writes          |
+| `respond_to_proposal` | accept (makes the trade) or reject                             | destructive     |
+
+- **Legal at both ends.** A proposal is checked against the 1.2 rules when
+  it's made and again inside the transaction that moves the players
+  (`rules.make_trade_in`), so an offer from week 3 can't go through after the
+  deadline or after a roster change made it illegal. An accept that fails the
+  rules makes the proposal void, with the rule in its answer, and moves nobody.
+- **One trade, one set of players.** When a trade goes through, every other
+  open proposal with one of its players is voided, naming who moved.
+- **The desk does the arithmetic.** `evaluate_trade` gives, for each team, the
+  players in and out with their market value and surplus (the
+  player-valuation skill's own formula, loaded from its script), the payroll
+  change, new starters, starters lost or benched, and how each simulator unit
+  moves (`build_lineup` on the real rosters before and after). An agent can
+  quote these numbers instead of working them out, which matters under the
+  briefing's number check (G3).
+- **Who may act is checked by team id**: only the team an offer was made to
+  can answer it, and only the team that made it can withdraw it. The owner's
+  approval of the Herons' own offers comes before the desk, in G4.
+
+No agent uses the desk yet: the GM proposes through it in G4, and the rival
+GMs (2.2) answer through it. On the bench, the **MCP servers** tab can start
+either server and call any tool; the Trade Desk's writes change the loaded
+league.
+
+```powershell
+python -m servers.trade_desk                         # over stdio, for an MCP client
+python -m servers.trade_desk --db saves/herons.db    # a saved game
+pytest tests/test_trade_desk.py                      # no API key needed
+```
+
+Done when: a trade can be evaluated, proposed, countered and accepted over
+MCP, every step is checked against the league rules, and only an accepted
+proposal moves players.
 
 ## Draft Day: a 6-team, 53-round snake draft (standalone)
 

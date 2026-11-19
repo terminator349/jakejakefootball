@@ -170,9 +170,15 @@ async def moves(request, body):
 
 # ---- The League Office over MCP --------------------------------------------
 
-def _league_office() -> StdioServerParameters:
-    """The server as the agents start it: a stdio subprocess, pointed at the loaded save."""
-    args = ["-m", "servers.league_office"]
+MCP_SERVERS = {"league_office": "servers.league_office", "trade_desk": "servers.trade_desk"}  # 1.1, 2.1
+
+
+def _mcp_server(name: str | None) -> StdioServerParameters:
+    """A server as the agents start it: a stdio subprocess, pointed at the loaded save."""
+    name = name or "league_office"
+    if name not in MCP_SERVERS:
+        raise ValueError(f"Unknown MCP server {name!r}. Valid: {', '.join(MCP_SERVERS)}.")
+    args = ["-m", MCP_SERVERS[name]]
     if active_save() is not None:
         args += ["--db", str(league_db.DB_FILE.resolve())]
     return StdioServerParameters(command=sys.executable, args=args, cwd=str(PROJECT_ROOT))
@@ -180,16 +186,17 @@ def _league_office() -> StdioServerParameters:
 
 async def mcp_tools(request, body):
     started = time.perf_counter()
-    async with Client(_league_office()) as client:
+    async with Client(_mcp_server(request.query_params.get("server"))) as client:
         listed = (await client.list_tools()).tools
     return {"elapsed_ms": round((time.perf_counter() - started) * 1000),
             "tools": [{"name": t.name, "description": t.description, "input_schema": t.input_schema,
-                       "read_only": bool(t.annotations and t.annotations.read_only_hint)} for t in listed]}
+                       "read_only": bool(t.annotations and t.annotations.read_only_hint),
+                       "destructive": bool(t.annotations and t.annotations.destructive_hint)} for t in listed]}
 
 
 async def mcp_call(request, body):
     started = time.perf_counter()
-    async with Client(_league_office()) as client:
+    async with Client(_mcp_server(body.get("server"))) as client:
         result = await client.call_tool(body.get("tool", ""), body.get("arguments") or {})
     text = "\n".join(getattr(part, "text", "") for part in result.content)
     try:

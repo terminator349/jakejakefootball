@@ -4,7 +4,7 @@ The build plan from the Front Office Build Schedule (Google Sheets), one row per
 task. Fourteen weeks, from the week of Oct 26, 2026 to the week of Jan 25, 2027.
 Task numbers match the chart; the README and code use the same numbers.
 
-Status as of Nov 12, 2026 (week 3).
+Status as of Nov 19, 2026 (week 4).
 
 **Change on Nov 11: the project is now an interactive game.** The original
 tasks keep their numbers and meaning, so earlier progress reports stay correct.
@@ -74,8 +74,8 @@ GM briefing
 | W3   | Nov 9 - Nov 15 | 1.2, G1 (done), 3.1                    |
 | W4   | Nov 16 - 22    | 3.1, G2, G8 (done), 1.3, G7            |
 | W5   | Nov 23 - 29    | 3.1, 1.3, 1.4, G3 (done early), G7     |
-| W6   | Nov 30 - Dec 6 | 1.5 (done early), 2.1, G8 (done early) |
-| W7   | Dec 7 - 13     | 2.1, G4, 2.2, G8 (done early)          |
+| W6   | Nov 30 - Dec 6 | 1.5, 2.1 (done early), G8 (done early) |
+| W7   | Dec 7 - 13     | 2.1 (done early), G4, 2.2, G8 (done early) |
 | W8   | Dec 14 - 20    | 2.2, G5                                |
 | W9   | Dec 21 - 27    | 2.3                                    |
 | W10  | Dec 28 - Jan 3 | 3.2, G6                                |
@@ -247,9 +247,19 @@ draft back for a long headline, too many sentences or hype words.
 
 ## Phase 2: Trades in the game
 
-### 2.1 Trade Desk MCP server (W6 - W7)
+### 2.1 Trade Desk MCP server (W6 - W7) - Done
 A second MCP server for proposing, evaluating and making trades, checked against
 the League Office's rules.
+
+Done Nov 19, ahead of W6. `servers/trade_desk.py` serves eight tools: evaluate a
+trade, propose it, and accept, reject or counter an offer, plus withdrawing an
+offer, listing proposals and the trade log. A proposal is checked against the
+1.2 rules when it's made and again in the transaction that moves the players,
+and a completed trade voids other open offers for the same players. The
+evaluation gives each side's market value (the player-valuation formula),
+payroll change, starters and simulator unit changes, so agents quote numbers
+rather than compute them. Proposals are kept in the save (schema version 5).
+No agent uses it yet; G4 and 2.2 are its first clients.
 
 ### G4 Owner orders and approvals (W7)
 The owner gives an order in plain words ("upgrade safety, stay under $5M").

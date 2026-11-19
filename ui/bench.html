@@ -40,7 +40,7 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
     <button data-tab="game" class="on">Game &amp; saves</button>
     <button data-tab="league">League</button>
     <button data-tab="trades">Trades</button>
-    <button data-tab="mcp">League Office (MCP)</button>
+    <button data-tab="mcp">MCP servers</button>
     <button data-tab="agent">Agents</button>
   </nav>
 </header>
@@ -149,8 +149,9 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
     <div class="grid">
       <div class="card">
         <h2>Tools <span class="sub" id="mcp-time"></span></h2>
-        <p class="note">Starts <code>python -m servers.league_office</code> over stdio, as the agents do, pointed at the loaded league. Click a tool to try it.</p>
-        <button class="btn" id="mcp-list">Connect and list tools</button>
+        <p class="note">Starts the server over stdio, as the agents do, pointed at the loaded league. Click a tool to try it. The League Office only reads; the Trade Desk's proposals and accepted trades change the loaded league.</p>
+        <div class="row"><select id="mcp-server"><option value="league_office">League Office (1.1)</option><option value="trade_desk">Trade Desk (2.1)</option></select>
+        <button class="btn" id="mcp-list">Connect and list tools</button></div>
         <div id="mcp-tools"></div>
       </div>
       <div class="card">
@@ -364,7 +365,8 @@ async function loadMoves() {
 
 // ---- MCP --------------------------------------------------------------
 let mcpTools = [];
-const SAMPLE = { team_id: "HAR", position: "S", team_a: "HAR", a_sends: ["HAR-46"], team_b: "SUM", b_sends: ["SUM-45"] };
+const SAMPLE = { team_id: "HAR", position: "S", team_a: "HAR", a_sends: ["HAR-46"], team_b: "SUM", b_sends: ["SUM-45"],
+  from_team: "HAR", sends: ["HAR-46"], to_team: "SUM", receives: ["SUM-45"], proposal_id: 1, decision: "accept", status: "open" };
 function sampleArgs(tool) {
   const props = tool.input_schema?.properties || {}, args = {};
   for (const k of Object.keys(props)) if (k in SAMPLE) args[k] = SAMPLE[k];
@@ -373,11 +375,11 @@ function sampleArgs(tool) {
 async function listMcp() {
   $("#mcp-tools").innerHTML = `<p class="note"><span class="spin"></span> starting the server…</p>`;
   try {
-    const data = await call("/api/mcp/tools");
+    const data = await call(`/api/mcp/tools?server=${$("#mcp-server").value}`);
     mcpTools = data.tools;
     $("#mcp-time").textContent = `${data.tools.length} tools · ${data.elapsed_ms} ms`;
     $("#mcp-tools").innerHTML = data.tools.map(t => `<div class="toolcard" data-tool="${t.name}">
-      <b>${t.name}</b> ${t.read_only ? `<span class="badge plain">read-only</span>` : ""}
+      <b>${t.name}</b> ${t.read_only ? `<span class="badge plain">read-only</span>` : t.destructive ? `<span class="badge warn">moves players</span>` : `<span class="badge plain">writes</span>`}
       <div class="desc">${esc(t.description)}</div></div>`).join("");
     $("#mcp-tool").innerHTML = data.tools.map(t => `<option>${t.name}</option>`).join("");
     pickMcp(data.tools[0]?.name);
@@ -392,7 +394,7 @@ async function callMcp() {
   try { args = JSON.parse($("#mcp-args").value || "{}"); } catch { return toast("The arguments are not valid JSON.", "bad"); }
   $("#mcp-call-time").innerHTML = `<span class="spin"></span>`;
   try {
-    const r = await call("/api/mcp/call", { tool: $("#mcp-tool").value, arguments: args });
+    const r = await call("/api/mcp/call", { server: $("#mcp-server").value, tool: $("#mcp-tool").value, arguments: args });
     $("#mcp-call-time").textContent = `${r.elapsed_ms} ms${r.is_error ? " · error" : ""}`;
     $("#mcp-out").innerHTML = `<pre>${esc(r.json ? JSON.stringify(r.json, null, 2) : r.text)}</pre>`;
   } catch (e) { $("#mcp-call-time").textContent = ""; fail(e); }
@@ -513,6 +515,7 @@ $("#make-trade").onclick = async () => {
 };
 $("#clear-trade").onclick = () => { state.trade.a.picked.clear(); state.trade.b.picked.clear(); renderSide("a"); renderSide("b"); $("#trade-result").innerHTML = ""; };
 $("#mcp-list").onclick = listMcp;
+$("#mcp-server").onchange = listMcp;
 $("#mcp-tool").onchange = e => pickMcp(e.target.value);
 $("#mcp-call").onclick = callMcp;
 $("#ask").onclick = runAgent;

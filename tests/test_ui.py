@@ -82,6 +82,15 @@ def test_league_office_over_stdio(client):
     assert result["is_error"] is False and result["json"]["team_id"] == "HAR"
 
 
+def test_trade_desk_over_stdio(client):
+    tools = {t["name"]: t for t in client.get("/api/mcp/tools?server=trade_desk").json()["tools"]}
+    assert tools["evaluate_trade"]["read_only"] and tools["respond_to_proposal"]["destructive"]
+    result = client.post("/api/mcp/call", json={"server": "trade_desk", "tool": "evaluate_trade", "arguments": {
+        "team_a": "HAR", "a_sends": ["HAR-46"], "team_b": "SUM", "b_sends": ["SUM-45"]}}).json()
+    assert result["is_error"] is False and result["json"]["legal"] is True
+    assert client.get("/api/mcp/tools?server=nope").status_code == 400
+
+
 def test_agent_needs_a_key(client, monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     for agent in ("analytics", "cap", "gm"):
