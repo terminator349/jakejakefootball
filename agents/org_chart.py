@@ -3,27 +3,33 @@ on what each member has done this week, for a screen in the game.
 
 Plain Python only - nothing here asks a model anything. The hierarchy is read
 from the GM's own Team (`agents/gm.py`) rather than written out separately, so
-it can't drift from who is actually on it. Each member's "this week" line comes
-from what's already in the save (orders, proposed moves, the briefing,
-injuries), the same facts G3's briefing and G4's desk already show the owner,
-so the screen costs nothing and needs no API key.
+it can't drift from who is actually on it - including a second level under any
+specialist that is itself a team (Scouting, 4.1). Each member's "this week"
+line comes from what's already in the save (orders, proposed moves, the
+briefing, injuries, scouting reports), the same facts G3's briefing and G4's
+desk already show the owner, so the screen costs nothing and needs no API key.
 """
 
 import json
 from pathlib import Path
 
-from agents import briefing, deadline, draft_desk, game_loop, gm, league_db, orders, season
+from agents import briefing, deadline, draft_desk, game_loop, gm, league_db, orders, scouting, season
 from agents.game_loop import _ordinal, _rating_name
 from agents.gm import OUR_TEAM
 
 
 def hierarchy() -> list[dict]:
-    """Owner -> GM -> specialists. No League Office tools are connected: only the
-    static name and role each member was built with is read, so this is cheap."""
+    """Owner -> GM -> specialists, and a second level under any specialist that is itself
+    a team (Scouting, 4.1). No League Office tools are connected: only the static name and
+    role each member was built with is read, so this is cheap."""
     team = gm.build_gm_team(None, None, None, None)
-    return [{"name": "Owner", "role": "Sets priorities; approves or vetoes every move.", "reports_to": None},
-            {"name": team.name, "role": team.role, "reports_to": "Owner"},
-            *({"name": m.name, "role": m.role, "reports_to": team.name} for m in team.members)]
+    nodes = [{"name": "Owner", "role": "Sets priorities; approves or vetoes every move.", "reports_to": None},
+            {"name": team.name, "role": team.role, "reports_to": "Owner"}]
+    for member in team.members:
+        nodes.append({"name": member.name, "role": member.role, "reports_to": team.name})
+        for sub in getattr(member, "members", None) or []:
+            nodes.append({"name": sub.name, "role": sub.role, "reports_to": member.name})
+    return nodes
 
 
 def _team_names(league: dict) -> dict[str, str]:
@@ -59,6 +65,13 @@ def _cap_activity(week: int, league: dict, db_file: Path | None) -> list[str]:
     if filed:
         lines.append(f"Checked {len(filed)} proposed move{'s' if len(filed) != 1 else ''} this week against the cap.")
     return lines
+
+
+def _scouting_activity(week: int, db_file: Path | None) -> list[str]:
+    reports = scouting.reports(week, db_file)
+    if not reports:
+        return ["No scouting reports filed this week."]
+    return [f"Scouted {', '.join(r['positions'])}: {r['summary']}" for r in reports]
 
 
 def _draft_activity() -> list[str]:
@@ -107,6 +120,7 @@ def chart(db_file: Path | None = None) -> dict:
             "activity": {"General Manager": _gm_activity(week, league, db_file),
                         "Analytics": _analytics_activity(league),
                         "Cap & Contracts": _cap_activity(week, league, db_file),
+                        "Scouting": _scouting_activity(week, db_file),
                         "Draft": _draft_activity(),
                         "Coaching": _coaching_activity(week, db_file),
                         "Medical": _medical_activity(week, db_file)}}

@@ -60,7 +60,8 @@ def overview() -> dict:
     team = next(t for t in league["teams"] if t["id"] == our)
     table = {row["team_id"]: row for row in season.standings()}
     week, last_week = season.current_week(), rules["season_games"]
-    over = week > last_week
+    over = week > last_week + len(season.PLAYOFF_ROUNDS)  # the playoffs too (G6)
+    playoff_round = season.playoff_round(week, last_week)
 
     this_week = None if over else _our_game(season.games(week), our)
     this_week = this_week and _from_our_side(this_week, our, table)
@@ -91,9 +92,23 @@ def overview() -> dict:
                  f"{weakest['league_avg']:.0f}).")
     if strongest["gap"] > 0:
         notes.append(f"Strongest: {_rating_name(strongest)}, {_ordinal(strongest['rank'])} of {len(league['teams'])}.")
-    if over:
-        notes.append(f"The regular season is over: {_record(table[our])}, {_ordinal(table[our]['rank'])} of "
-                     f"{len(league['teams'])}. The playoffs arrive with task G6.")
+    if over or playoff_round:
+        from agents import playoffs  # it reads this module's helpers
+        bracket = playoffs.bracket()
+        finish = f"{_record(table[our])}, {_ordinal(table[our]['rank'])} of {len(league['teams'])}"
+        if over:
+            result = bracket["our_result"]
+            notes.append(f"The season is over: {finish} in the regular season; we {result}."
+                         + ("" if result == "won the championship" else
+                            f" {bracket['champion']['city']} won the championship."))
+        elif not bracket["we_made_it"]:
+            notes.append(f"The playoffs, the {playoff_round.lower()}: we finished {finish} and missed them.")
+        elif bracket["our_result"]:
+            notes.append(f"The playoffs, the {playoff_round.lower()}: we {bracket['our_result']}.")
+        else:
+            seed = next(s["seed"] for s in bracket["seeds"] if s["team_id"] == our)
+            notes.append(f"The playoffs, the {playoff_round.lower()}: we're the {_ordinal(seed)} seed. "
+                         "Lose and the season is over.")
     elif week <= deadline:
         left = deadline - week
         notes.append("The trade deadline is after this week." if left == 0 else
@@ -106,6 +121,7 @@ def overview() -> dict:
     ours = table[our]
     return {
         "week": week, "season_games": last_week, "season_over": over, "week_played": week_played,
+        "playoff_round": playoff_round, "regular_season_over": week > last_week,
         "trade_deadline_week": deadline, "deadline_passed": week > deadline,
         "team": {"id": our, "city": team["city"], "name": team["name"], "record": _record(ours),
                  "wins": ours["wins"], "losses": ours["losses"], "ties": ours["ties"], "rank": ours["rank"],

@@ -25,10 +25,14 @@ def play_to(week: int) -> None:
 
 def test_hierarchy_matches_the_gms_team():
     nodes = org_chart.hierarchy()
-    assert [n["name"] for n in nodes] == ["Owner", "General Manager", "Analytics", "Cap & Contracts",
-                                          "Draft", "Coaching", "Medical"]
+    assert [n["name"] for n in nodes] == ["Owner", "General Manager", "Analytics", "Cap & Contracts", "Scouting",
+                                          "Pro scout, offense", "Pro scout, defense", "Draft", "Coaching", "Medical"]
     assert nodes[0]["reports_to"] is None and nodes[1]["reports_to"] == "Owner"
-    assert all(n["reports_to"] == "General Manager" for n in nodes[2:])
+    by_name = {n["name"]: n for n in nodes}
+    # Scouting's own scouts and the Draft desk report through it, a second level (4.1).
+    assert by_name["Pro scout, offense"]["reports_to"] == by_name["Draft"]["reports_to"] == "Scouting"
+    top_level = {"Analytics", "Cap & Contracts", "Scouting", "Coaching", "Medical"}
+    assert all(n["reports_to"] == "General Manager" for n in nodes if n["name"] in top_level)
     assert all(n["role"] for n in nodes)  # every member has something to show
 
 
@@ -39,6 +43,7 @@ def test_week_one_activity_defaults(scratch_db):
     assert activity["General Manager"] == ["Nothing from the GM yet this week."]
     assert "safety coverage" in activity["Analytics"][0] and "6th of 6" in activity["Analytics"][0]
     assert activity["Cap & Contracts"][0] == "Holding $249.5M payroll, $5.5M space under the $255M hard cap."
+    assert activity["Scouting"] == ["No scouting reports filed this week."]
     assert activity["Draft"][0].startswith("Last active at the rookie draft:") and "picks" in activity["Draft"][0]
     assert activity["Medical"] == ["Clean bill of health this week."]
     assert activity["Coaching"][0] == "No depth chart changes this week."

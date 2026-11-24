@@ -3,6 +3,8 @@
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+// Q1-Q4, then OT, 2OT, ... (a playoff game plays overtime periods until someone scores, G6).
+const quarterText = q => q <= 4 ? "Q" + q : q === 5 ? "OT" : `${q - 4}OT`;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 const money = n => n == null ? "" : `$${Number(n).toFixed(2)}M`;
 const POSITIONS = ["QB", "RB", "WR", "TE", "OL", "DL", "LB", "CB", "S", "K", "P"];
@@ -38,7 +40,7 @@ function driveTable(b, drives, ourTeam) {
   return `<table class="drives"><tr><th>#</th><th>Team</th><th>Start</th><th>From</th><th class="num">Plays</th>
     <th class="num">Yds</th><th class="num">Time</th><th>Result</th><th class="num">${a}-${h}</th></tr>
     ${drives.map(d => `<tr class="${d.team === ourTeam ? "ours" : ""}"><td>${d.number}</td><td>${d.team}</td>
-      <td>${d.quarter === 5 ? "OT" : "Q" + d.quarter} ${clockText(d.clock)}</td><td>${spotOf(d.team, other(d.team), d.start_yardline)}</td>
+      <td>${quarterText(d.quarter)} ${clockText(d.clock)}</td><td>${spotOf(d.team, other(d.team), d.start_yardline)}</td>
       <td class="num">${d.plays}</td><td class="num">${d.yards}</td><td class="num">${clockText(d.seconds)}</td>
       <td class="how">${["touchdown", "field_goal", "safety"].includes(d.result) ? `<b>${RESULT_LABEL[d.result]}</b>` : RESULT_LABEL[d.result] || d.result}</td>
       <td class="num">${d.away_score}-${d.home_score}</td></tr>`).join("")}</table>`;
@@ -143,13 +145,13 @@ class WatchView {
     const poss = next?.offense_team_id;
 
     let status, sub;
-    if (done) { status = P[n - 1].quarter === 5 ? "Final (OT)" : "Final"; sub = `${n} plays · ${b.drives.length} drives`; }
+    if (done) { status = P[n - 1].quarter >= 5 ? `Final (${quarterText(P[n - 1].quarter)})` : "Final"; sub = `${n} plays · ${b.drives.length} drives`; }
     else {
-      status = `${next.quarter === 5 ? "OT" : "Q" + next.quarter} ${clockText(next.clock)}`;
+      status = `${quarterText(next.quarter)} ${clockText(next.clock)}`;
       sub = `${poss} ball · ${ORD[next.down]} & ${togoText(next)} at ${spotOf(poss, other(poss), next.yardline)}`;
     }
     const ball = next && { poss, yardline: next.yardline, distance: next.distance, driveTeam: drive.team, driveStart: drive.start_yardline };
-    const lastText = last ? `<span class="sit">${last.offense_team_id} · ${last.quarter === 5 ? "OT" : "Q" + last.quarter} ${clockText(last.clock)}</span> ${esc(last.text)}`
+    const lastText = last ? `<span class="sit">${last.offense_team_id} · ${quarterText(last.quarter)} ${clockText(last.clock)}</span> ${esc(last.text)}`
       : `<span class="sit">Kickoff.</span> ${esc(poss)} receives.`;
     const thisDrive = drive ? P.slice(drive.first_play - 1, idx) : [];
     const finished = b.drives.filter(d => d.last_play <= idx);
@@ -183,7 +185,8 @@ const MONEY_FIELDS = ["payroll", "cap_space", "salary_to_clear"];
 
 function reportHtml(rep) {
   if (!rep || typeof rep !== "object") return `<pre>${esc(rep ?? "")}</pre>`;
-  const value = (k, v) => Array.isArray(v) ? `<ul>${v.map(e => `<li>${esc(e)}</li>`).join("")}</ul>`
+  const item = e => e && typeof e === "object" ? Object.values(e).filter(x => x == null || typeof x !== "object").join(" · ") : e;
+  const value = (k, v) => Array.isArray(v) ? `<ul>${v.map(e => `<li>${esc(item(e))}</li>`).join("")}</ul>`
     : typeof v === "boolean" ? (v ? "Yes" : "No") : MONEY_FIELDS.includes(k) ? money(v) : esc(v);
   return `<dl class="report">${Object.entries(rep).filter(([k]) => k !== "team_id").map(([k, v]) =>
     `<dt>${REPORT_LABELS[k] || esc(k)}${k === "answer" && rep.team_id ? ` <span class="pos">${esc(rep.team_id)}</span>` : ""}</dt>
@@ -209,11 +212,13 @@ function frontOfficeHtml(r, withTools = false) {
   if (!r.specialists.length) return `<p class="empty">The GM answered without asking a specialist.</p>`;
   const tasks = r.delegations.slice();
   return r.specialists.map(s => {
-    const i = tasks.findIndex(d => memberKey(d.member) === memberKey(s.name));
+    // A specialist team's members are named "Scouting / Pro scout, defense"; its director asked them.
+    const own = s.name.split(" / ").pop(), boss = s.name.includes(" / ") ? s.name.split(" / ").slice(-2)[0] : "The GM";
+    const i = tasks.findIndex(d => memberKey(d.member) === memberKey(own));
     const task = i >= 0 ? tasks.splice(i, 1)[0].task : null;
     const tools = s.tool_calls.map(c => c.tool).join(", ") || "no tools";
     return `<details class="specialist"><summary><b>${esc(s.name)}</b> <span class="note">${s.tool_calls.length} tool calls: ${esc(tools)}</span></summary>
-      ${task ? `<p class="task"><span class="note">The GM asked:</span> ${esc(task)}</p>` : ""}
+      ${task ? `<p class="task"><span class="note">${esc(boss)} asked:</span> ${esc(task)}</p>` : ""}
       ${reportHtml(s.report)}${withTools ? `<h3>Tool calls</h3>${toolCallsHtml(s.tool_calls)}` : ""}</details>`;
   }).join("");
 }

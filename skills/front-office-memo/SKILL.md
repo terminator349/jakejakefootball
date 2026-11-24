@@ -48,6 +48,10 @@ Written at the start of each week from the week's facts.
   and how far we are from the team named now "instead of" before, with the
   numbers exactly as the facts give them.
 
+- **What was decided**: if the facts have `front_office_since_last_week`,
+  say in one sentence what came of the owner's decisions since last week (a
+  trade made, a move vetoed, an offer turned down), in the facts' words.
+
 ## Answering the owner
 
 - **Answer** in two to four sentences: the direct answer first, then the reason

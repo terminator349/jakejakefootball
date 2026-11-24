@@ -11,6 +11,7 @@ and get_skill_script tools (the last can run a script and read its output).
     roster-impact      how ratings feed the simulator's units; unit_impact.py
     front-office-memo  the house style for the owner; check_memo.py
     negotiation        how every GM scores a trade, and building an offer they'll take; appraise.py (2.2)
+    scouting           grading a trade target A, B or C, and the scout's note; grade.py (4.1)
 
 Who has which:
 
@@ -19,6 +20,7 @@ Who has which:
     the GM             front-office-memo, always on: its rules are in its instructions
     the briefing       front-office-memo, always on, and its checks (agents/memo.py)
     the GM's search    negotiation (G4, 2.2): proposing trades the other side will accept
+    the pro scouts     scouting, always on: its grades and notes are in their instructions (4.1)
 """
 
 import re
@@ -27,7 +29,7 @@ from pathlib import Path
 from agno.skills import LocalSkills, Skills
 
 SKILLS_DIR = Path(__file__).parent.parent / "skills"
-ALL = ("salary-cap-rules", "player-valuation", "roster-impact", "front-office-memo", "negotiation")
+ALL = ("salary-cap-rules", "player-valuation", "roster-impact", "front-office-memo", "negotiation", "scouting")
 
 
 def load(*names: str) -> Skills:
