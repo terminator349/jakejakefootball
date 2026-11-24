@@ -32,6 +32,7 @@ from dataclasses import dataclass, field
 
 QUARTER_SECONDS = 15 * 60
 OVERTIME_SECONDS = 10 * 60
+MAX_OVERTIMES = 6  # a playoff game plays overtime periods until someone scores, up to this many (G6)
 TIMEOUTS_PER_HALF = 3
 HOME_EDGE = 0.6  # rating points added to the home side's units
 
@@ -231,7 +232,7 @@ def call_offense(sit: Situation, offense: Lineup, defense: Lineup, rng: random.R
     # Ahead late: kneel if the defense can't stop the clock in time (about 40 seconds a snap).
     if sit.quarter >= 4 and lead > 0 and sit.clock <= 38 * (4 - sit.down - sit.timeouts[sit.defense]) + 2:
         return "kneel"
-    end_of_half = sit.quarter in (2, 4, 5)
+    end_of_half = sit.quarter in (2, 4) or sit.quarter >= 5
     if end_of_half and fg_range and kick_helps(sit) and sit.clock <= (8 if timeouts else 14):
         return "field_goal"  # kick while there's still time
     if end_of_half and sit.clock <= 8 and sit.yardline < 80 and (lead <= 0 and sit.quarter >= 4 or sit.yardline >= 45):
@@ -309,8 +310,9 @@ def call_defense(sit: Situation, defense: Lineup, offense: Lineup, rng: random.R
 class Game:
     """One game between two lineups. Call step() until over, or play() to the end."""
 
-    def __init__(self, home: Lineup, away: Lineup, seed: str | int):
+    def __init__(self, home: Lineup, away: Lineup, seed: str | int, playoff: bool = False):
         self.home, self.away = home, away
+        self.playoff = playoff  # no ties: overtime periods go on until someone scores (G6)
         self.teams = {home.team_id: home, away.team_id: away}
         self.field_rng = random.Random(f"field-{seed}")
         self.call_rng = random.Random(f"calls-{seed}")
@@ -415,7 +417,7 @@ class Game:
 
     def _score(self, team_id: str, points: int) -> None:
         self.score[team_id] += points
-        if self.quarter == 5:  # overtime is sudden death
+        if self.quarter >= 5:  # overtime is sudden death
             self.over = True
 
     def _touchdown(self) -> str:
@@ -445,7 +447,7 @@ class Game:
     def _run_clock(self, seconds: int, stops: bool, out_of_bounds: bool = False, snap_time: int | None = None) -> None:
         """Take the snap's own time off the clock. If the clock keeps running, the rest of
         `seconds` (the huddle and the walk to the line) runs off before the next snap."""
-        two_minute = self.clock <= 120 and self.quarter in (2, 4, 5)
+        two_minute = self.clock <= 120 and (self.quarter in (2, 4) or self.quarter >= 5)
         if out_of_bounds and (two_minute or (self.quarter == 4 and self.clock <= 300)):
             stops = True
         if snap_time is not None:
@@ -463,7 +465,7 @@ class Game:
             return 0
         if spike:
             return min(self.field_rng.randint(3, 6), max(0, sit.clock - 1))
-        if sit.clock <= 120 and sit.quarter in (2, 4, 5):
+        if sit.clock <= 120 and (sit.quarter in (2, 4) or sit.quarter >= 5):
             # The defense stops the clock when it's behind and can still get the ball back:
             # late in a game it can win, or before the half if the offense is backed up.
             if sit.lead > 0 and self.timeouts[sit.defense] and (
@@ -498,8 +500,14 @@ class Game:
                 self._kickoff(receiving=self.home.team_id if self.field_rng.random() < 0.5 else self.away.team_id)
             else:
                 self.over = True
-        elif self.quarter == 5:
-            self.over = True  # overtime ran out: a tie
+        elif self.quarter >= 5:
+            tied = self.score[self.home.team_id] == self.score[self.away.team_id]
+            if self.playoff and tied and self.quarter < 4 + MAX_OVERTIMES:  # another period
+                self.quarter, self.clock = self.quarter + 1, OVERTIME_SECONDS
+                self.timeouts = {t: 2 for t in self.timeouts}
+                self._kickoff(receiving=self.home.team_id if self.field_rng.random() < 0.5 else self.away.team_id)
+            else:
+                self.over = True  # overtime ran out: a tie (in the playoffs, only after MAX_OVERTIMES)
         else:
             self.quarter, self.clock = self.quarter + 1, QUARTER_SECONDS
 
@@ -520,7 +528,7 @@ class Game:
         if runoff >= self.clock > 0:
             quarter, self.clock = self.quarter, 0
             self._end_of_period()
-            if quarter in (2, 4, 5):
+            if quarter in (2, 4) or quarter >= 5:
                 return None
         else:
             self.clock -= runoff
@@ -747,14 +755,14 @@ DRIVE_ENDS = {"touchdown", "field_goal", "field_goal_missed", "punt", "intercept
 
 
 def _elapsed(quarter: int, clock: int) -> int:
-    """Game seconds gone at a moment, counting overtime after the fourth quarter."""
+    """Game seconds gone at a moment, counting each overtime period (5, 6, ...) after the fourth quarter."""
     if quarter <= 4:
         return (quarter - 1) * QUARTER_SECONDS + QUARTER_SECONDS - clock
-    return 4 * QUARTER_SECONDS + OVERTIME_SECONDS - clock
+    return 4 * QUARTER_SECONDS + (quarter - 4) * OVERTIME_SECONDS - clock
 
 
 def _half_ends(quarter: int) -> int:
-    return {1: 2, 2: 2, 3: 4, 4: 4}.get(quarter, 5)
+    return {1: 2, 2: 2, 3: 4, 4: 4}.get(quarter, quarter)  # each overtime period is its own
 
 
 def drives(plays: list[dict]) -> list[dict]:
@@ -781,8 +789,8 @@ def drives(plays: list[dict]) -> list[dict]:
         half_end = _elapsed(_half_ends(first["quarter"]), 0)
         if i + 1 < len(groups):
             end = min(half_end, _elapsed(groups[i + 1][0]["quarter"], groups[i + 1][0]["clock"]))
-        elif last["quarter"] == 5 and last["result"] in ("touchdown", "field_goal", "safety"):
-            end = _elapsed(5, last["clock"]) + 5  # a score ends overtime at once
+        elif last["quarter"] >= 5 and last["result"] in ("touchdown", "field_goal", "safety"):
+            end = _elapsed(last["quarter"], last["clock"]) + 5  # a score ends overtime at once
         else:
             end = half_end
         if last["result"] in DRIVE_ENDS:

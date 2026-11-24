@@ -9,11 +9,14 @@ his salary (per season and over the contract), a verdict, and what his age means
 
 import argparse
 import json
+import os
+import sqlite3
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 LEAGUE = ROOT / "data" / "league.json"
+DB_ENV = "FRONT_OFFICE_DB"  # the game sets it to the loaded save (agents/league_db.py)
 
 FLOOR = 55          # at or below this overall, a veteran earns about the minimum
 MIN_SALARY = 1.0    # $M; the league minimum
@@ -87,6 +90,19 @@ def parse_key(text: str | None) -> float | None:
         raise ValueError(f"--key needs the rating's value, e.g. --key coverage=88, not {text!r}.") from None
 
 
+def players_in_play() -> list[dict] | None:
+    """The loaded game's players, when the game says which save is loaded, so a real-players
+    league is priced on its own salaries. None means the generated league's seed."""
+    path = os.environ.get(DB_ENV)
+    if not path or not Path(path).exists():
+        return None
+    with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as db:
+        rows = db.execute("SELECT p.position, p.age, p.overall, c.salary FROM players p "
+                          "JOIN contracts c ON c.player_id = p.id").fetchall()
+    db.close()
+    return [{"position": pos, "age": age, "overall": overall, "salary": salary} for pos, age, overall, salary in rows]
+
+
 def main(argv=None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--position", required=True, help="QB, RB, WR, TE, OL, DL, LB, CB, S, K or P")
@@ -101,7 +117,8 @@ def main(argv=None) -> None:
     except ValueError as problem:
         print(json.dumps({"error": str(problem)}, indent=2))
         return
-    print(json.dumps(value(args.position, args.overall, args.salary, args.age, args.years, key=key), indent=2))
+    print(json.dumps(value(args.position, args.overall, args.salary, args.age, args.years,
+                           players=players_in_play(), key=key), indent=2))
 
 
 if __name__ == "__main__":

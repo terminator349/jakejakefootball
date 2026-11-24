@@ -27,6 +27,13 @@ from pathlib import Path
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 SEED_FILE = DATA_DIR / "league.json"
+# The leagues a new game can start from (task 4.4): the generated one, or the six
+# franchises filled with real NFL players from 2025 (data/real_league.py).
+LEAGUES = {"generated": "Generated league", "real": "Real 2025 players"}
+SEED_FILES = {"generated": SEED_FILE, "real": DATA_DIR / "league_real.json"}
+# Set to the loaded save's path, so the skills' scripts (run in their own process)
+# read the same league as the game.
+DB_ENV = "FRONT_OFFICE_DB"
 DEFAULT_DB_FILE = DATA_DIR / "league.db"
 DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points this at its save
 
@@ -39,7 +46,10 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 # 6: task G4 adds the owner's orders and the moves the GM proposes for approval.
 # 7: task 3.2 adds injuries and the depth chart. (3.2 was built on a branch where it
 #    was version 5; MIGRATIONS below brings those databases up to date too.)
-SCHEMA_VERSION = 7
+# 8: task G6 leaves the playoffs out of the standings.
+# 9: task 4.1 adds the scouting team's reports.
+# 10: task 4.2 keeps the GM's answers to the owner's questions, for its memory.
+SCHEMA_VERSION = 10
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -88,7 +98,7 @@ CREATE INDEX players_by_team ON players (team_id, position);
 -- The game (task G1). One row.
 CREATE TABLE game (
     id           INTEGER PRIMARY KEY CHECK (id = 1),
-    current_week INTEGER NOT NULL CHECK (current_week >= 1),  -- season_games + 1 once the season is over
+    current_week INTEGER NOT NULL CHECK (current_week >= 1),  -- after season_games, the playoffs (G6)
     seed         INTEGER NOT NULL,                            -- the schedule and simulator draw from this
     created_at   TEXT NOT NULL
 );
@@ -115,11 +125,19 @@ CREATE TABLE move_players (
     to_team_id   TEXT NOT NULL REFERENCES teams(id),
     PRIMARY KEY (move_id, player_id)
 );
+"""
+
+# The regular season's standings. Playoff games (weeks after season_games, task G6) don't
+# count: the seeds come from these, and a record is the regular season's.
+STANDINGS_VIEW = """
 CREATE VIEW standings AS
-WITH sides AS (
-    SELECT home_team_id AS team_id, home_score AS pf, away_score AS pa FROM games WHERE home_score IS NOT NULL
+WITH regular AS (
+    SELECT * FROM games WHERE home_score IS NOT NULL
+                          AND week <= (SELECT CAST(value AS INTEGER) FROM rules WHERE key = 'season_games')
+), sides AS (
+    SELECT home_team_id AS team_id, home_score AS pf, away_score AS pa FROM regular
     UNION ALL
-    SELECT away_team_id, away_score, home_score FROM games WHERE home_score IS NOT NULL
+    SELECT away_team_id, away_score, home_score FROM regular
 )
 SELECT t.id                       AS team_id,
        COALESCE(SUM(s.pf > s.pa), 0) AS wins,
@@ -130,6 +148,9 @@ SELECT t.id                       AS team_id,
 FROM teams t LEFT JOIN sides s ON s.team_id = t.id
 GROUP BY t.id;
 """
+
+# G6: the standings view, rebuilt to leave the playoffs out.
+PLAYOFF_SCHEMA = "DROP VIEW IF EXISTS standings;\n" + STANDINGS_VIEW
 
 GAME_LOG_SCHEMA = """
 -- Simulated games (task 3.1): every snap, and each player's stats per game.
@@ -236,6 +257,37 @@ CREATE TABLE IF NOT EXISTS gm_proposals (
 );
 """
 
+SCOUTING_SCHEMA = """
+-- The scouting team's reports (task 4.1): the trade targets it found for an order (or
+-- the deadline), graded, with plain Python's numbers. Kept for the week screen and the
+-- org chart (4.3).
+CREATE TABLE IF NOT EXISTS scouting_reports (
+    id        INTEGER PRIMARY KEY,
+    week      INTEGER NOT NULL CHECK (week >= 1),
+    order_id  INTEGER REFERENCES orders(id),             -- the order it was for, if any
+    by        TEXT NOT NULL CHECK (by IN ('scouts', 'rules')),  -- graded by the model's scouts, or the rules
+    positions TEXT NOT NULL,                             -- JSON: the positions scouted
+    summary   TEXT NOT NULL,
+    targets   TEXT NOT NULL,                             -- JSON: the graded targets, best first
+    cost      REAL                                       -- what the model calls cost, in $
+);
+"""
+
+MEMORY_SCHEMA = """
+-- The GM's answers to the owner's questions (task 4.2). Everything else the front
+-- office remembers is already in the save (orders, moves, trade proposals, scouting
+-- reports, briefings); agents/memory.py reads it all back into one timeline.
+CREATE TABLE IF NOT EXISTS gm_answers (
+    id             INTEGER PRIMARY KEY,
+    week           INTEGER NOT NULL CHECK (week >= 1),
+    question       TEXT NOT NULL,                        -- the owner's words
+    answer         TEXT NOT NULL,                        -- the GM's answer
+    recommendation TEXT,
+    consulted      TEXT NOT NULL DEFAULT '[]',           -- JSON: the specialists it asked
+    cost           REAL                                  -- what the model calls cost, in $
+);
+"""
+
 INJURY_SCHEMA = """
 -- Injuries and the depth chart (task 3.2).
 CREATE TABLE IF NOT EXISTS injuries (
@@ -264,7 +316,8 @@ CREATE TABLE IF NOT EXISTS depth_chart (
 # it the Trade Desk, but on the 3.2 branch it meant injuries, so the step from 5 adds
 # the Trade Desk's table too, and the step from 6 adds injuries whichever way it came.
 MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA,
-              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA}
+              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA, 7: PLAYOFF_SCHEMA, 8: SCOUTING_SCHEMA,
+              9: MEMORY_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -274,14 +327,19 @@ class OutdatedDatabase(Exception):
     """The database was made by an older version of this code."""
 
 
-def build(db_file: Path | None = None, seed_file: Path | None = None, season_seed: int | None = None) -> None:
+def build(db_file: Path | None = None, seed_file: Path | None = None, season_seed: int | None = None,
+          league: str | None = None) -> None:
     """Create the database from the seed, at week 1 with a fresh schedule, replacing
-    any database already there."""
+    any database already there. `league` picks the seed from LEAGUES (default: the
+    generated league)."""
     from agents.season import make_schedule  # season imports this module
 
 
     # Paths are read at call time, so tests can point DB_FILE at a scratch database.
-    db_file, seed_file = db_file or DB_FILE, seed_file or SEED_FILE
+    if league is not None and league not in SEED_FILES:
+        raise ValueError(f"Unknown league {league!r}. Valid: {list(SEED_FILES)}")
+    db_file = db_file or DB_FILE
+    seed_file = seed_file or (SEED_FILES[league] if league else SEED_FILE)
     if not seed_file.exists():
         raise FileNotFoundError(f"{seed_file} not found. Run: python data/generate_league.py")
     seed = json.loads(seed_file.read_text())
@@ -290,10 +348,11 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file = db_file.with_name(db_file.name + ".tmp")
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
-        db.executescript(SCHEMA + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
-                         + INJURY_SCHEMA)
+        db.executescript(SCHEMA + STANDINGS_VIEW + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
+                         + INJURY_SCHEMA + SCOUTING_SCHEMA + MEMORY_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
-                       [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
+                       [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"])),
+                        ("league", json.dumps(seed.get("league", "generated")))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}
         db.executemany("INSERT INTO rules VALUES (?, ?)", [(k, json.dumps(v)) for k, v in rules.items()])
         db.executemany("INSERT INTO positions VALUES (?, ?, ?)",
@@ -379,6 +438,17 @@ def load_league(db_file: Path | None = None) -> dict:
 
     return {"sport": settings["sport"], "our_team": settings["our_team"], "rules": rules,
             "teams": teams, "players": players}
+
+
+def league_kind(db_file: Path | None = None) -> str:
+    """Which league the database was started from: "generated" or "real" (LEAGUES).
+    A database from before task 4.4 is the generated league."""
+    db = connect(db_file)
+    try:
+        row = db.execute("SELECT value FROM settings WHERE key = 'league'").fetchone()
+    finally:
+        db.close()
+    return json.loads(row["value"]) if row else "generated"
 
 
 # ---- Injuries and the depth chart (task 3.2) -------------------------------

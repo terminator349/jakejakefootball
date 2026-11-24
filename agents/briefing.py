@@ -28,7 +28,7 @@ from agno.agent import Agent
 from pydantic import BaseModel, Field
 
 from agents import deadline as trade_deadline
-from agents import game_loop, league_db, memo, season, skills, tools
+from agents import game_loop, league_db, memo, memory, season, skills, tools
 from agents.analytics import specialist_model
 
 # A draft and up to two rewrites with the problems named. DeepSeek's structured output
@@ -94,7 +94,7 @@ def _result_line(game: dict, table: dict) -> str:
 
 def facts(db_file: Path | None = None) -> dict:
     """Everything this week's briefing may say, read from the loaded league."""
-    if season.season_over():
+    if season.regular_season_over():
         raise ValueError("The regular season is over: there's no weekly briefing.")
     week = game_loop.overview()
     team = week["team"]
@@ -123,6 +123,9 @@ def facts(db_file: Path | None = None) -> dict:
             "standouts": _leaders(box, our)}
         out["around_the_league"] = [_result_line(g, table) for g in season.games(week["week"] - 1)
                                     if g["id"] != game["id"] and g["home_score"] is not None]
+
+    if decided := memory.since_last_week(week["week"], db_file):  # 4.2: the front office remembers
+        out["front_office_since_last_week"] = decided
 
     comparisons = json.loads(tools.compare_to_league(our))["comparisons"]
     weakest, strongest = comparisons[0], comparisons[-1]

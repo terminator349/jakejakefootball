@@ -8,8 +8,13 @@ each game's score, play log and player stats; record_result() writes a score
 by hand. The week only moves on once every game in it has a result. Standings are worked out from the results when asked for,
 so they can never disagree with them.
 
-Weeks run from 1 to the league's season_games (17). After the last week's games
-the current week is season_games + 1, meaning the regular season is over.
+Weeks run from 1 to the league's season_games (17). Then come the playoffs
+(task G6): the top four teams by the regular season's standings, the 1st seed
+against the 4th and the 2nd against the 3rd in week 18, the winners in the final
+in week 19, each game at the higher seed's ground. Each round is scheduled when
+the week moves on to it, and a playoff game can't end in a tie (the simulator
+plays overtime periods until someone scores). Once the final is played and the
+week moves on, the season is over.
 """
 
 import json
@@ -122,6 +127,50 @@ def _season_games(db) -> int:
     return int(db.execute("SELECT value FROM rules WHERE key = 'season_games'").fetchone()[0])
 
 
+# ---- The playoffs (task G6) --------------------------------------------------
+
+PLAYOFF_TEAMS = 4
+PLAYOFF_ROUNDS = ("Semifinals", "Final")
+
+
+def _last_week(db) -> int:
+    """The final's week: the last week of the season."""
+    return _season_games(db) + len(PLAYOFF_ROUNDS)
+
+
+def playoff_round(week: int, season_games: int) -> str | None:
+    """'Semifinals' or 'Final' for a playoff week, None for the regular season (or after)."""
+    i = week - season_games - 1
+    return PLAYOFF_ROUNDS[i] if 0 <= i < len(PLAYOFF_ROUNDS) else None
+
+
+def seeds(db_file: Path | None = None) -> list[str]:
+    """The playoff teams, best seed first, by the regular season's standings."""
+    return [row["team_id"] for row in standings(db_file)[:PLAYOFF_TEAMS]]
+
+
+def winner(game: dict, seeded: list[str]) -> str | None:
+    """Who won a played playoff game. A tie (only after every overtime period) goes to the
+    better seed."""
+    if game["home_score"] is None:
+        return None
+    if game["home_score"] != game["away_score"]:
+        return game["home_team_id"] if game["home_score"] > game["away_score"] else game["away_team_id"]
+    return min((game["home_team_id"], game["away_team_id"]), key=seeded.index)
+
+
+def _schedule_playoffs(db, week: int, seeded: list[str]) -> None:
+    """Put the playoff round of `week` on the schedule: the better seed at home."""
+    season_games = _season_games(db)
+    if week == season_games + 1:
+        pairs = [(seeded[0], seeded[3]), (seeded[1], seeded[2])]
+    else:
+        semis = [dict(r) for r in db.execute("SELECT * FROM games WHERE week = ? ORDER BY id", (week - 1,))]
+        pairs = [sorted((winner(g, seeded) for g in semis), key=seeded.index)]
+    db.executemany("INSERT INTO games (week, home_team_id, away_team_id) VALUES (?, ?, ?)",
+                   [(week, home, away) for home, away in pairs])
+
+
 def _current_week(db) -> int:
     return db.execute("SELECT current_week FROM game").fetchone()[0]
 
@@ -134,7 +183,24 @@ def current_week(db_file: Path | None = None) -> int:
         db.close()
 
 
+def _season_games_of(db_file: Path | None) -> int:
+    db = connect(db_file)
+    try:
+        return _season_games(db)
+    finally:
+        db.close()
+
+
 def season_over(db_file: Path | None = None) -> bool:
+    """Whether the whole season is over: the regular season and the playoffs."""
+    db = connect(db_file)
+    try:
+        return _current_week(db) > _last_week(db)
+    finally:
+        db.close()
+
+
+def regular_season_over(db_file: Path | None = None) -> bool:
     db = connect(db_file)
     try:
         return _current_week(db) > _season_games(db)
@@ -174,18 +240,22 @@ def record_result(game_id: int, home_score: int, away_score: int, db_file: Path 
 
 
 def advance_week(db_file: Path | None = None) -> int:
-    """Move on to the next week once every game this week has a result. Returns the new week."""
+    """Move on to the next week once every game this week has a result. Returns the new week.
+    Moving into the playoffs (G6) puts the next round on the schedule."""
+    seeded = seeds(db_file) if current_week(db_file) >= _season_games_of(db_file) else []
     db = connect(db_file)
     try:
         with db:
             week = _current_week(db)
-            if week > _season_games(db):
-                raise ValueError("The regular season is over.")
+            if week > _last_week(db):
+                raise ValueError("The season is over.")
             unplayed = db.execute("SELECT COUNT(*) FROM games WHERE week = ? AND home_score IS NULL",
                                   (week,)).fetchone()[0]
             if unplayed:
                 raise ValueError(f"{unplayed} game(s) in week {week} have not been played.")
             db.execute("UPDATE game SET current_week = current_week + 1")
+            if playoff_round(week + 1, _season_games(db)):
+                _schedule_playoffs(db, week + 1, seeded)
             return week + 1
     finally:
         db.close()
@@ -229,10 +299,11 @@ def _lineup(db, team_id: str, week: int | None = None) -> Lineup:
 
 
 def new_game(db, game) -> Game:
-    """A scheduled game, ready to play: the rosters as they stand and the game's own seed."""
+    """A scheduled game, ready to play: the rosters as they stand and the game's own seed.
+    A playoff game (G6) can't end in a tie."""
     seed = db.execute("SELECT seed FROM game").fetchone()[0]
     return Game(_lineup(db, game["home_team_id"], game["week"]), _lineup(db, game["away_team_id"], game["week"]),
-               seed=f"{seed}-{game['id']}")
+               seed=f"{seed}-{game['id']}", playoff=game["week"] > _season_games(db))
 
 
 def _play(db, game) -> dict:
@@ -290,8 +361,8 @@ def play_week(db_file: Path | None = None) -> list[dict]:
     db = connect(db_file)
     try:
         db.execute("BEGIN IMMEDIATE")
-        if _current_week(db) > _season_games(db):
-            raise ValueError("The regular season is over.")
+        if _current_week(db) > _last_week(db):
+            raise ValueError("The season is over.")
         games = db.execute("SELECT * FROM games WHERE week = ? AND home_score IS NULL ORDER BY id",
                            (_current_week(db),)).fetchall()
         played = [_play(db, game) for game in games]

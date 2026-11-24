@@ -231,22 +231,9 @@ def test_an_empty_order():
 
 # ---- The GM's tools ----------------------------------------------------------------
 
-def test_trade_targets_lists_other_teams_players(scratch_db):
-    oid = an_order()
-    targets, _ = orders.build_tools(oid)
-    found = json.loads(targets("s", 5))
-    assert found["position"] == "S" and found["players"]
-    assert all(p["team_id"] != "HAR" and p["salary"] <= 5 for p in found["players"])
-    overalls = [p["overall"] for p in found["players"]]
-    assert overalls == sorted(overalls, reverse=True)
-    odom = next(p for p in found["players"] if p["id"] == "SUM-45")
-    assert odom["starts_for_his_team"] is False and odom["ratings"]["coverage"] == 80
-    assert "error" in json.loads(targets("PG"))
-
-
 def test_propose_to_owner_reports_problems_to_the_gm(scratch_db):
     oid = an_order()
-    _, propose = orders.build_tools(oid)
+    [propose] = orders.build_tools(oid)
     refused = json.loads(propose("SUM", ["HAR-01"], ["SUM-45"], "Odom."))
     assert refused["filed"] is False and "protects him" in refused["problems"][0]
     filed = json.loads(propose("SUM", ["HAR-46"], ["SUM-45"], "Odom covers 80."))
@@ -258,7 +245,8 @@ def test_the_search_uses_read_tools_only():
     searcher = orders.build_searcher(orders.league_office_tools(), orders.trade_desk_tools(), order_id=1)
     mcp = [t for t in searcher.tools if isinstance(t, MCPTools)]
     assert [t.include_tools for t in mcp] == [orders.LEAGUE_OFFICE_TOOLS, ["evaluate_trade"]]
-    assert [t.__name__ for t in searcher.tools if not isinstance(t, MCPTools)] == ["trade_targets", "propose_to_owner"]
+    # Finding targets is Scouting's job (4.1): the GM only files moves.
+    assert [t.__name__ for t in searcher.tools if not isinstance(t, MCPTools)] == ["propose_to_owner"]
     assert searcher.tool_call_limit == orders.SEARCH_TOOL_LIMIT
     # The memo skill's rules for writing to the owner are always on, as for the GM's answers.
     assert any(i.startswith("How to answer the owner:\n") for i in searcher.instructions)

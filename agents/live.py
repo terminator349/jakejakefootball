@@ -37,7 +37,7 @@ DEFENSE_LABELS = {"base": "Base", "blitz": "Blitz", "cover_2": "Cover 2", "deep_
 def key_moment(sit: Situation, team_id: str) -> bool:
     """Whether the owner gets the call at the 'key moments' level."""
     two_minute = sit.quarter in (2, 4) and sit.clock <= 120
-    if sit.quarter == 5:
+    if sit.quarter >= 5:  # overtime
         return True
     if sit.offense == team_id:
         return sit.down == 4 or sit.yardline >= 80 or two_minute

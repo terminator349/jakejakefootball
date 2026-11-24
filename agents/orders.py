@@ -22,9 +22,11 @@ Approving re-checks the move against the rules and the orders as they are then,
 and proposes it on the Trade Desk as the Herons' offer. The other team's GM
 answers it there (agents/rivals.py, 2.2).
 
-The GM searches on its own here, with the League Office's read tools, the Trade
-Desk's evaluate_trade and a target list (`trade_targets`). The scouting team
-(4.1) takes over finding targets later.
+The scouting team (4.1, agents/scouting.py) finds the targets first: its report
+lists the players at the order's positions who would start for us, graded, each
+with the one-for-one offer his team should take. The GM works from that report
+with the League Office's read tools and the Trade Desk's evaluate_trade, and
+files moves with propose_to_owner.
 """
 
 import json
@@ -38,7 +40,7 @@ from agno.tools.mcp import MCPTools
 from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
 
-from agents import rules, skills
+from agents import memory, rules, scouting, skills
 from agents import trade_desk as desk
 from agents.league_db import connect, load_league
 
@@ -47,7 +49,6 @@ OUR_TEAM = "HAR"
 MAX_PROPOSALS = 3        # moves the GM may file for one order
 SEARCH_TOOL_LIMIT = 30   # a search takes about 6-15 calls, plus loading the negotiation skill
 READ_ATTEMPTS = 2        # DeepSeek's structured output now and then comes back empty
-TARGETS_SHOWN = 12
 
 
 class OrderError(ValueError):
@@ -251,6 +252,10 @@ def check_move(order_id: int, team_id: str, we_send: list[str], we_get: list[str
         if row["id"] != skip_proposal and (sorted(json.loads(row["sends"])), sorted(json.loads(row["receives"]))) \
                 == (sorted(we_send), sorted(we_get)):
             problems.append(f"Move #{row['id']} already proposes this trade.")
+    # The owner's past decisions hold (4.2): a trade the owner vetoed isn't proposed again.
+    if before := memory.vetoed(team_id, we_send, we_get, db_file):
+        problems.append(f"You vetoed this exact trade in week {before['week']}"
+                        + (f" (\"{before['note']}\")" if before["note"] else "") + "; it won't be proposed again.")
     return problems, evaluation
 
 
@@ -403,45 +408,19 @@ def moves(db_file: Path | None = None, order_id: int | None = None) -> list[dict
 
 
 def desk_view(db_file: Path | None = None) -> dict:
-    """The orders standing and the moves the GM has proposed, for the week screen."""
+    """The orders standing, Scouting's report for each, and the moves the GM has proposed,
+    for the week screen."""
     all_moves = moves(db_file)
-    return {"orders": orders("active", db_file), "moves": all_moves,
+    standing = [{**o, "scouting": scouting.report_for_order(o["id"], db_file)} for o in orders("active", db_file)]
+    return {"orders": standing, "moves": all_moves,
             "waiting": sum(m["status"] == "waiting" for m in all_moves)}
 
 
 # ---- The GM's search ----------------------------------------------------------------
 
 def build_tools(order_id: int, db_file: Path | None = None) -> list:
-    """The GM's own tools for one order, bound to it and to the loaded league."""
-
-    def trade_targets(position: str, max_salary: float = 0) -> str:
-        """Players at one position on the other five teams, best overall first, with their
-        ratings, salary, contract years and whether they start for their team. Use it to find
-        players to trade for.
-
-        Args:
-            position: league position code, e.g. "S" or "CB".
-            max_salary: only players earning at most this, in $M per season. 0 for no limit.
-        """
-        league = load_league(db_file)
-        position = position.strip().upper()
-        starters = league["rules"]["starters_per_position"]
-        if position not in starters:
-            return json.dumps({"error": f"Unknown position {position!r}. Valid: {', '.join(starters)}."})
-        found = []
-        for team in league["teams"]:
-            if team["id"] == OUR_TEAM:
-                continue
-            depth = sorted((p for p in league["players"] if p["team_id"] == team["id"] and p["position"] == position),
-                           key=lambda p: -p["overall"])
-            for rank, p in enumerate(depth):
-                if max_salary and p["salary"] > max_salary:
-                    continue
-                found.append({"id": p["id"], "name": p["name"], "team_id": team["id"], "age": p["age"],
-                              "overall": p["overall"], "ratings": p["ratings"], "salary": p["salary"],
-                              "years_left": p["contract_years"], "starts_for_his_team": rank < starters[position]})
-        found.sort(key=lambda p: -p["overall"])
-        return json.dumps({"position": position, "max_salary": max_salary or None, "players": found[:TARGETS_SHOWN]})
+    """The GM's own tool for one order, bound to it and to the loaded league. Finding
+    targets is the scouting team's job (4.1): its report is in the GM's prompt."""
 
     def propose_to_owner(team_id: str, we_send: list[str], we_get: list[str], reason: str) -> str:
         """Put one trade in front of the owner for approval. It is checked first: against the
@@ -462,27 +441,32 @@ def build_tools(order_id: int, db_file: Path | None = None) -> list:
         return json.dumps({"filed": True, "move_id": move_id,
                            "moves_left_for_this_order": MAX_PROPOSALS - len(moves(db_file, order_id))})
 
-    return [trade_targets, propose_to_owner]
+    return [propose_to_owner]
 
 
 SEARCH_INSTRUCTIONS = [
     "You are the general manager of the Harbor City Herons (team id HAR) in a six-team American football "
     "league. The owner gave you an order. Carry it out by finding trades and putting the best of them in "
     f"front of the owner with propose_to_owner (at most {MAX_PROPOSALS}). The owner approves or vetoes each one.",
-    "Work like this: if the order names no position, call compare_to_league for HAR to find the weakest. Call "
-    "get_roster for HAR at the position to see who starts. Call trade_targets for that position, with the "
-    "order's salary limit, to find players who would start for us. For each promising one, decide what we "
-    "send back (backups at the same position, or salary we can spare) and call evaluate_trade to check it: "
-    "it must be legal, and it should improve the units the order is about.",
+    "Your scouting team has already found the targets: its report is in the message, graded best first, each "
+    "with the one-for-one offer his team should take by the league's measure. Work from it and don't look for "
+    "other players. For each target worth having (A and B grades first), check the suggested offer with "
+    "evaluate_trade, or a better one you build (backups at the same position, or salary we can spare): it must "
+    "be legal, and it should improve the units the order is about. Call get_roster for HAR if you need to see "
+    "who starts.",
     "The salary cap is $255M and hard, and rosters must stay between 46 and 53 players. evaluate_trade tells "
     "you both teams' payroll, cap space and roster size after the trade: trust it rather than doing sums.",
     "Never send a player the owner protects. Never invent players: use only ids that your tools returned.",
+    "You remember the season so far (in the message): the owner's earlier decisions and notes stand. Don't "
+    "propose a trade the owner vetoed, and treat what the owner said about a player or a deal as a standing "
+    "preference.",
     "The other team decides by its appraisal in evaluate_trade (teams.<their id>.appraisal): below its margin "
     "it will counter or say no. Use your negotiation skill to build an offer whose appraisal for them says "
     "accept while ours stays worth it: swap strength for need, rather than offering backups for a starter.",
     "Write each reason with the numbers evaluate_trade gave you (ratings, salaries, unit changes, cap space "
     "after). If propose_to_owner refuses a move, read its problems and fix the move or try another.",
-    "Propose only moves you would recommend. If nothing fits the order, propose nothing and say why.",
+    "Propose only moves you would recommend. If nothing fits the order, or Scouting found no one, propose "
+    "nothing and say why.",
     "When you're done, write the owner a short reply: what you proposed and why, or why nothing fits.",
     "How to answer the owner:\n" + skills.section("front-office-memo", "Answering the owner"),
     "The house style:\n" + skills.section("front-office-memo", "House style"),
@@ -518,7 +502,8 @@ def build_searcher(league_office, trade_tools, order_id: int, db_file: Path | No
                  instructions=SEARCH_INSTRUCTIONS, tool_call_limit=SEARCH_TOOL_LIMIT, debug_mode=debug)
 
 
-def search_prompt(order: dict, standing: list[dict], league: dict, week: int) -> str:
+def search_prompt(order: dict, standing: list[dict], league: dict, week: int, report: dict | None = None,
+                  db_file: Path | None = None) -> str:
     cap = league["rules"]["salary_cap"]
     payroll = round(sum(p["salary"] for p in league["players"] if p["team_id"] == OUR_TEAM), 2)
     others = [f"#{o['id']}: \"{o['text']}\"" + (f" (protects {', '.join(o['terms']['protected'])})"
@@ -530,7 +515,10 @@ def search_prompt(order: dict, standing: list[dict], league: dict, week: int) ->
             + ". Call each team by its name.\n\n"
             f"The owner's order #{order['id']}: \"{order['text']}\"\n"
             f"How you read it (enforced when you propose): {json.dumps(order['terms'])}\n\n"
-            + (f"Standing orders that still apply:\n" + "\n".join(others) if others else "No other standing orders."))
+            + (f"Standing orders that still apply:\n" + "\n".join(others) if others else "No other standing orders.")
+            + (f"\n\n{scouting.report_text(report)}" if report is not None else "")
+            + "\n\n" + memory.text(memory.recall(db_file, positions=order["terms"]["positions"],
+                                                 players=order["terms"]["protected_player_ids"]), week))
 
 
 async def give_order(text: str, db_file: Path | None = None, reader: Agent | None = None,
@@ -558,7 +546,7 @@ async def work_order(order_id: int, db_file: Path | None = None, searcher=None, 
     week = _current_week(db_file)
     deadline = league["rules"]["trade_deadline_week"]
 
-    calls = []
+    calls, report = [], None
     if not order["terms"]["wants_trades"]:
         reply = f"Understood: {order['terms']['summary']} That stands until you cancel it."
     elif week > deadline:
@@ -566,8 +554,11 @@ async def work_order(order_id: int, db_file: Path | None = None, searcher=None, 
                  f"deadline, so there's nothing I can propose this season. The order still stands.")
     else:
         standing = orders("active", db_file)
+        # Scouting finds the targets first (4.1): its scouts grade them with the model when
+        # the GM's own search does, and the rules grade them for the rules' search.
+        report = await scouting.scout_for_order(order, standing, db_file, use_model=searcher is None, usage=usage)
         if searcher is None:
-            reply, run = await _search(order, standing, league, week, db_file)
+            reply, run = await _search(order, standing, league, week, db_file, report)
         else:
             reply, run = await searcher(order, standing, league, week)
         if run is not None:
@@ -579,14 +570,15 @@ async def work_order(order_id: int, db_file: Path | None = None, searcher=None, 
     cost = round(sum(costs), 6) if costs else None
     _finish_order(order_id, reply, cost, db_file)
     return {"order": next(o for o in orders("all", db_file) if o["id"] == order_id), "reply": reply,
-            "moves": moves(db_file, order_id), "tool_calls": calls,
+            "moves": moves(db_file, order_id), "scouting": report, "tool_calls": calls,
             "seconds": round(time.perf_counter() - started, 1), "cost": cost}
 
 
-async def _search(order: dict, standing: list[dict], league: dict, week: int, db_file: Path | None):
+async def _search(order: dict, standing: list[dict], league: dict, week: int, db_file: Path | None,
+                  report: dict | None = None):
     async with league_office_tools(db_file) as league_office, trade_desk_tools(db_file) as trade_tools:
         run = await build_searcher(league_office, trade_tools, order["id"], db_file).arun(
-            search_prompt(order, standing, league, week))
+            search_prompt(order, standing, league, week, report, db_file))
     content = final_message(run)
     filed = len(moves(db_file, order["id"]))
     reply = content or (f"I've put {filed} move{'s' if filed != 1 else ''} in front of you." if filed

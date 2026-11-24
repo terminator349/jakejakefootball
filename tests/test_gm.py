@@ -1,4 +1,4 @@
-"""Checks for the GM's team (task 1.4) and the Draft desk. No API key needed: the
+"""Checks for the GM's team (task 1.4, with Scouting's team under it since 4.1) and the Draft desk. No API key needed: the
 team is built and inspected, and a run is read from a stand-in response."""
 
 import asyncio
@@ -10,7 +10,7 @@ import pytest
 from agno.team import TeamMode
 from agno.tools.mcp import MCPTools
 
-from agents import analytics, cap_contracts, draft_desk, gm
+from agents import analytics, cap_contracts, draft_desk, gm, memory
 from draft.players import build_player_pool
 from draft.roster_rules import SALARY_CAP
 
@@ -22,18 +22,23 @@ def team(draft_file=draft_desk.RESULTS_FILE):
 def test_the_gm_leads_every_specialist():
     gm_team = team()
     assert gm_team.name == "General Manager" and gm_team.mode == TeamMode.coordinate
-    assert [m.name for m in gm_team.members] == ["Analytics", "Cap & Contracts", "Draft"]
+    assert [m.name for m in gm_team.members] == ["Analytics", "Cap & Contracts", "Scouting"]
+    # The second level of the org chart: the Draft desk reports through Scouting now (4.1).
+    assert [m.name for m in gm_team.members[2].members] == ["Pro scout, offense", "Pro scout, defense", "Draft"]
     assert all(m.role for m in gm_team.members)  # what the GM reads to choose who to ask
     assert gm_team.model.id == gm.GM_MODEL
     assert not gm_team.tools  # the GM has no data of its own: every number comes from a specialist
 
 
 def test_each_specialist_keeps_its_own_tools():
-    analytics_member, cap_member, draft_member = team().members
+    analytics_member, cap_member, scouting_team = team().members
+    offense, defense, draft_member = scouting_team.members
     assert isinstance(analytics_member.tools[0], MCPTools) and isinstance(cap_member.tools[0], MCPTools)
     assert analytics_member.tools[0] is not cap_member.tools[0]  # a League Office server each
     assert "check_cap_fit" not in analytics.ANALYTICS_TOOLS and "check_cap_fit" in cap_contracts.CAP_CONTRACTS_TOOLS
     assert [f.__name__ for f in draft_member.tools] == ["draft_summary", "team_draft", "best_undrafted"]
+    assert [f.__name__ for f in offense.tools] == [f.__name__ for f in defense.tools] == ["scout_targets",
+                                                                                         "scout_player"]
 
 
 def test_the_team_has_loop_guards_and_a_parser():
@@ -42,7 +47,7 @@ def test_the_team_has_loop_guards_and_a_parser():
     assert gm_team.share_member_interactions  # Cap & Contracts sees what Analytics found
     assert gm_team.output_schema is gm.GMReport and gm_team.parser_model is not None
     assert "general manager" in gm_team.parser_model_prompt
-    for member in gm_team.members:
+    for member in [*gm_team.members, *gm_team.members[2].members]:
         assert member.tool_call_limit and member.parser_model is not None and member.output_schema is not None
 
 
@@ -132,9 +137,13 @@ def test_a_lost_report_shows_what_the_gm_wrote():
     assert gm.summarize(BROKEN)["text"] == "Safety is our weakest spot. Sign one."
 
 
-def test_ask_parses_the_gms_answer_again(monkeypatch):
+def test_ask_parses_the_gms_answer_again(scratch_db, monkeypatch):
+    seen = []
+
     @asynccontextmanager
-    async def front_office(db_file=None, debug=False):
+    async def front_office(db_file=None, debug=False, remembered=None):
+        seen.append(remembered)
+
         async def arun(question):
             return SimpleNamespace(**vars(BROKEN))
         yield SimpleNamespace(arun=arun)
@@ -148,6 +157,12 @@ def test_ask_parses_the_gms_answer_again(monkeypatch):
     run = asyncio.run(gm.ask("Where are we weakest?"))
     assert run["report"]["answer"] == "Safety is our weakest spot. Sign one." and run["text"] is None
     assert run["cost"] == pytest.approx(0.0003)  # the second parse is counted
+    # The GM remembers the season (4.2), and now this answer too.
+    assert seen == ["What you remember from this season (it is week 1 now): nothing yet; this is the start of "
+                    "the season."]
+    [answer] = memory.timeline()
+    assert answer["kind"] == "answer" and answer["text"].startswith('You asked: "Where are we weakest?" I answered: '
+                                                                    "Safety is our weakest spot.")
 
 
 # ---- The Draft desk ---------------------------------------------------------------

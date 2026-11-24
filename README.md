@@ -17,7 +17,7 @@ space and a weak secondary.
 agents/     agent + team definitions, and the plain-Python tools they call
 servers/    MCP servers: League Office (1.1), Trade Desk (2.1)
 skills/     markdown know-how + helper scripts - from 1.5
-data/       league.json (generated season start), league.db (SQLite, the default league), draft_results.json
+data/       league.json (generated season start), league_real.json (real 2025 players, 4.4), league.db (SQLite, the default league), draft_results.json
 saves/      one SQLite database per saved game (git-ignored) - from G1
 draft/      standalone draft simulator - players, rules, valuation, engine, CPU agent
 tests/      checks that run without an API key
@@ -53,18 +53,18 @@ giving orders need `OPENROUTER_API_KEY` in `.env`; without it, the rival GMs
 answer by the rules alone. The other agents join the game as they are built.
 
 1. **Start a game.** Give it a name (and a seed if you want a season you can
-   repeat). Each game is its own save in `saves/`, saved as you play. Continue
+   repeat), and pick the generated league or **Real 2025 players** (4.4, below). Each game is its own save in `saves/`, saved as you play. Continue
    or load a game from the same screen.
 2. **Each week** shows the matchup, both records, and **your GM's briefing**
    (G3, below): our record and standing, last week's result and standouts, the
    other results, our biggest weakness and who plays there, the cap, the trade
    deadline and this week's opponent. Without a key, or while the GM writes it,
    plain notes read from the league stand in. **Ask the front office** puts any question to your GM, who asks Analytics,
-   Cap & Contracts or Draft and answers you with a recommendation, the numbers
+   Cap & Contracts or Scouting and answers you with a recommendation, the numbers
    behind it and what each specialist said (1.4, below). **Give an order**
-   ("Upgrade safety. Stay under $5M a year.") and your GM proposes trades that
-   follow it; **approve** or **veto** each one under **Proposed moves** (G4,
-   below). Nothing goes to another team until you approve it, and then their
+   ("Upgrade safety. Stay under $5M a year."): your scouts find and grade the
+   targets (4.1, below), and your GM proposes trades that follow it; **approve** or **veto** each one under **Proposed moves** (G4,
+   below), with a note if you like: your GM remembers why (4.2, below). Nothing goes to another team until you approve it, and then their
    GM answers: yes, no or a counteroffer. Counteroffers and the offers rival
    GMs make between weeks wait under **Offers to us**, with your GM's read on
    each, and **Around the league** lists the other teams' trades (2.2 and G5,
@@ -78,12 +78,18 @@ answer by the rules alone. The other agents join the game as they are built.
 4. **Results**: our score, every game of the week with its box score, the
    standings, and a replay of our game. Then go on to the next week.
 5. **Roster, Standings, Schedule and Cap** tabs: any team's roster with
-   ratings, contracts and starters; our 17 games with results, box scores and
-   replays; payroll, cap space, the biggest contracts and who is in a final year.
+   ratings, contracts and starters; our games, playoffs included, with results,
+   box scores and replays; payroll, cap space, the biggest contracts and who is in a final year.
 6. **Save & quit** goes back to the title screen. The save already holds
-   everything; load it to carry on from the same week.
+   everything, the front office's memory included; load it to carry on from
+   the same week. The **Front office memory** card lists what your GM
+   remembers.
 
-After week 17 the game shows the final standings; the playoffs are G6.
+7. **The playoffs**: after week 17 the top four play the semifinals, then the
+   final. Win or go home, and a playoff game can't end in a tie. The game ends
+   with the **season summary**: record, playoff result, moves made, final cap
+   position and our season leaders (G6, below).
+
 `agents/game_loop.py` builds the week in plain Python, and
 `pytest tests/test_game_loop.py tests/test_ui.py` checks it and the page's API.
 
@@ -233,7 +239,7 @@ Standings are an SQL view over the results, so they can't drift from them.
 - **Season**: `record_result` writes a score for a game in the current week
   (the simulator, 3.1, will call it). `advance_week` moves on only once every
   game that week has a result. After week 17 the current week is 18 and the
-  regular season is over. `standings` ranks teams by win percentage (a tie is
+  regular season is over; weeks 18 and 19 are the playoffs (G6). `standings` ranks teams by win percentage (a tie is
   half a win), then point difference, then points scored.
 - **Saves** (`agents/saves.py`): `new_game(name)` builds `saves/<name>.db` from
   the `league.json` seed with its own season seed. `load_game(name)` makes a
@@ -344,6 +350,9 @@ Owner -> GM -> Analytics        League Office: rosters, ratings, rankings
             -> Draft            Draft Day results and the draft class
 ```
 
+(Since 4.1 the Draft desk reports through the scouting team, which takes its
+place here; see 4.1, below.)
+
 - **Specialists keep their own tools.** Analytics and Cap & Contracts each start
   their own League Office server with their own slice of its tools, pointed at
   the same league (the loaded save, in the game).
@@ -439,6 +448,8 @@ skills/
     references/examples.md        a good briefing, a bad one, a good answer
   negotiation/        how every GM scores a trade, and building an offer they'll take (2.2)
     scripts/appraise.py           the score, the margin and the verdict for a what-if
+  scouting/           grading a trade target A, B or C, and the scout's note (4.1)
+    scripts/grade.py              the highest grade the numbers allow
 ```
 
 | Who               | Skills                                                 |
@@ -448,6 +459,7 @@ skills/
 | The GM            | front-office-memo, always on (in its instructions)     |
 | The briefing      | front-office-memo, always on, and its checks           |
 | The GM's search   | negotiation (G4, from 2.2)                             |
+| The pro scouts    | scouting, always on (4.1)                              |
 
 - **The scripts use the league's own code**, not a copy of the rules:
   `cap_check.py` uses the League Office's `cap_math` and the rules in
@@ -581,11 +593,11 @@ moves are kept in the save (`orders` and `gm_proposals`, schema version 6).
   only file a move through `propose_to_owner`, which hands the problems back
   so it can fix the move or try another. At most three moves per order.
 - **The GM's search** uses the League Office's `get_roster`,
-  `compare_to_league` and `list_teams`, the Trade Desk's `evaluate_trade`, and
-  `trade_targets` (players at a position on the other teams, under a salary).
-  It can't propose on the Trade Desk itself; only the owner's approval does.
-  Its reasons quote the evaluation's numbers. The scouting team (4.1) takes
-  over finding targets later.
+  `compare_to_league` and `list_teams`, and the Trade Desk's `evaluate_trade`.
+  Since 4.1 the scouting team finds the targets first, and its report is in
+  the GM's prompt (it had a `trade_targets` tool before). It can't propose on
+  the Trade Desk itself; only the owner's approval does. Its reasons quote the
+  evaluation's numbers.
 - **Orders stand all season** until the owner cancels them, so "never trade
   Okafor" holds for every later order. Cancelling an order voids its moves
   still waiting. An order that only sets a rule needs no search, and after
@@ -724,6 +736,220 @@ Done when: in the weeks before the deadline the owner is warned, one click
 runs the scenario from the weakness to offers the other team will take, a
 legal trade can be completed through the rival GMs, and after week 9 the desk
 is closed.
+
+## G6: the playoffs and the end of the season
+
+After week 17 the top four teams play for the championship, and the game ends
+with a season summary. The schedule is in `agents/season.py`, and the bracket
+and summary are in `agents/playoffs.py`, all plain Python.
+
+```
+week 18   Semifinals   1st seed v 4th, 2nd v 3rd, at the better seed
+week 19   Final        the two winners, at the better seed
+week 20   season over  the season summary: record, playoff result, moves made, final cap
+```
+
+- **Seeds** come from the regular season's standings (win percentage, then
+  point difference, then points scored). Each round goes on the schedule when
+  the week moves on to it, so the final is set once both semifinals are played.
+- **Playoff games are ordinary games.** Sim it, Watch it and Call it all work,
+  with box scores and replays, and the Schedule tab lists them as Semifinal and
+  Final. They don't count in the standings: the view only reads weeks up to
+  `season_games` (schema version 8; older saves are moved up when they load).
+- **No ties.** A playoff game tied after four quarters plays sudden-death
+  overtime periods (OT, 2OT, ...) until someone scores, up to six. A tie after
+  that goes to the better seed. In 300 simulated playoff games, 16 needed one
+  overtime, 2 needed two and none got past that.
+- **The playoff screen** shows our game (win or go home), or the round without
+  us, then the bracket with seeds, scores, overtimes, box scores and replays,
+  and the final regular-season standings. The GM's briefing and the trade
+  deadline card stop after week 17.
+- **The season summary** (`playoffs.summary()`): record and standing, points
+  for and against, how far we went and who won, our trades, the orders given,
+  the GM's moves approved, vetoed and void, rivals' offers accepted, turned down
+  and expired, the final payroll and cap space under the hard cap, and our
+  season leaders in passing, rushing and receiving yards, sacks and
+  interceptions.
+
+Played through a seeded season (seed 11): Harbor City finished 10-7, 2nd of 6,
+and were the 2nd seed. They lost the semifinal 24-28 at home to Summit (3rd),
+and Summit beat Iron Falls (15-2) 23-14 in the final.
+
+```powershell
+pytest tests/test_playoffs.py    # overtime, seeds, the bracket, how far we went, the summary, older saves, the game's API; no API key
+```
+
+Done when: after week 17 the top four play two rounds to a champion, no
+playoff game ends in a tie, and the game ends with the season summary.
+
+## 4.1: the scouting team, a second level under the GM
+
+The GM used to find its own trade targets. Now a scouting team under the GM
+finds them, and the org chart has a second level. The code is in
+`agents/scouting.py`.
+
+```
+Owner -> GM -> Analytics
+            -> Cap & Contracts
+            -> Scouting (director) -> Pro scout, offense   QB RB WR TE OL K P
+                                   -> Pro scout, defense   DL LB CB S
+                                   -> Draft                the Draft desk (1.4), moved here
+
+order / deadline -> Scouting's report (graded targets, each with an offer) -> the GM checks and files moves
+```
+
+- **Plain Python does the looking** (`scouting.targets()`). For one position
+  it lists the best six players on the other teams who would start for us,
+  with what each adds to our units (the Trade Desk's unit changes), his season
+  stats, any injury, and the best one-for-one offer his team should accept by
+  the league's own measure (the negotiation score at or above its margin)
+  that's also worth it to us and keeps every player the owner protects. This
+  is the search the deadline's rules used (2.3), moved here.
+- **The scouts grade.** Each pro scout is an agent with two tools,
+  `scout_targets` and `scout_player`, held to its own positions and to the
+  order's limits (salary, payroll, protected players). It grades up to four
+  players a position A, B or C and writes a note on each, following the new
+  `scouting` skill (`skills/scouting/`, with `grade.py`). A scout can grade
+  below what the numbers allow, never above: an A or B needs an offer and a
+  healthy player, and plain Python holds it to that.
+- **The director** is an Agno team in coordinate mode. It hands each
+  position to the scout who covers it and writes a short bottom line for the
+  GM. The report keeps only players plain Python found, with plain Python's
+  numbers; if the scouts leave a position empty, or the run fails, the rules
+  grade it instead.
+- **Orders and the deadline go through Scouting first.** `work_order` runs
+  `scout_for_order` before the GM's search, and the report goes into the
+  GM's prompt. The GM's `trade_targets` tool is gone: it checks the suggested
+  offers (or better ones) with `evaluate_trade` and files them. Without a
+  model, the deadline's rules search files Scouting's offers. Each report is
+  kept with its order (`scouting_reports`, schema version 9) and shows under
+  the order on the week screen.
+- **In the GM's own team** (Ask the front office), Scouting replaces the
+  Draft desk: the GM asks it for targets, and Draft Day questions go to the
+  Draft desk through it. `summarize()` lists the scouts too, as "Scouting /
+  Pro scout, defense". The test bench's Agents tab can run Scouting on its own.
+
+Tried live on the seed league with "Upgrade safety. Nobody over $8M.": the
+scouts graded four safeties (three A, and Quentin Sato a B because his
+contract ends this season) in 53 seconds for $0.013. The GM then filed three
+of them, each on Scouting's suggested offer, recommending Xavier Pruitt
+(Delta Bay scores it +0.31 against its +0.25 margin; we +2.20) first. The
+whole order took 114 seconds and $0.018.
+
+```powershell
+pytest tests/test_scouting.py    # targets and offers, grades, grounding, the team, orders and the deadline; no API key
+```
+
+Done when: the GM's trade search works from Scouting's report, the Draft desk
+reports through Scouting, and the org chart has a second level.
+
+## 4.2: memory, the GM remembers the season
+
+The GM and its staff now remember the season: the owner's orders, every move
+the GM proposed and what the owner decided (in the owner's own words), the
+trades made and the offers answered, Scouting's reports, the weekly briefings,
+and the GM's answers to the owner's questions. The code is in
+`agents/memory.py`.
+
+- **Plain Python keeps it, in the save.** Almost all of it was already there
+  (orders, the GM's moves, trade proposals, scouting reports, briefings), so
+  `memory.timeline()` reads it back into one list, week by week. The GM's
+  answers were the one thing not kept, so they get a table, `gm_answers`
+  (schema version 10). Because the memory is the save, it lasts from week to
+  week and comes back when a saved game is loaded; a new game starts with none.
+  No model writes it, so nothing in it is made up.
+- **The owner's reasons.** Approve, veto, accept and reject each take an
+  optional note ("Never trade Wade Bolden: he's our best lineman."), kept with
+  the decision. A note typed on the week screen survives the screen redrawing.
+- **Who remembers what.** `recall()` picks what bears on the job (always the
+  owner's decisions and the trades made, then what's about the job's positions
+  and players, then the most recent), and `text()` writes it for a prompt, with
+  the owner's questions last in the order asked:
+
+```
+the GM answering a question   the season so far (Agno's additional_context)
+the GM's order search          the season, and everything about the order's positions and protected players
+the pro scouts                 each target's history: offers made for him, moves the owner vetoed
+the weekly briefing            what was decided since last week (front_office_since_last_week)
+```
+
+- **The owner's decisions hold.** A trade the owner vetoed is refused if the
+  GM files it again (`orders.check_move`), with the owner's note. The scouting
+  skill tells the scouts to grade a vetoed target lower unless the deal is
+  different, and the memo skill has the briefing say what came of the owner's
+  decisions.
+- **In the game**, the week screen's **Front office memory** card lists it
+  all, newest week first.
+
+Tried live on the seed league, after a vetoed move (with a note) and an
+approved trade: asked "What trades have we made so far, and what did I say
+when I vetoed the Summit deal?", the GM answered from memory alone without
+asking a specialist (19 seconds, $0.0008): the Pruitt trade, and the owner's
+words on Bolden. Asked next to repeat what it said a minute ago, it did. A
+first try mixed up who approved what, so the memory now says that "You" is the
+owner and "I" the GM, and lists the questions in the order they were asked.
+
+```powershell
+pytest tests/test_memory.py    # the timeline, recall, vetoes holding, the search, scouts and briefing, saves; no API key
+```
+
+Done when: the GM remembers the owner's orders and decisions across weeks and
+through save and load, and acts on them.
+
+## 4.4: real players
+
+A new game can fill the six franchises with real NFL players instead of the
+generated league: pick **Real 2025 players** at **New game**. The Herons and their
+five rivals stay; the players on them are real, rated from their 2025 regular
+season. The generated league is still the default, and everything else (rules,
+cap, schedule, agents) is the same in both.
+
+- **The data.** `data/nflverse_fetch.py` downloads nflverse's public 2025 data
+  (github.com/nflverse/nflverse-data, about 7 MB, into the git-ignored
+  `data/nflverse/`): rosters, season stats, Pro Football Reference's advanced
+  stats and snap counts. `data/real_league.py` turns it into
+  `data/league_real.json`, which is committed, so playing never downloads
+  anything and needs no key.
+- **Who's in.** At each position, the players who played the most in 2025
+  (snaps; kicks and punts for K and P), as many as six 48-man rosters hold: 288.
+- **Ratings from real stats.** Each skill the simulator uses is scored from the
+  stats that show it: a cornerback's coverage from the passer rating and yards
+  per target he allowed, a QB's accuracy from completion % over expected and
+  on-target %, a pass rusher's from pressures, sacks and QB hits. Rate stats on
+  few attempts are pulled toward the average. Players are then ranked, and the
+  ranks get the generated league's ratings for that skill, so the real league
+  plays on the same scale: a simulated season (seed 7) averaged 21.6 points a
+  game, against 21.2 for the generated league.
+  Where no public stat shows a skill (a lineman's blocking, a back's pass
+  protection, a defensive back's speed), the score uses what does exist: playing
+  time, the team's sack rate and rushing EPA, weight, age. `RATING_SOURCES` in
+  `data/real_league.py` lists every rating's stats.
+- **Teams.** The six franchises draft each position in turns, starters first, so
+  their average overalls come out within two points. The Herons get the weakest
+  starting secondary, so they rank last in cornerback and safety coverage, as in
+  the generated league (by less: real data, not a planted 22-point drop).
+- **Salaries are estimated.** nflverse's contract file ends with deals signed in
+  2022 (Josh Allen's and Ja'Marr Chase's current deals aren't in it), so pay uses
+  the game's own scale on each player's rating, with players in their first four
+  seasons on rookie deals by real draft position. Each team's payroll matches the
+  generated league's, so the Herons again have $5.5M of cap space.
+- **In the game**, the save list and the header say *real players*, and the
+  order examples name your own starting quarterback (Drake Maye with real
+  players). The player-valuation skill's script now prices players on the loaded
+  save's salaries (`FRONT_OFFICE_DB`), not the generated seed's.
+
+The best players come out where you'd expect: Myles Garrett has the best pass
+rush, Drake Maye (after his 2025 season) the best accuracy, and Josh Allen,
+Ja'Marr Chase and Bijan Robinson are all starters.
+
+```powershell
+python data/nflverse_fetch.py      # once, to rebuild: the raw 2025 data
+python data/real_league.py         # writes data/league_real.json
+pytest tests/test_real_league.py   # the league's shape, ratings, payrolls and balance, and playing it; no download
+```
+
+Done when: a new game can start with real players, rated from real stats, on
+the same rules and scale as the generated league.
 
 ## 3.2: Coaching and Medical agents (built ahead of schedule)
 

@@ -29,7 +29,8 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import briefing, deadline, game_loop, league_db, live, orders, rivals, rules, saves, season, tools
+from agents import (briefing, deadline, game_loop, league_db, live, memory, orders, playoffs, rivals, rules, saves,
+                    season, tools)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -72,7 +73,7 @@ async def status(request, body):
         db_file = db_file.relative_to(PROJECT_ROOT.resolve())
     return {"save": active_save(), "db_file": db_file.as_posix(),
             "week": week, "season_games": league_rules["season_games"],
-            "season_over": week > league_rules["season_games"],
+            "season_over": season.season_over(), "regular_season_over": season.regular_season_over(),
             "trade_deadline_week": league_rules["trade_deadline_week"],
             "our_team": json.loads(tools.list_teams())["our_team"],
             "api_key_set": bool(os.getenv("OPENROUTER_API_KEY"))}
@@ -85,7 +86,7 @@ async def list_saves(request, body):
 async def new_game(request, body):
     seed = body.get("seed")
     path = saves.new_game(body.get("name", ""), season_seed=int(seed) if seed not in (None, "") else None,
-                          overwrite=bool(body.get("overwrite")))
+                          overwrite=bool(body.get("overwrite")), league=body.get("league") or "generated")
     saves.load_game(path.stem)
     return {"loaded": path.stem}
 
@@ -95,7 +96,7 @@ async def load_game(request, body):
 
 
 async def use_default(request, body):
-    league_db.DB_FILE = league_db.DEFAULT_DB_FILE
+    saves.use_default()
     return {"loaded": None}
 
 
@@ -230,8 +231,15 @@ async def run_cap_contracts(request, body):
                                  CapReport, ground_report)
 
 
+async def run_scouting(request, body):
+    """The scouting team on its own (4.1): its director delegates to the pro scouts and Draft."""
+    from agents import scouting
+    return await scouting.ask(_question(body), _db_for_agents())
+
+
 async def run_gm(request, body):
-    """The GM's team (1.4): the GM delegates to Analytics, Cap & Contracts and Draft."""
+    """The GM's team (1.4): the GM delegates to Analytics, Cap & Contracts and Scouting (4.1),
+    whose director delegates to its pro scouts and the Draft desk."""
     from agents import gm
     return await gm.ask(_question(body), _db_for_agents())
 
@@ -261,12 +269,21 @@ async def hub(request, body):
     if active_save() is None:
         return {"save": None}
     week = game_loop.overview()
-    return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
-            "briefing": None if week["season_over"] else briefing.stored(week["week"]),  # G3, once written
+    league = league_db.load_league()
+    our_qbs = sorted((p for p in league["players"] if p["team_id"] == league["our_team"] and p["position"] == "QB"),
+                     key=lambda p: -p["overall"])
+    return {"save": active_save(), **week, "league": league_db.league_kind(),
+            "league_name": league_db.LEAGUES[league_db.league_kind()],
+            "our_qb": our_qbs[0]["name"] if our_qbs else None,  # for the order examples (4.4: real names too)
+            "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
+            "briefing": None if week["regular_season_over"] else briefing.stored(week["week"]),  # G3
             "desk": orders.desk_view(),  # G4: standing orders and the GM's proposed moves
             "offers": rivals.offers_to_us(),  # G5: rival GMs' offers to us, with our GM's read
+            "memory": memory.timeline(),  # 4.2: what the front office remembers this season
             "news": [] if week["season_over"] else rivals.news(week["week"]),  # G5: trades between rivals
-            "deadline": None if week["season_over"] else deadline.status()}  # 2.3: the trade deadline
+            "deadline": None if week["regular_season_over"] else deadline.status(),  # 2.3: the trade deadline
+            "playoffs": playoffs.bracket(),  # G6: the bracket, from week 18
+            "summary": playoffs.summary() if week["season_over"] else None}  # G6: how the season went
 
 
 def _needs_a_save():
@@ -297,7 +314,8 @@ async def hub_briefing(request, body):
 
 
 async def hub_ask(request, body):
-    """Ask the front office: the owner talks to the GM, who asks the specialists (1.4)."""
+    """Ask the front office: the owner talks to the GM, who asks the specialists (1.4). The GM
+    remembers the season, and its answer is kept (4.2)."""
     _needs_a_save()
     return await run_gm(request, body)
 
@@ -451,6 +469,7 @@ app = Starlette(routes=[
     Route("/api/agent/analytics", api(run_analytics), methods=["POST"]),
     Route("/api/agent/cap", api(run_cap_contracts), methods=["POST"]),
     Route("/api/agent/gm", api(run_gm), methods=["POST"]),
+    Route("/api/agent/scouting", api(run_scouting), methods=["POST"]),
 ])
 
 

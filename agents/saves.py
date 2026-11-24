@@ -9,6 +9,7 @@ The same season seed gives the same schedule (and, from task 3.1, the same
 games), so tests and the demo can replay a season exactly.
 """
 
+import os
 import re
 import secrets
 from pathlib import Path
@@ -27,14 +28,17 @@ def save_path(name: str) -> Path:
     return SAVES_DIR / f"{name}.db"
 
 
-def new_game(name: str, season_seed: int | None = None, overwrite: bool = False) -> Path:
+def new_game(name: str, season_seed: int | None = None, overwrite: bool = False, league: str = "generated") -> Path:
     """Start a new game in saves/<name>.db, at week 1 of a fresh season. Picks a random
-    season seed unless one is given. Refuses to replace an existing save unless told to."""
+    season seed unless one is given. Refuses to replace an existing save unless told to.
+    `league` is "generated" or "real" (task 4.4: the franchises filled with real players)."""
+    if league not in league_db.LEAGUES:
+        raise ValueError(f"Unknown league {league!r}. Valid: {list(league_db.LEAGUES)}")
     path = save_path(name)
     if path.exists() and not overwrite:
         raise FileExistsError(f"There is already a save called {name!r}.")
     SAVES_DIR.mkdir(exist_ok=True)
-    league_db.build(path, season_seed=secrets.randbelow(2**31) if season_seed is None else season_seed)
+    league_db.build(path, season_seed=secrets.randbelow(2**31) if season_seed is None else season_seed, league=league)
     return path
 
 
@@ -47,7 +51,14 @@ def load_game(name: str) -> Path:
         raise FileNotFoundError(f"There is no save called {name!r}.")
     league_db.connect(path).close()  # raises OutdatedDatabase for an old save
     league_db.DB_FILE = path
+    os.environ[league_db.DB_ENV] = str(path)  # for the skills' scripts
     return path
+
+
+def use_default() -> None:
+    """Make data/league.db the league every tool reads again."""
+    league_db.DB_FILE = league_db.DEFAULT_DB_FILE
+    os.environ.pop(league_db.DB_ENV, None)
 
 
 def list_saves() -> list[dict]:
@@ -65,11 +76,13 @@ def list_saves() -> list[dict]:
         try:
             our_team = db.execute("SELECT json_extract(value, '$') FROM settings "
                                   "WHERE key = 'our_team'").fetchone()[0]
+            league = db.execute("SELECT json_extract(value, '$') FROM settings WHERE key = 'league'").fetchone()
             week = db.execute("SELECT current_week FROM game").fetchone()[0]
             record = db.execute("SELECT wins, losses, ties FROM standings WHERE team_id = ?",
                                 (our_team,)).fetchone()
         finally:
             db.close()
         saves.append({"name": path.stem, "outdated": False, "week": week, "team_id": our_team,
+                      "league": league[0] if league else "generated",
                       "wins": record["wins"], "losses": record["losses"], "ties": record["ties"]})
     return saves

@@ -78,10 +78,10 @@ GM briefing
 | W7   | Dec 7 - 13     | 2.1, G4, 2.2 (done early), G8 (done early) |
 | W8   | Dec 14 - 20    | 2.2, G5 (done early)                   |
 | W9   | Dec 21 - 27    | 2.3 (done early)                       |
-| W10  | Dec 28 - Jan 3 | 3.2 (done early), G6                   |
-| W11  | Jan 4 - 10     | 3.2 (done early), 4.2                  |
-| W12  | Jan 11 - 17    | 4.1, 4.3, 4.5                          |
-| W13  | Jan 18 - 24    | 4.4 (stretch), 5.1                     |
+| W10  | Dec 28 - Jan 3 | 3.2 (done early), G6 (done early)      |
+| W11  | Jan 4 - 10     | 3.2 (done early), 4.2 (done early)     |
+| W12  | Jan 11 - 17    | 4.1 (done early), 4.3, 4.5             |
+| W13  | Jan 18 - 24    | 4.4 (stretch, done early), 5.1         |
 | W14  | Jan 25 - 31    | 5.1, 5.2                               |
 
 Milestones: the game is **playable with no AI** at the end of W4 (G2), the GM
@@ -354,23 +354,50 @@ until changed again, and a trade or cut silently retires a stale one; and
 The top teams after week 17 play for the championship. The game ends with a
 season summary: record, playoff result, moves made and final cap position.
 
+Done Nov 19, ahead of W10. The top four by the standings play semifinals in
+week 18 (1 v 4, 2 v 3) and the final in week 19, at the better seed. Playoff
+games are simmed, watched or called like any other but don't count in the
+standings, and they play overtime until someone scores. Week 20 shows the
+season summary: record and standing, how far we went, trades, orders, the GM's
+moves and rivals' offers, the final cap position and our season leaders.
+
 ## Phase 4: Hierarchy and polish
 
-### 4.1 Scouting sub-team (W12)
+### 4.1 Scouting sub-team (W12) - Done early (Nov 19)
 A scouting team under the GM, adding a second level to the org chart. It finds
 trade targets for the GM's proposals, and the Draft agent (G7) moves into it.
 
-### 4.2 Memory (W11)
+Done Nov 19, ahead of W12. A Scouting director (an Agno team under the GM) hands
+each position to an offense or defense pro scout. Plain Python lists the players
+who would start for us and the one-for-one offer their team should take; the
+scouts grade them A, B or C with the new scouting skill. Orders and the deadline
+go through Scouting first, and the GM files moves from its report. The Draft desk
+(1.4) reports through Scouting; G7's draft agent will join it there.
+
+### 4.2 Memory (W11) - Done early (Nov 24)
 Agents remember past decisions, trades and reports. In the game, the GM
 remembers the owner's standing orders and past decisions across weeks and saved
 games.
+
+Done Nov 24, ahead of W11. Plain Python reads the save back into one timeline
+(orders, the GM's moves and the owner's decisions with notes, trades, offers,
+scouting reports, briefings, and the GM's answers, now kept). The GM's
+questions, its order search, the scouts and the briefing each get what bears
+on their job, and a trade the owner vetoed is refused if filed again. Memory
+lives in the save, so it lasts across weeks and through save and load.
 
 ### 4.3 Org-chart screen (W12)
 A screen in the game showing the agent hierarchy and what each agent did this
 week.
 
-### 4.4 Real stats data (W13, stretch goal)
+### 4.4 Real stats data (W13, stretch goal) - Done early (Nov 24)
 Load real player data in place of the generated league, if ahead of schedule.
+
+Done Nov 24, ahead of W13. "New game" offers "Real 2025 players": the six
+franchises filled with real NFL players from nflverse's public 2025 data, each
+rated from his real stats on the generated league's scale, so the simulator
+stays balanced. The generated league stays the default. Salaries are estimated
+from ratings, because nflverse's contract data ends in 2022.
 
 ### 4.5 Difficulty levels: easy, normal, hard (W12)
 No longer a stretch goal, since a game needs it: chosen at "New game", it sets

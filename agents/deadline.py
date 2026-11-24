@@ -27,7 +27,7 @@ after it. This module makes the deadline something the owner plays:
 import copy
 from pathlib import Path
 
-from agents import negotiation, orders, rivals, rules, season
+from agents import negotiation, orders, rules, scouting, season
 from agents.game_loop import _ordinal, _rating_name
 from agents.league_db import load_league
 from agents.tools import _starter_average
@@ -188,52 +188,36 @@ def briefing_facts(db_file: Path | None = None) -> dict:
 
 # ---- Working the deadline --------------------------------------------------------------------
 
-def _candidates(league: dict, positions: list[str], protected: set[str]) -> list[dict]:
-    """One-for-one trades for a player who would start for us at one of the positions: the
-    seller scores it at least its margin (so it says yes), and so do we. Best for us first."""
-    by_id = {p["id"]: p for p in league["players"]}
-    sellers = [t["id"] for t in league["teams"] if t["id"] != OUR_TEAM]
-    ours = [p for p in league["players"] if p["team_id"] == OUR_TEAM and p["id"] not in protected]
-    found = []
-    for pos in positions:
-        for target in rivals._targets(league, OUR_TEAM, pos, sellers):
-            best = None
-            for p in ours:
-                if not rivals._legal(league, OUR_TEAM, [p["id"]], target["team_id"], [target["id"]], by_id):
-                    continue
-                mine, theirs = rivals._scores(league, OUR_TEAM, [p["id"]], target["team_id"], [target["id"]])
-                if theirs["score"] >= theirs["margin"] and mine["score"] >= mine["margin"]:
-                    if best is None or mine["score"] > best["ours"]["score"]:
-                        best = {"send": p, "get": target, "ours": mine, "theirs": theirs}
-            if best:
-                found.append(best)
-    return sorted(found, key=lambda c: -c["ours"]["score"])
-
-
-def _reason(league: dict, c: dict) -> str:
-    get, send = c["get"], c["send"]
-    return (f"{get['name']} ({get['position']}, {get['overall']} overall, ${get['salary']:.2f}M) would start for "
-            f"us. {_team_name(league, get['team_id'])} scores the trade {c['theirs']['score']:+.2f}, above the "
-            f"{c['theirs']['margin']:+.2f} a team needs to say yes, and it's worth {c['ours']['score']:+.2f} to us. "
-            f"We send {send['name']} ({send['position']}, {send['overall']} overall, ${send['salary']:.2f}M).")
+def _reason(league: dict, t: dict) -> str:
+    offer = t["offer"]
+    send = offer["we_send"][0]
+    return (f"{t['name']} ({t['position']}, {t['overall']} overall, ${t['salary']:.2f}M) would start for us; "
+            f"Scouting grades him {t['grade']}. {_team_name(league, t['team_id'])} scores the trade "
+            f"{offer['their_score']:+.2f}, above the {offer['margin']:+.2f} a team needs to say yes, and it's worth "
+            f"{offer['our_score']:+.2f} to us. We send {send['name']} ({send['position']}, {send['overall']} overall, "
+            f"${send['salary']:.2f}M).")
 
 
 def rules_search(db_file: Path | None = None):
-    """The deadline search without a model: a searcher for orders.work_order."""
+    """The deadline search without a model: a searcher for orders.work_order. It files the
+    offers in Scouting's report (4.1), best for us first: one-for-one trades for a player who
+    would start for us, which his team scores at least its margin, and so do we."""
     async def search(order, standing, league, week):
-        protected = {pid for o in standing for pid in o["terms"]["protected_player_ids"]}
+        report = scouting.report_for_order(order["id"], db_file)
+        deals = sorted((t for t in (report["targets"] if report else []) if t["offer"] and not t["games_out"]),
+                       key=lambda t: -t["offer"]["our_score"])
         filed, sent, targets = 0, set(), set()
-        for c in _candidates(league, order["terms"]["positions"], protected):
+        for t in deals:
             if filed == orders.MAX_PROPOSALS:
                 break
-            if c["send"]["id"] in sent or c["get"]["id"] in targets:
+            send = t["offer"]["we_send"][0]["id"]
+            if send in sent or t["player_id"] in targets:
                 continue
             try:
-                orders.file_move(order["id"], c["get"]["team_id"], [c["send"]["id"]], [c["get"]["id"]],
-                                 _reason(league, c), db_file)
+                orders.file_move(order["id"], t["team_id"], [send], [t["player_id"]], _reason(league, t), db_file)
             except orders.MoveRefused:
                 continue
-            filed, sent, targets = filed + 1, sent | {c["send"]["id"]}, targets | {c["get"]["id"]}
+            filed, sent, targets = filed + 1, sent | {send}, targets | {t["player_id"]}
         unit = order["terms"]["summary"]
         reply = (f"I've put {filed} deadline move{'s' if filed != 1 else ''} in front of you, each one the other "
                  "team should take by the league's measure." if filed else

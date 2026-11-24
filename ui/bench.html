@@ -169,9 +169,10 @@ span[data-box] { cursor: pointer; text-decoration: underline dotted; }
       <div class="card">
         <h2>Ask an agent <span class="sub" id="agent-task"></span></h2>
         <div class="row"><select id="agent-pick">
-          <option value="gm">General Manager, leading Analytics, Cap &amp; Contracts and Draft</option>
+          <option value="gm">General Manager, leading Analytics, Cap &amp; Contracts and Scouting</option>
           <option value="analytics">Analytics</option>
-          <option value="cap">Cap &amp; Contracts</option></select></div>
+          <option value="cap">Cap &amp; Contracts</option>
+          <option value="scouting">Scouting, leading two pro scouts and Draft</option></select></div>
         <p class="note" id="agent-about"></p>
         <div class="examples" id="examples"></div>
         <textarea id="question" rows="3"></textarea>
@@ -403,8 +404,9 @@ async function callMcp() {
 // ---- agents -----------------------------------------------------------
 const AGENTS = {
   gm: { task: "1.4", report: "GMReport, grounded in the data", calls: "Who the GM asked, and what each specialist did",
-    about: "Runs the GM's Agno team against the loaded league: the GM decides which specialists to ask, writes each a task, and combines their answers. Analytics and Cap & Contracts each start their own League Office server; Draft reads Draft Day's results. A run takes 1-2 minutes.",
+    about: "Runs the GM's Agno team against the loaded league: the GM decides which specialists to ask, writes each a task, and combines their answers. Analytics and Cap & Contracts each start their own League Office server; Scouting is a team of its own, whose director asks two pro scouts and the Draft desk (Draft Day's results). A run takes 1-3 minutes.",
     examples: ["We're 1 game out of a playoff spot. Where is our roster weakest, and can we afford a player who fixes it?",
+      "Who could we trade for to fix our secondary, and what would it cost us?",
       "Can we afford a $6M safety, and would one fix our secondary?",
       "Which team did best on Draft Day, and what did we take at cornerback?",
       "Is our quarterback worth his contract, and what would cutting him free up?"] },
@@ -419,8 +421,21 @@ const AGENTS = {
     examples: ["Is every team in the league legal under the $255M hard cap right now?",
       "Can we sign a free agent safety for $6M a year?",
       "Would trading HAR-46 for SUM-45 break any rule?"] },
+  scouting: { task: "4.1", report: "Scouting's report, grounded in the data", calls: "Who the director asked, and what each scout did",
+    about: "Runs the scouting team on its own: the director hands each position to the offense or defense pro scout (or Draft Day questions to the Draft desk). Plain Python finds the players who would start for us and the offer their team should take; the scouts grade them A, B or C. A run takes 30-90 seconds.",
+    examples: ["Find us safeties who would start for us, and what their teams would take.",
+      "Which cornerbacks and linebackers could we get on a one-for-one trade?",
+      "Who's the best receiver we could trade for without adding more than $3M?",
+      "Which team did best on Draft Day?"] },
 };
 const agentPick = () => $("#agent-pick").value;
+function scoutReportHtml(rep) {
+  const rows = rep.targets.map(t => `<tr><td><span class="badge ${t.grade === "A" ? "good" : t.grade === "C" ? "bad" : ""}">${t.grade}</span></td>
+    <td><b>${esc(t.name)}</b> <span class="pos">${t.player_id}</span><br><span class="note">${t.position} · ${esc(t.team)} · ${t.overall} · ${money(t.salary)} · units ${t.unit_gain >= 0 ? "+" : ""}${t.unit_gain}</span></td>
+    <td>${esc(t.note)}${t.offer ? `<br><span class="note">Offer: ${esc(t.offer.we_send[0].name)}; they score ${t.offer.their_score}, we ${t.offer.our_score}</span>` : ""}
+      <span class="note">(${t.graded_by})</span></td></tr>`).join("");
+  return `<p>${esc(rep.summary)}</p>${rep.targets.length ? `<table>${rows}</table>` : `<p class="empty">No targets.</p>`}`;
+}
 function showAgent() {
   const a = AGENTS[agentPick()];
   $("#agent-task").textContent = a.task;
@@ -438,9 +453,10 @@ async function runAgent() {
   try {
     const r = await call(`/api/agent/${which}`, { question: q });
     $("#report").innerHTML = r.report
-      ? (which === "gm" ? `<p class="note">Asked: ${r.consulted.map(esc).join(", ") || "no one"}</p>` : "") + reportHtml(r.report)
+      ? (r.consulted ? `<p class="note">Asked: ${r.consulted.map(esc).join(", ") || "no one"}</p>` : "")
+        + (which === "scouting" ? scoutReportHtml(r.report) : reportHtml(r.report))
       : `<p class="note">The agent didn't return its report. Its text:</p><pre>${esc(r.text)}</pre>`;
-    $("#calls").innerHTML = which === "gm" ? frontOfficeHtml(r, true) : toolCallsHtml(r.tool_calls);
+    $("#calls").innerHTML = r.specialists ? frontOfficeHtml(r, true) : toolCallsHtml(r.tool_calls);
     $("#agent-stats").innerHTML = runStatsHtml(r);
     $("#ask-status").textContent = "Done.";
   } catch (e) { $("#ask-status").textContent = ""; fail(e); }
