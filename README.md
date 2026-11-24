@@ -806,3 +806,27 @@ pytest tests/test_draft.py           # engine checks, no API key needed
 - **CPU GMs**: the 5 teams you don't control are each drafted by the same kind of OpenRouter/DeepSeek agent as Analytics (`draft/agent.py`), given a shortlist of the best value/need players, cap-checking tools, and a randomly assigned front-office philosophy (best-player-available, need-first, trenches-first, or premium-positions-first) so the six teams draft differently. Pass `--no-llm` to skip the API and use the underlying heuristic directly instead.
 - **You draft too**: on your team's turn, `board`, `board <POS>`, `needs`, `best`, and `pick <id>` from the command line.
 - Results are written to `data/draft_results.json` (draft order, every team's final roster and payroll, and the full pick-by-pick log).
+
+## 4.3: the org chart
+
+A screen in the game (`agents/org_chart.py`, the Org chart tab) showing the
+front office's reporting line and a one-line summary of what each member did
+this week. Plain Python only - nothing here asks a model anything, so the
+screen costs nothing and needs no API key.
+
+```
+Owner -> General Manager -> Analytics, Cap & Contracts, Draft, Coaching, Medical
+```
+
+- **Can't drift from the real team.** `hierarchy()` builds `gm.build_gm_team(None, None, None, None)` (no League Office tools connected, so this is cheap) and reads each member's own `name`/`role` straight off it, rather than writing the org chart out separately in prose that could fall out of sync the next time a specialist is added or reworded.
+- **Every line is already in the save.** Each specialist's "this week" line comes from data G3's briefing and G4's desk already show the owner: the GM's briefing headline, the owner's orders and decisions this week (`orders.py`), the weakest unit (`deadline.comparisons`, the same math as Analytics' `compare_to_league`), payroll and cap space, the last draft's results, and new vs. ongoing injuries (`league_db.current_injuries`) for Medical and Coaching's depth-chart note.
+- **Draft isn't week-scoped.** The rookie draft happens once before the season (G7 hasn't wired it into the game loop yet), so its line reads "Last active at the rookie draft" rather than claiming something happened this week.
+
+```powershell
+pytest tests/test_org_chart.py tests/test_ui.py    # hierarchy, weekly activity, and the /api/hub/org_chart route
+```
+
+Done when: the hierarchy always matches the GM's actual Team members, and each
+specialist's line is read from the save rather than guessed - confirmed with a
+new injury, a decided move and an order all showing up correctly in the
+screen.

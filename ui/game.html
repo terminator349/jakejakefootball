@@ -66,6 +66,14 @@ ul.news li { margin: 3px 0; }
 tr.group td { background: var(--bg); font-weight: 600; font-size: 12px; color: var(--muted); }
 .filters { display: flex; gap: 4px; flex-wrap: wrap; }
 .filters button.on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.orgchart { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.org-node { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; text-align: center; }
+.org-node b { display: block; }
+.org-node .role { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+.org-node ul.notes { text-align: left; font-size: 13px; margin-top: 8px; }
+.org-node.owner, .org-node.gm { max-width: 420px; }
+.org-link { width: 1px; height: 18px; background: var(--line); }
+.org-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; width: 100%; margin-top: 4px; }
 dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); padding: 0;
   width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
 dialog::backdrop { background: rgba(0,0,0,.45); }
@@ -106,6 +114,7 @@ dialog .close { position: sticky; top: 0; display: flex; justify-content: space-
     <button data-tab="standings">Standings</button>
     <button data-tab="schedule">Schedule</button>
     <button data-tab="cap">Cap</button>
+    <button data-tab="org">Org chart</button>
   </nav>
 </header>
 
@@ -143,6 +152,7 @@ dialog .close { position: sticky; top: 0; display: flex; justify-content: space-
   <section class="tab" id="tab-standings"><div class="card"><h2>Standings <span class="sub" id="standings-sub"></span></h2><div id="standings"></div></div></section>
   <section class="tab" id="tab-schedule"><div class="card"><h2>Our schedule <span class="sub">17 games · trade deadline after week 9</span></h2><div id="schedule"></div></div></section>
   <section class="tab" id="tab-cap"><div id="cap"></div></section>
+  <section class="tab" id="tab-org"><div class="card"><h2>Front office <span class="sub">who reports to whom, and what each one did this week</span></h2><div id="org"></div></div></section>
 </main>
 
 <dialog id="viewer"><div class="close"><b id="viewer-title"></b><button class="btn sm" id="viewer-close">Close</button></div>
@@ -200,6 +210,7 @@ async function renderTab(tab) {
   if (tab === "standings") return standingsView();
   if (tab === "schedule") return scheduleView();
   if (tab === "cap") return capView();
+  if (tab === "org") return orgChartView();
 }
 
 // ---- This week ---------------------------------------------------------------
@@ -693,6 +704,19 @@ async function capView() {
       ${expiring.length ? `<table><tr><th>Player</th><th>Pos</th><th class="num">Ovr</th><th class="num">Salary</th></tr>
       ${expiring.map(p => `<tr><td>${esc(p.name)}</td><td class="pos">${p.position}</td><td class="num">${p.overall}</td><td class="num">${money(p.salary)}</td></tr>`).join("")}</table>` : `<p class="empty">None.</p>`}</div>
   </div>`;
+}
+
+// ---- Org chart (4.3): the agent hierarchy and what each one did this week -------------
+async function orgChartView() {
+  const chart = await call("/api/hub/org_chart");
+  const owner = chart.hierarchy.find(n => n.reports_to === null);
+  const gm = chart.hierarchy.find(n => n.reports_to === owner.name);
+  const specialists = chart.hierarchy.filter(n => n.reports_to === gm.name);
+  const node = (n, extra = "") => `<div class="org-node ${extra}"><b>${esc(n.name)}</b><p class="role">${esc(n.role)}</p>
+    ${chart.activity[n.name] ? `<ul class="notes">${chart.activity[n.name].map(l => `<li>${esc(l)}</li>`).join("")}</ul>` : ""}</div>`;
+  $("#org").innerHTML = `<p class="note">Week ${chart.week}.</p>
+    <div class="orgchart">${node(owner, "owner")}<div class="org-link"></div>${node(gm, "gm")}<div class="org-link"></div>
+    <div class="org-row">${specialists.map(n => node(n)).join("")}</div></div>`;
 }
 
 // ---- Box score and replays -------------------------------------------------------

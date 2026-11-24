@@ -369,9 +369,12 @@ Agents remember past decisions, trades and reports. In the game, the GM
 remembers the owner's standing orders and past decisions across weeks and saved
 games.
 
-### 4.3 Org-chart screen (W12)
+### 4.3 Org-chart screen (W12) - Done early (built W5, Nov 24)
 A screen in the game showing the agent hierarchy and what each agent did this
-week.
+week. `agents/org_chart.py` builds the hierarchy straight from the GM's own
+Team (`agents/gm.py`), so it can't fall out of sync, and reads each
+specialist's weekly line from what's already in the save - no model call, no
+API key needed. See `README.md`'s 4.3 entry for the full story.
 
 ### 4.4 Real stats data (W13, stretch goal)
 Load real player data in place of the generated league, if ahead of schedule.

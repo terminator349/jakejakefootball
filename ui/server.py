@@ -29,7 +29,7 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import briefing, deadline, game_loop, league_db, live, orders, rivals, rules, saves, season, tools
+from agents import briefing, deadline, game_loop, league_db, live, orders, org_chart, rivals, rules, saves, season, tools
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -357,6 +357,12 @@ async def hub_schedule(request, body):
     return {"games": game_loop.our_schedule()}
 
 
+async def hub_org_chart(request, body):
+    """The front office org chart (4.3): the agent hierarchy and what each one did this week."""
+    _needs_a_save()
+    return org_chart.chart(_db_for_agents())
+
+
 async def live_start(request, body):
     _needs_a_save()
     return live.start(body.get("level", "key"))
@@ -412,6 +418,7 @@ app = Starlette(routes=[
     Route("/api/hub/play", api(hub_play), methods=["POST"]),
     Route("/api/hub/advance", api(hub_advance), methods=["POST"]),
     Route("/api/hub/schedule", api(hub_schedule)),
+    Route("/api/hub/org_chart", api(hub_org_chart)),
     Route("/api/hub/ask", api(hub_ask), methods=["POST"]),
     Route("/api/hub/briefing", api(hub_briefing), methods=["POST"]),
     Route("/api/hub/order", api(hub_order), methods=["POST"]),

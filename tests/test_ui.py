@@ -138,6 +138,9 @@ def test_play_a_week_in_the_game(client, monkeypatch):
     assert client.post("/api/hub/advance", json={}).json()["week"] == 2  # with the rivals' news (G5)
     schedule = client.get("/api/hub/schedule").json()["games"]
     assert len(schedule) == 17 and schedule[0]["played"] and not schedule[1]["played"]
+    org = client.get("/api/hub/org_chart").json()  # 4.3: the org chart, for this save
+    assert org["week"] == 2 and [n["name"] for n in org["hierarchy"][:2]] == ["Owner", "General Manager"]
+    assert set(org["activity"]) == {"General Manager", "Analytics", "Cap & Contracts", "Draft", "Coaching", "Medical"}
 
 
 def test_call_the_plays_in_the_game(client, monkeypatch):
