@@ -333,10 +333,14 @@ backup (K, P) plays its one option hurt rather than fielding nobody.
 Medical reports who's out and how much longer, and which position it leaves
 thinnest; Coaching sets the depth chart around that and plans the next game
 around the opponent's tendencies. Built before this merge caught up with 1.4,
-G3, G8 and 1.5, already landed on `main` in the meantime - so neither agent is
-wired into the GM's Team yet, and Call It (G8) doesn't ask Coaching for a
-suggested call. Both run standalone for now, like Analytics and Cap & Contracts
-before 1.4.
+G3, G8 and 1.5, already landed on `main` in the meantime - so neither agent was
+wired into the GM's Team at first.
+
+Done Nov 24: both are now members of the GM's Team (`agents/gm.py`), alongside
+Analytics, Cap & Contracts and Draft - the owner can ask the GM about an injury
+or the depth chart and it delegates to Medical or Coaching like any other
+specialist. Call It (G8) still doesn't ask Coaching for a suggested call during
+a live game; that remains open.
 
 ```powershell
 python check_coaching.py                                              # game plan + depth chart for our team

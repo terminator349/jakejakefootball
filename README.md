@@ -60,7 +60,7 @@ answer by the rules alone. The other agents join the game as they are built.
    other results, our biggest weakness and who plays there, the cap, the trade
    deadline and this week's opponent. Without a key, or while the GM writes it,
    plain notes read from the league stand in. **Ask the front office** puts any question to your GM, who asks Analytics,
-   Cap & Contracts or Draft and answers you with a recommendation, the numbers
+   Cap & Contracts, Draft, Coaching or Medical and answers you with a recommendation, the numbers
    behind it and what each specialist said (1.4, below). **Give an order**
    ("Upgrade safety. Stay under $5M a year.") and your GM proposes trades that
    follow it; **approve** or **veto** each one under **Proposed moves** (G4,
@@ -342,11 +342,16 @@ gives comes from a specialist.
 Owner -> GM -> Analytics        League Office: rosters, ratings, rankings
             -> Cap & Contracts  League Office: payroll, cap fit, trade checks
             -> Draft            Draft Day results and the draft class
+            -> Coaching         League Office: depth chart, opponent tendencies
+            -> Medical          League Office: injuries
 ```
 
-- **Specialists keep their own tools.** Analytics and Cap & Contracts each start
-  their own League Office server with their own slice of its tools, pointed at
-  the same league (the loaded save, in the game).
+Coaching and Medical joined the team on Nov 24, once 3.2 (below) caught up with
+1.4; the diagram and the rest of this section describe the team as it stands now.
+
+- **Specialists keep their own tools.** Analytics, Cap & Contracts, Coaching and
+  Medical each start their own League Office server with their own slice of its
+  tools, pointed at the same league (the loaded save, in the game).
 - **They hand work on.** Later specialists see what earlier ones said in the
   same run (`share_member_interactions`), so the GM can ask Analytics for the
   weakness and a target salary, then ask Cap & Contracts whether that salary
@@ -731,9 +736,14 @@ Two more specialists, following the same pattern as Cap & Contracts: `agents/coa
 (the depth chart and the game plan) and `agents/medical.py` (who's hurt and what it
 costs the roster). Built early, alongside 1.3/G2/G7, at the owner's request - see
 `ROADMAP.md`'s 3.2 entry for the full story. Built before the GM's team (1.4) and
-game-day calling (G8) landed, so neither is wired into either yet: the GM doesn't
-delegate to them, and Call It (G8) doesn't ask Coaching for a suggested call. Both
-run standalone for now, like Analytics and Cap & Contracts before 1.4.
+game-day calling (G8) landed, so at first neither was wired into either: the GM
+didn't delegate to them, and both ran standalone, like Analytics and Cap &
+Contracts before 1.4.
+
+Done Nov 24: both are now members of the GM's Team (see 1.4 below) - the owner
+can ask the GM about an injury or who starts, and it delegates to Medical or
+Coaching like any other specialist. Call It (G8) still doesn't ask Coaching for
+a suggested call during a live game; that remains open.
 
 The 3.1 simulator now rolls injuries: a small, independent chance (its own random
 stream, so the 3.1 tuning and G8's clock management are unaffected) that the player

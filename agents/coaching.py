@@ -3,9 +3,9 @@
 It reads the league through the same League Office MCP server as the other
 directors, but with its own tool slice: the depth chart tools (task 3.2's
 get_depth_chart/set_depth_chart) and get_team_tendencies are for this agent alone.
-In a later task this agent becomes another member of the GM's Team, alongside
-Medical (agents/medical.py). Its `role` is what the GM will read when deciding
-whether to delegate to it.
+It is a member of the GM's Team (agents/gm.py), alongside Medical
+(agents/medical.py). Its `role` is what the GM reads when deciding whether to
+delegate to it.
 """
 
 import json

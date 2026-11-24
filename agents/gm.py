@@ -8,11 +8,14 @@ no data tools of its own, so every number it gives comes from a specialist.
     Owner -> GM -> Analytics        (League Office: rosters, ratings, rankings)
                 -> Cap & Contracts  (League Office: payroll, cap fit, trade checks)
                 -> Draft            (Draft Day results and the draft class)
+                -> Coaching         (League Office: depth chart, opponent tendencies)
+                -> Medical          (League Office: injuries)
 
-Each specialist keeps its own tools and structured report. Analytics and Cap &
-Contracts each start their own League Office server, with their own slice of
-its tools, pointed at the same league. Specialists see what the others said
-earlier in the run, so Cap & Contracts can price the player Analytics found.
+Each specialist keeps its own tools and structured report. Analytics, Cap &
+Contracts, Coaching and Medical each start their own League Office server, with
+their own slice of its tools, pointed at the same league. Specialists see what
+the others said earlier in the run, so Cap & Contracts can price the player
+Analytics found, or Coaching can weigh an injury Medical just reported.
 """
 
 import json
@@ -24,7 +27,7 @@ from agno.agent import Agent
 from agno.team import Team, TeamMode
 from pydantic import BaseModel, Field
 
-from agents import analytics, cap_contracts, draft_desk, skills
+from agents import analytics, cap_contracts, coaching, draft_desk, medical, skills
 from agents.analytics import specialist_model
 from agents.tools import list_teams
 
@@ -69,9 +72,9 @@ def ground_report(report: GMReport) -> GMReport:
     return ours.model_copy(update={"team_id": team_id})
 
 
-def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RESULTS_FILE,
-                  debug: bool = False) -> Team:
-    """The GM and its three specialists. Pass connected League Office tools for the two
+def build_gm_team(analytics_office, cap_office, coaching_office, medical_office,
+                  draft_file: Path = draft_desk.RESULTS_FILE, debug: bool = False) -> Team:
+    """The GM and its five specialists. Pass connected League Office tools for the four
     League Office specialists (see `front_office()`, which opens them)."""
     return Team(
         name="General Manager",
@@ -82,6 +85,8 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
             analytics.build_analytics_agent(analytics_office, debug=debug),
             cap_contracts.build_cap_contracts_agent(cap_office, debug=debug),
             draft_desk.build_draft_desk(draft_file, debug=debug),
+            coaching.build_coaching_agent(coaching_office, debug=debug),
+            medical.build_medical_agent(medical_office, debug=debug),
         ],
         instructions=[
             "You are the general manager of the Harbor City Herons (team id HAR) in a six-team American "
@@ -93,8 +98,13 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
             "how much salary would have to go back to make it fit.",
             "Draft: Draft Day, the separate draft of real NFL players - its order, each team's picks, rookie "
             "salaries and who went undrafted. Its rosters are not the league's rosters.",
+            "Coaching: who starts at each position right now (the depth chart), changes to it around an "
+            "injury, and how to plan the next game around the opponent's tendencies.",
+            "Medical: who is hurt right now, for how many more games, and which position group an injury "
+            "leaves thinnest.",
             "Ask only the specialists the question needs. When it needs more than one, ask them in order and "
-            "pass on what you learned: e.g. ask Analytics for the weakness and a target salary, then ask Cap & "
+            "pass on what you learned: e.g. ask Medical who's hurt, then ask Coaching how the depth chart "
+            "should change around it; or ask Analytics for the weakness and a target salary, then ask Cap & "
             "Contracts whether that exact salary fits our cap.",
             "Give each specialist one complete, specific task: the team ids, positions, players and salaries "
             "involved. Ask each specialist at most twice.",
@@ -129,13 +139,16 @@ async def front_office(db_file: Path | None = None, draft_file: Path = draft_des
     """Start the League Office servers the specialists need and yield the GM's team.
     Pass a save file to serve that game instead of the default league."""
     async with analytics.league_office_tools(db_file) as analytics_office, \
-            cap_contracts.league_office_tools(db_file) as cap_office:
-        yield build_gm_team(analytics_office, cap_office, draft_file, debug)
+            cap_contracts.league_office_tools(db_file) as cap_office, \
+            coaching.league_office_tools(db_file) as coaching_office, \
+            medical.league_office_tools(db_file) as medical_office:
+        yield build_gm_team(analytics_office, cap_office, coaching_office, medical_office, draft_file, debug)
 
 
 # ---- Reading a run ----------------------------------------------------------------
 
-GROUNDERS = {analytics.RosterReport: analytics.ground_report, cap_contracts.CapReport: cap_contracts.ground_report}
+GROUNDERS = {analytics.RosterReport: analytics.ground_report, cap_contracts.CapReport: cap_contracts.ground_report,
+            coaching.CoachingReport: coaching.ground_report, medical.MedicalReport: medical.ground_report}
 
 
 def tool_calls(run) -> list[dict]:

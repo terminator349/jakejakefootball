@@ -3,9 +3,9 @@
 It reads the league through the same League Office MCP server as the other
 directors, with a short tool list: just enough roster and injury data (task
 3.2's get_injury_report) to answer a question about who is hurt and what it
-costs the team. In a later task this agent becomes another member of the GM's
-Team, alongside Coaching (agents/coaching.py). Its `role` is what the GM will
-read when deciding whether to delegate to it.
+costs the team. It is a member of the GM's Team (agents/gm.py), alongside
+Coaching (agents/coaching.py). Its `role` is what the GM reads when deciding
+whether to delegate to it.
 """
 
 import json

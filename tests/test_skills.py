@@ -192,7 +192,7 @@ def test_each_agent_has_its_skills():
 
 
 def test_the_gm_always_writes_in_the_house_style():
-    team = gm.build_gm_team(None, None)
+    team = gm.build_gm_team(None, None, None, None)
     text = " ".join(team.instructions)
     assert skills.section("front-office-memo", "House style") in text
     assert skills.section("front-office-memo", "Answering the owner") in text

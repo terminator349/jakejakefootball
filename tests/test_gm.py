@@ -10,28 +10,30 @@ import pytest
 from agno.team import TeamMode
 from agno.tools.mcp import MCPTools
 
-from agents import analytics, cap_contracts, draft_desk, gm
+from agents import analytics, cap_contracts, coaching, draft_desk, gm, medical
 from draft.players import build_player_pool
 from draft.roster_rules import SALARY_CAP
 
 
 def team(draft_file=draft_desk.RESULTS_FILE):
-    return gm.build_gm_team(analytics.league_office_tools(), cap_contracts.league_office_tools(), draft_file)
+    return gm.build_gm_team(analytics.league_office_tools(), cap_contracts.league_office_tools(),
+                            coaching.league_office_tools(), medical.league_office_tools(), draft_file)
 
 
 def test_the_gm_leads_every_specialist():
     gm_team = team()
     assert gm_team.name == "General Manager" and gm_team.mode == TeamMode.coordinate
-    assert [m.name for m in gm_team.members] == ["Analytics", "Cap & Contracts", "Draft"]
+    assert [m.name for m in gm_team.members] == ["Analytics", "Cap & Contracts", "Draft", "Coaching", "Medical"]
     assert all(m.role for m in gm_team.members)  # what the GM reads to choose who to ask
     assert gm_team.model.id == gm.GM_MODEL
     assert not gm_team.tools  # the GM has no data of its own: every number comes from a specialist
 
 
 def test_each_specialist_keeps_its_own_tools():
-    analytics_member, cap_member, draft_member = team().members
+    analytics_member, cap_member, draft_member, coaching_member, medical_member = team().members
     assert isinstance(analytics_member.tools[0], MCPTools) and isinstance(cap_member.tools[0], MCPTools)
-    assert analytics_member.tools[0] is not cap_member.tools[0]  # a League Office server each
+    assert isinstance(coaching_member.tools[0], MCPTools) and isinstance(medical_member.tools[0], MCPTools)
+    assert len({id(m.tools[0]) for m in (analytics_member, cap_member, coaching_member, medical_member)}) == 4
     assert "check_cap_fit" not in analytics.ANALYTICS_TOOLS and "check_cap_fit" in cap_contracts.CAP_CONTRACTS_TOOLS
     assert [f.__name__ for f in draft_member.tools] == ["draft_summary", "team_draft", "best_undrafted"]
 
@@ -47,12 +49,14 @@ def test_the_team_has_loop_guards_and_a_parser():
 
 
 def test_both_league_office_servers_start():
-    """front_office() starts a League Office server per specialist, each with its own tools."""
+    """front_office() starts a League Office server per League Office specialist, each with its own tools."""
     async def go():
         async with gm.front_office() as gm_team:
-            return [set(m.tools[0].functions) for m in gm_team.members[:2]]
-    analytics_tools, cap_tools = asyncio.run(go())
+            analytics_m, cap_m, _, coaching_m, medical_m = gm_team.members
+            return [set(m.tools[0].functions) for m in (analytics_m, cap_m, coaching_m, medical_m)]
+    analytics_tools, cap_tools, coaching_tools, medical_tools = asyncio.run(go())
     assert analytics_tools == set(analytics.ANALYTICS_TOOLS) and cap_tools == set(cap_contracts.CAP_CONTRACTS_TOOLS)
+    assert coaching_tools == set(coaching.COACHING_TOOLS) and medical_tools == set(medical.MEDICAL_TOOLS)
 
 
 def test_the_owner_must_ask_something():
