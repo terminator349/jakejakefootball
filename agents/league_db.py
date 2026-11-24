@@ -27,6 +27,13 @@ from pathlib import Path
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 SEED_FILE = DATA_DIR / "league.json"
+# The leagues a new game can start from (task 4.4): the generated one, or the six
+# franchises filled with real NFL players from 2025 (data/real_league.py).
+LEAGUES = {"generated": "Generated league", "real": "Real 2025 players"}
+SEED_FILES = {"generated": SEED_FILE, "real": DATA_DIR / "league_real.json"}
+# Set to the loaded save's path, so the skills' scripts (run in their own process)
+# read the same league as the game.
+DB_ENV = "FRONT_OFFICE_DB"
 DEFAULT_DB_FILE = DATA_DIR / "league.db"
 DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points this at its save
 
@@ -320,14 +327,19 @@ class OutdatedDatabase(Exception):
     """The database was made by an older version of this code."""
 
 
-def build(db_file: Path | None = None, seed_file: Path | None = None, season_seed: int | None = None) -> None:
+def build(db_file: Path | None = None, seed_file: Path | None = None, season_seed: int | None = None,
+          league: str | None = None) -> None:
     """Create the database from the seed, at week 1 with a fresh schedule, replacing
-    any database already there."""
+    any database already there. `league` picks the seed from LEAGUES (default: the
+    generated league)."""
     from agents.season import make_schedule  # season imports this module
 
 
     # Paths are read at call time, so tests can point DB_FILE at a scratch database.
-    db_file, seed_file = db_file or DB_FILE, seed_file or SEED_FILE
+    if league is not None and league not in SEED_FILES:
+        raise ValueError(f"Unknown league {league!r}. Valid: {list(SEED_FILES)}")
+    db_file = db_file or DB_FILE
+    seed_file = seed_file or (SEED_FILES[league] if league else SEED_FILE)
     if not seed_file.exists():
         raise FileNotFoundError(f"{seed_file} not found. Run: python data/generate_league.py")
     seed = json.loads(seed_file.read_text())
@@ -339,7 +351,8 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
         db.executescript(SCHEMA + STANDINGS_VIEW + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
                          + INJURY_SCHEMA + SCOUTING_SCHEMA + MEMORY_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
-                       [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
+                       [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"])),
+                        ("league", json.dumps(seed.get("league", "generated")))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}
         db.executemany("INSERT INTO rules VALUES (?, ?)", [(k, json.dumps(v)) for k, v in rules.items()])
         db.executemany("INSERT INTO positions VALUES (?, ?, ?)",
@@ -425,6 +438,17 @@ def load_league(db_file: Path | None = None) -> dict:
 
     return {"sport": settings["sport"], "our_team": settings["our_team"], "rules": rules,
             "teams": teams, "players": players}
+
+
+def league_kind(db_file: Path | None = None) -> str:
+    """Which league the database was started from: "generated" or "real" (LEAGUES).
+    A database from before task 4.4 is the generated league."""
+    db = connect(db_file)
+    try:
+        row = db.execute("SELECT value FROM settings WHERE key = 'league'").fetchone()
+    finally:
+        db.close()
+    return json.loads(row["value"]) if row else "generated"
 
 
 # ---- Injuries and the depth chart (task 3.2) -------------------------------

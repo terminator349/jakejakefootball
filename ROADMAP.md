@@ -81,7 +81,7 @@ GM briefing
 | W10  | Dec 28 - Jan 3 | 3.2 (done early), G6 (done early)      |
 | W11  | Jan 4 - 10     | 3.2 (done early), 4.2 (done early)     |
 | W12  | Jan 11 - 17    | 4.1 (done early), 4.3, 4.5             |
-| W13  | Jan 18 - 24    | 4.4 (stretch), 5.1                     |
+| W13  | Jan 18 - 24    | 4.4 (stretch, done early), 5.1         |
 | W14  | Jan 25 - 31    | 5.1, 5.2                               |
 
 Milestones: the game is **playable with no AI** at the end of W4 (G2), the GM
@@ -390,8 +390,14 @@ lives in the save, so it lasts across weeks and through save and load.
 A screen in the game showing the agent hierarchy and what each agent did this
 week.
 
-### 4.4 Real stats data (W13, stretch goal)
+### 4.4 Real stats data (W13, stretch goal) - Done early (Nov 24)
 Load real player data in place of the generated league, if ahead of schedule.
+
+Done Nov 24, ahead of W13. "New game" offers "Real 2025 players": the six
+franchises filled with real NFL players from nflverse's public 2025 data, each
+rated from his real stats on the generated league's scale, so the simulator
+stays balanced. The generated league stays the default. Salaries are estimated
+from ratings, because nflverse's contract data ends in 2022.
 
 ### 4.5 Difficulty levels: easy, normal, hard (W12)
 No longer a stretch goal, since a game needs it: chosen at "New game", it sets

@@ -17,7 +17,7 @@ space and a weak secondary.
 agents/     agent + team definitions, and the plain-Python tools they call
 servers/    MCP servers: League Office (1.1), Trade Desk (2.1)
 skills/     markdown know-how + helper scripts - from 1.5
-data/       league.json (generated season start), league.db (SQLite, the default league), draft_results.json
+data/       league.json (generated season start), league_real.json (real 2025 players, 4.4), league.db (SQLite, the default league), draft_results.json
 saves/      one SQLite database per saved game (git-ignored) - from G1
 draft/      standalone draft simulator - players, rules, valuation, engine, CPU agent
 tests/      checks that run without an API key
@@ -53,7 +53,7 @@ giving orders need `OPENROUTER_API_KEY` in `.env`; without it, the rival GMs
 answer by the rules alone. The other agents join the game as they are built.
 
 1. **Start a game.** Give it a name (and a seed if you want a season you can
-   repeat). Each game is its own save in `saves/`, saved as you play. Continue
+   repeat), and pick the generated league or **Real 2025 players** (4.4, below). Each game is its own save in `saves/`, saved as you play. Continue
    or load a game from the same screen.
 2. **Each week** shows the matchup, both records, and **your GM's briefing**
    (G3, below): our record and standing, last week's result and standouts, the
@@ -895,6 +895,61 @@ pytest tests/test_memory.py    # the timeline, recall, vetoes holding, the searc
 
 Done when: the GM remembers the owner's orders and decisions across weeks and
 through save and load, and acts on them.
+
+## 4.4: real players
+
+A new game can fill the six franchises with real NFL players instead of the
+generated league: pick **Real 2025 players** at **New game**. The Herons and their
+five rivals stay; the players on them are real, rated from their 2025 regular
+season. The generated league is still the default, and everything else (rules,
+cap, schedule, agents) is the same in both.
+
+- **The data.** `data/nflverse_fetch.py` downloads nflverse's public 2025 data
+  (github.com/nflverse/nflverse-data, about 7 MB, into the git-ignored
+  `data/nflverse/`): rosters, season stats, Pro Football Reference's advanced
+  stats and snap counts. `data/real_league.py` turns it into
+  `data/league_real.json`, which is committed, so playing never downloads
+  anything and needs no key.
+- **Who's in.** At each position, the players who played the most in 2025
+  (snaps; kicks and punts for K and P), as many as six 48-man rosters hold: 288.
+- **Ratings from real stats.** Each skill the simulator uses is scored from the
+  stats that show it: a cornerback's coverage from the passer rating and yards
+  per target he allowed, a QB's accuracy from completion % over expected and
+  on-target %, a pass rusher's from pressures, sacks and QB hits. Rate stats on
+  few attempts are pulled toward the average. Players are then ranked, and the
+  ranks get the generated league's ratings for that skill, so the real league
+  plays on the same scale: a simulated season (seed 7) averaged 21.6 points a
+  game, against 21.2 for the generated league.
+  Where no public stat shows a skill (a lineman's blocking, a back's pass
+  protection, a defensive back's speed), the score uses what does exist: playing
+  time, the team's sack rate and rushing EPA, weight, age. `RATING_SOURCES` in
+  `data/real_league.py` lists every rating's stats.
+- **Teams.** The six franchises draft each position in turns, starters first, so
+  their average overalls come out within two points. The Herons get the weakest
+  starting secondary, so they rank last in cornerback and safety coverage, as in
+  the generated league (by less: real data, not a planted 22-point drop).
+- **Salaries are estimated.** nflverse's contract file ends with deals signed in
+  2022 (Josh Allen's and Ja'Marr Chase's current deals aren't in it), so pay uses
+  the game's own scale on each player's rating, with players in their first four
+  seasons on rookie deals by real draft position. Each team's payroll matches the
+  generated league's, so the Herons again have $5.5M of cap space.
+- **In the game**, the save list and the header say *real players*, and the
+  order examples name your own starting quarterback (Drake Maye with real
+  players). The player-valuation skill's script now prices players on the loaded
+  save's salaries (`FRONT_OFFICE_DB`), not the generated seed's.
+
+The best players come out where you'd expect: Myles Garrett has the best pass
+rush, Drake Maye (after his 2025 season) the best accuracy, and Josh Allen,
+Ja'Marr Chase and Bijan Robinson are all starters.
+
+```powershell
+python data/nflverse_fetch.py      # once, to rebuild: the raw 2025 data
+python data/real_league.py         # writes data/league_real.json
+pytest tests/test_real_league.py   # the league's shape, ratings, payrolls and balance, and playing it; no download
+```
+
+Done when: a new game can start with real players, rated from real stats, on
+the same rules and scale as the generated league.
 
 ## 3.2: Coaching and Medical agents (built ahead of schedule)
 

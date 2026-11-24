@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="Front Office: how the agents interact&lt;br&gt;&lt;span style='font-size:12px;font-weight:normal'&gt;As built through task 4.2 (Nov 24, 2026), branch w5-gm-team. Every agent runs DeepSeek V4.1 Flash through OpenRouter.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="title" value="Front Office: how the agents interact&lt;br&gt;&lt;span style='font-size:12px;font-weight:normal'&gt;As built through task 4.4 (Nov 24, 2026), branch w5-gm-team. Every agent runs DeepSeek V4.1 Flash through OpenRouter.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="80" y="20" width="540" height="90" as="geometry" />
         </mxCell>
         <mxCell id="legend" value="&lt;b&gt;Legend&lt;/b&gt;&lt;table style='font-size:11px'&gt;&lt;tr&gt;&lt;td&gt;&lt;span style='color:#6c8ebf'&gt;&amp;#9632;&lt;/span&gt; LLM agent (model calls)&lt;br&gt;&lt;span style='color:#82b366'&gt;&amp;#9632;&lt;/span&gt; Plain Python, no model&lt;br&gt;&lt;span style='color:#d79b00'&gt;&amp;#9632;&lt;/span&gt; MCP server&lt;br&gt;&lt;span style='color:#d6b656'&gt;&amp;#9632;&lt;/span&gt; Skill (skills/, task 1.5)&lt;/td&gt;&lt;td style='padding-left:24px'&gt;&lt;span style='color:#666666'&gt;&amp;#9632;&lt;/span&gt; UI / storage&lt;br&gt;Dashed box: planned, not built yet&lt;br&gt;Two-headed arrow: task down, report up&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;fillColor=#ffffff;strokeColor=#999999;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;" vertex="1" parent="1">
@@ -143,6 +143,12 @@
           <mxGeometry x="620" y="970" width="340" height="90" as="geometry" />
         </mxCell>
         <mxCell id="e_core_db" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.476;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="core" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="seeds" value="&lt;b&gt;New game seeds&lt;/b&gt;: data/league.json (generated) or data/league_real.json (real 2025 players, 4.4: rated from nflverse stats by data/real_league.py)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="200" y="970" width="380" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_seeds_db" value="New game builds&lt;br&gt;a save from one" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="seeds" target="db">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="tdesk" value="&lt;b&gt;Trade Desk&lt;/b&gt;: MCP server over stdio (servers/trade_desk.py, 2.1)&lt;br&gt;evaluate_trade &amp;#183; propose_trade &amp;#183; counter_proposal &amp;#183; respond_to_proposal &amp;#183; withdraw_proposal &amp;#183; list_proposals &amp;#183; get_proposal &amp;#183; trade_log&lt;br&gt;The GM's orders evaluate here, with each side's appraisal; the owner's approvals propose our offers (G4)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">

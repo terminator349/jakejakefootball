@@ -86,7 +86,7 @@ async def list_saves(request, body):
 async def new_game(request, body):
     seed = body.get("seed")
     path = saves.new_game(body.get("name", ""), season_seed=int(seed) if seed not in (None, "") else None,
-                          overwrite=bool(body.get("overwrite")))
+                          overwrite=bool(body.get("overwrite")), league=body.get("league") or "generated")
     saves.load_game(path.stem)
     return {"loaded": path.stem}
 
@@ -96,7 +96,7 @@ async def load_game(request, body):
 
 
 async def use_default(request, body):
-    league_db.DB_FILE = league_db.DEFAULT_DB_FILE
+    saves.use_default()
     return {"loaded": None}
 
 
@@ -269,7 +269,13 @@ async def hub(request, body):
     if active_save() is None:
         return {"save": None}
     week = game_loop.overview()
-    return {"save": active_save(), **week, "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
+    league = league_db.load_league()
+    our_qbs = sorted((p for p in league["players"] if p["team_id"] == league["our_team"] and p["position"] == "QB"),
+                     key=lambda p: -p["overall"])
+    return {"save": active_save(), **week, "league": league_db.league_kind(),
+            "league_name": league_db.LEAGUES[league_db.league_kind()],
+            "our_qb": our_qbs[0]["name"] if our_qbs else None,  # for the order examples (4.4: real names too)
+            "api_key_set": bool(os.getenv("OPENROUTER_API_KEY")),
             "briefing": None if week["regular_season_over"] else briefing.stored(week["week"]),  # G3
             "desk": orders.desk_view(),  # G4: standing orders and the GM's proposed moves
             "offers": rivals.offers_to_us(),  # G5: rival GMs' offers to us, with our GM's read

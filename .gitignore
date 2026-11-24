@@ -6,3 +6,6 @@ __pycache__/
 
 # Slides, scripts, proposal, schedule exports: kept local, never posted
 private/
+
+# Raw nflverse downloads for data/real_league.py (task 4.4)
+data/nflverse/

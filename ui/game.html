@@ -134,9 +134,14 @@ dialog .close { position: sticky; top: 0; display: flex; justify-content: space-
       <form id="new-game">
         <input name="name" placeholder="Save name, e.g. herons" maxlength="40" required pattern="[A-Za-z0-9][A-Za-z0-9_\-]*" title="Letters, numbers, - and _">
         <input name="seed" type="number" placeholder="Seed (optional)" title="The same seed gives the same schedule and the same games">
+        <select name="league" title="Which players fill the six teams">
+          <option value="generated">Generated league</option>
+          <option value="real">Real 2025 players</option>
+        </select>
         <button class="btn primary">Start</button>
       </form>
-      <p class="note">Each game is its own save in <code>saves/</code>. It saves as you play.</p>
+      <p class="note">Each game is its own save in <code>saves/</code>. It saves as you play.
+        <b>Real 2025 players</b> fills the six teams with real NFL players, rated from their 2025 stats (nflverse).</p>
     </div>
     <div class="card" style="margin-top:16px">
       <h2>Load a game</h2>
@@ -185,11 +190,12 @@ async function refresh() {
 }
 async function showTitle() {
   gameDay?.view.stop(); gameDay = null;
+  order.text = null;  // the next save's examples name its own quarterback
   $("#head").hidden = true; $("#title").hidden = false;
   $$(".tab").forEach(t => t.style.display = "none");
   const { saves } = await call("/api/saves");
   const ok = saves.filter(s => !s.outdated);
-  const line = s => `<span>${esc(s.name)}</span><span class="meta">${s.week > 17 ? "season over" : "week " + s.week} · ${s.team_id} ${recordOf(s)}</span>`;
+  const line = s => `<span>${esc(s.name)}</span><span class="meta">${s.week > 17 ? "season over" : "week " + s.week} · ${s.team_id} ${recordOf(s)}${s.league === "real" ? " · real players" : ""}</span>`;
   $("#continue").innerHTML = ok.length ? `<button class="btn primary" data-load="${esc(ok[0].name)}">Continue: ${esc(ok[0].name)}</button>
       <span class="note">&nbsp;${ok[0].week > 19 ? "season over" : ok[0].week > 17 ? "playoffs" : "week " + ok[0].week}, ${recordOf(ok[0])}</span>`
     : `<p class="note">No saved games yet. Start one below.</p>`;
@@ -200,7 +206,7 @@ async function showTitle() {
 }
 function header() {
   const t = H.team, played = t.wins + t.losses + t.ties > 0;
-  $("#teamline").innerHTML = `<b>${esc(t.city)} ${esc(t.name)}</b> · ${t.record}${played ? ` · ${nth(t.rank)} of ${t.teams}` : ""} · save <b>${esc(H.save)}</b>`;
+  $("#teamline").innerHTML = `<b>${esc(t.city)} ${esc(t.name)}</b> · ${t.record}${played ? ` · ${nth(t.rank)} of ${t.teams}` : ""} · save <b>${esc(H.save)}</b>${H.league === "real" ? " · real 2025 players" : ""}`;
   $("#chips").innerHTML = `
     <span class="chip">${H.season_over ? "<b>Season over</b>" : H.playoff_round ? `Playoffs: <b>${H.playoff_round.toLowerCase()}</b>` : `Week <b>${H.week}</b> of ${H.season_games}`}</span>
     <span class="chip">Cap space <b>$${t.cap_space.toFixed(1)}M</b></span>
@@ -304,12 +310,15 @@ document.addEventListener("input", e => {
 });
 
 // ---- Orders and approvals (G4): the owner gives orders, the GM proposes moves ----------
-const ORDER_EXAMPLES = [
-  "Upgrade safety. Stay under $5M a year. Don't trade Okafor.",
-  "Find us a better corner without adding more than $3M to payroll.",
-  "Never trade Mateo Okafor.",
-];
-const order = { text: ORDER_EXAMPLES[0], started: null, last: null };
+// The examples name our starting quarterback, so they fit a real-players league too (4.4).
+function orderExamples() {
+  const qb = H?.our_qb || "Mateo Okafor";
+  const last = qb.split(" ").filter(w => !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w)).pop();
+  return [`Upgrade safety. Stay under $5M a year. Don't trade ${last}.`,
+          "Find us a better corner without adding more than $3M to payroll.",
+          `Never trade ${qb}.`];
+}
+const order = { text: null, started: null, last: null };
 const unitName = u => u.replace(/_/g, " ");
 function termsHtml(t) {
   const bits = [];
@@ -342,8 +351,8 @@ function orderCard() {
       <p class="lead reply">${richText(l.reply)}</p>
       <p class="note">${l.moves.length} move${l.moves.length === 1 ? "" : "s"} proposed · ${l.seconds}s${l.cost != null ? ` · $${Number(l.cost).toFixed(4)}` : ""}${l.tool_calls.length ? ` · ${l.tool_calls.length} tool calls: ${esc([...new Set(l.tool_calls.map(c => c.tool))].join(", "))}` : ""}</p></div>` : "";
   return `<div class="card"><h2>Give an order <span class="sub">your GM turns it into moves for you to approve</span></h2>
-    <textarea id="order-q" rows="2" ${order.started ? "disabled" : ""}>${esc(order.text)}</textarea>
-    <div class="ask-examples">${ORDER_EXAMPLES.map(q => `<button class="btn sm" data-order-example ${order.started ? "disabled" : ""}>${esc(q)}</button>`).join("")}</div>
+    <textarea id="order-q" rows="2" ${order.started ? "disabled" : ""}>${esc(order.text ??= orderExamples()[0])}</textarea>
+    <div class="ask-examples">${orderExamples().map(q => `<button class="btn sm" data-order-example ${order.started ? "disabled" : ""}>${esc(q)}</button>`).join("")}</div>
     <div class="row"><button class="btn primary" data-act="order" ${keyless || order.started ? "disabled" : ""}>Give the order</button>
       <span class="note" id="order-status">${keyless ? "Orders need OPENROUTER_API_KEY in .env (then restart the server)."
         : order.started ? orderWaiting() : "Orders stand all season, until you cancel them. A search takes a minute or two."}</span></div>
@@ -491,7 +500,7 @@ function offersCard() {
   </div>`;
 }
 async function giveOrder() {
-  const text = ($("#order-q")?.value || order.text).trim();
+  const text = ($("#order-q")?.value || order.text || "").trim();
   if (!text) return toast("Type an order for your GM.", "bad");
   Object.assign(order, { text, started: Date.now() });
   if (currentTab() === "week") await weekView();
@@ -837,7 +846,7 @@ $("#new-game").onsubmit = async e => {
   e.preventDefault();
   const f = new FormData(e.target);
   try {
-    await call("/api/saves/new", { name: f.get("name"), seed: f.get("seed") });
+    await call("/api/saves/new", { name: f.get("name"), seed: f.get("seed"), league: f.get("league") });
     e.target.reset(); toast(`New game ${f.get("name")} started. Good luck.`); await refresh();
   } catch (err) { fail(err); }
 };

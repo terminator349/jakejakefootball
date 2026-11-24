@@ -1,0 +1,5011 @@
+{
+  "sport": "american_football",
+  "league": "real",
+  "our_team": "HAR",
+  "rules": {
+    "salary_cap": 255.0,
+    "cap_type": "hard",
+    "roster_min": 46,
+    "roster_max": 53,
+    "season_games": 17,
+    "trade_deadline_week": 9,
+    "starters_per_position": {
+      "QB": 1,
+      "RB": 1,
+      "WR": 3,
+      "TE": 1,
+      "OL": 5,
+      "DL": 4,
+      "LB": 3,
+      "CB": 2,
+      "S": 2,
+      "K": 1,
+      "P": 1
+    }
+  },
+  "source": "nflverse 2025 regular season (github.com/nflverse/nflverse-data), built by data/real_league.py",
+  "teams": [
+    {
+      "id": "HAR",
+      "city": "Harbor City",
+      "name": "Herons"
+    },
+    {
+      "id": "MES",
+      "city": "Mesa Verde",
+      "name": "Coyotes"
+    },
+    {
+      "id": "IRN",
+      "city": "Iron Falls",
+      "name": "Foundry"
+    },
+    {
+      "id": "LAK",
+      "city": "Lakeshore",
+      "name": "Loons"
+    },
+    {
+      "id": "SUM",
+      "city": "Summit",
+      "name": "Sherpas"
+    },
+    {
+      "id": "DEL",
+      "city": "Delta Bay",
+      "name": "Gators"
+    }
+  ],
+  "players": [
+    {
+      "id": "HAR-01",
+      "name": "Drake Maye",
+      "team_id": "HAR",
+      "position": "QB",
+      "age": 23,
+      "overall": 75,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 83,
+        "arm_strength": 82,
+        "decision_making": 69,
+        "mobility": 67
+      },
+      "nfl_team": "NE",
+      "salary": 5.71
+    },
+    {
+      "id": "HAR-02",
+      "name": "Cam Ward",
+      "team_id": "HAR",
+      "position": "QB",
+      "age": 23,
+      "overall": 59,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 59,
+        "arm_strength": 57,
+        "decision_making": 60,
+        "mobility": 60
+      },
+      "nfl_team": "TEN",
+      "salary": 2.02
+    },
+    {
+      "id": "HAR-03",
+      "name": "James Cook",
+      "team_id": "HAR",
+      "position": "RB",
+      "age": 25,
+      "overall": 69,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 74,
+        "receiving": 67,
+        "pass_protection": 63,
+        "speed": 71
+      },
+      "nfl_team": "BUF",
+      "salary": 3.35
+    },
+    {
+      "id": "HAR-04",
+      "name": "Kyren Williams",
+      "team_id": "HAR",
+      "position": "RB",
+      "age": 25,
+      "overall": 68,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 73,
+        "receiving": 65,
+        "pass_protection": 70,
+        "speed": 65
+      },
+      "nfl_team": "LA",
+      "salary": 1.78
+    },
+    {
+      "id": "HAR-05",
+      "name": "Woody Marks",
+      "team_id": "HAR",
+      "position": "RB",
+      "age": 24,
+      "overall": 57,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "rushing": 52,
+        "receiving": 59,
+        "pass_protection": 61,
+        "speed": 57
+      },
+      "nfl_team": "HOU",
+      "salary": 1.06
+    },
+    {
+      "id": "HAR-06",
+      "name": "Wan'Dale Robinson",
+      "team_id": "HAR",
+      "position": "WR",
+      "age": 24,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 75,
+        "hands": 78,
+        "speed": 65
+      },
+      "nfl_team": "NYG",
+      "salary": 3.35
+    },
+    {
+      "id": "HAR-07",
+      "name": "Jameson Williams",
+      "team_id": "HAR",
+      "position": "WR",
+      "age": 24,
+      "overall": 72,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 76,
+        "hands": 60,
+        "speed": 80
+      },
+      "nfl_team": "DET",
+      "salary": 5.71
+    },
+    {
+      "id": "HAR-08",
+      "name": "DJ Moore",
+      "team_id": "HAR",
+      "position": "WR",
+      "age": 28,
+      "overall": 68,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 64,
+        "hands": 67,
+        "speed": 73
+      },
+      "nfl_team": "CHI",
+      "salary": 7.49
+    },
+    {
+      "id": "HAR-09",
+      "name": "Jakobi Meyers",
+      "team_id": "HAR",
+      "position": "WR",
+      "age": 28,
+      "overall": 66,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 65,
+        "hands": 77,
+        "speed": 57
+      },
+      "nfl_team": "JAX",
+      "salary": 5.65
+    },
+    {
+      "id": "HAR-10",
+      "name": "Brian Thomas Jr.",
+      "team_id": "HAR",
+      "position": "WR",
+      "age": 22,
+      "overall": 59,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "route_running": 60,
+        "hands": 47,
+        "speed": 70
+      },
+      "nfl_team": "JAX",
+      "salary": 1.61
+    },
+    {
+      "id": "HAR-11",
+      "name": "Jauan Jennings",
+      "team_id": "HAR",
+      "position": "WR",
+      "age": 28,
+      "overall": 57,
+      "contract_years": 4,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "route_running": 58,
+        "hands": 63,
+        "speed": 51
+      },
+      "nfl_team": "SF",
+      "salary": 1.15
+    },
+    {
+      "id": "HAR-12",
+      "name": "Tyler Warren",
+      "team_id": "HAR",
+      "position": "TE",
+      "age": 23,
+      "overall": 72,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 72,
+        "blocking": 63,
+        "speed": 81
+      },
+      "nfl_team": "IND",
+      "salary": 5.71
+    },
+    {
+      "id": "HAR-13",
+      "name": "Juwan Johnson",
+      "team_id": "HAR",
+      "position": "TE",
+      "age": 28,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 73,
+        "blocking": 58,
+        "speed": 69
+      },
+      "nfl_team": "NO",
+      "salary": 3.77
+    },
+    {
+      "id": "HAR-14",
+      "name": "T.J. Hockenson",
+      "team_id": "HAR",
+      "position": "TE",
+      "age": 28,
+      "overall": 60,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 55,
+        "blocking": 63,
+        "speed": 61
+      },
+      "nfl_team": "MIN",
+      "salary": 1.48
+    },
+    {
+      "id": "HAR-15",
+      "name": "Joe Thuney",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 32,
+      "overall": 81,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 85,
+        "run_blocking": 86,
+        "strength": 72
+      },
+      "nfl_team": "CHI",
+      "salary": 20.04
+    },
+    {
+      "id": "HAR-16",
+      "name": "Ted Karras",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 32,
+      "overall": 78,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 78,
+        "run_blocking": 82,
+        "strength": 75
+      },
+      "nfl_team": "CIN",
+      "salary": 15.9
+    },
+    {
+      "id": "HAR-17",
+      "name": "Daniel Faalele",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 25,
+      "overall": 75,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 58,
+        "run_blocking": 79,
+        "strength": 88
+      },
+      "nfl_team": "BAL",
+      "salary": 1.78
+    },
+    {
+      "id": "HAR-18",
+      "name": "Abraham Lucas",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 26,
+      "overall": 71,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 75,
+        "run_blocking": 65,
+        "strength": 72
+      },
+      "nfl_team": "SEA",
+      "salary": 3.35
+    },
+    {
+      "id": "HAR-19",
+      "name": "Kingsley Suamataia",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 22,
+      "overall": 70,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 67,
+        "run_blocking": 69,
+        "strength": 73
+      },
+      "nfl_team": "KC",
+      "salary": 3.35
+    },
+    {
+      "id": "HAR-20",
+      "name": "Bradley Bozeman",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 30,
+      "overall": 67,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 63,
+        "run_blocking": 68,
+        "strength": 69
+      },
+      "nfl_team": "LAC",
+      "salary": 5.06
+    },
+    {
+      "id": "HAR-21",
+      "name": "Peter Skoronski",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 24,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 68,
+        "run_blocking": 67,
+        "strength": 61
+      },
+      "nfl_team": "TEN",
+      "salary": 3.82
+    },
+    {
+      "id": "HAR-22",
+      "name": "Jake Matthews",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 33,
+      "overall": 61,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 67,
+        "run_blocking": 60,
+        "strength": 56
+      },
+      "nfl_team": "ATL",
+      "salary": 2.01
+    },
+    {
+      "id": "HAR-23",
+      "name": "Tyler Steen",
+      "team_id": "HAR",
+      "position": "OL",
+      "age": 25,
+      "overall": 55,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 55,
+        "run_blocking": 57,
+        "strength": 53
+      },
+      "nfl_team": "PHI",
+      "salary": 1.0
+    },
+    {
+      "id": "HAR-24",
+      "name": "Myles Garrett",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 29,
+      "overall": 83,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 88,
+        "run_defense": 83,
+        "strength": 79
+      },
+      "nfl_team": "CLE",
+      "salary": 31.11
+    },
+    {
+      "id": "HAR-25",
+      "name": "Montez Sweat",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 28,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 76,
+        "run_defense": 76,
+        "strength": 68
+      },
+      "nfl_team": "CHI",
+      "salary": 13.44
+    },
+    {
+      "id": "HAR-26",
+      "name": "Jalen Redmond",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 26,
+      "overall": 72,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 75,
+        "strength": 72
+      },
+      "nfl_team": "MIN",
+      "salary": 1.78
+    },
+    {
+      "id": "HAR-27",
+      "name": "Mason Graham",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 21,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 63,
+        "run_defense": 69,
+        "strength": 75
+      },
+      "nfl_team": "CLE",
+      "salary": 5.71
+    },
+    {
+      "id": "HAR-28",
+      "name": "Nathan Shepherd",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 31,
+      "overall": 67,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 63,
+        "strength": 70
+      },
+      "nfl_team": "NO",
+      "salary": 6.53
+    },
+    {
+      "id": "HAR-29",
+      "name": "Myles Murphy",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 23,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 68,
+        "run_defense": 66,
+        "strength": 61
+      },
+      "nfl_team": "CIN",
+      "salary": 4.84
+    },
+    {
+      "id": "HAR-30",
+      "name": "Bryan Bresee",
+      "team_id": "HAR",
+      "position": "DL",
+      "age": 23,
+      "overall": 62,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 57,
+        "strength": 66
+      },
+      "nfl_team": "NO",
+      "salary": 2.88
+    },
+    {
+      "id": "HAR-31",
+      "name": "Bobby Wagner",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 35,
+      "overall": 82,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 85,
+        "coverage": 72,
+        "tackling": 86,
+        "pass_rush": 83
+      },
+      "nfl_team": "WAS",
+      "salary": 17.8
+    },
+    {
+      "id": "HAR-32",
+      "name": "Jordyn Brooks",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 27,
+      "overall": 72,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 85,
+        "coverage": 61,
+        "tackling": 75,
+        "pass_rush": 69
+      },
+      "nfl_team": "MIA",
+      "salary": 7.66
+    },
+    {
+      "id": "HAR-33",
+      "name": "Bobby Okereke",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 29,
+      "overall": 71,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 66,
+        "coverage": 75,
+        "tackling": 85,
+        "pass_rush": 59
+      },
+      "nfl_team": "NYG",
+      "salary": 6.9
+    },
+    {
+      "id": "HAR-34",
+      "name": "Foye Oluokun",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 30,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 72,
+        "coverage": 73,
+        "tackling": 59,
+        "pass_rush": 65
+      },
+      "nfl_team": "JAX",
+      "salary": 4.32
+    },
+    {
+      "id": "HAR-35",
+      "name": "Lavonte David",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 35,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 64,
+        "coverage": 62,
+        "tackling": 64,
+        "pass_rush": 79
+      },
+      "nfl_team": "TB",
+      "salary": 4.32
+    },
+    {
+      "id": "HAR-36",
+      "name": "Kenneth Murray, Jr.",
+      "team_id": "HAR",
+      "position": "LB",
+      "age": 26,
+      "overall": 57,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 51,
+        "coverage": 59,
+        "tackling": 62,
+        "pass_rush": 55
+      },
+      "nfl_team": "DAL",
+      "salary": 1.09
+    },
+    {
+      "id": "HAR-37",
+      "name": "Kool-Aid McKinstry",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 22,
+      "overall": 76,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 64,
+        "speed": 91,
+        "tackling": 74
+      },
+      "nfl_team": "NO",
+      "salary": 3.35
+    },
+    {
+      "id": "HAR-38",
+      "name": "Alontae Taylor",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 26,
+      "overall": 69,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 65,
+        "speed": 67,
+        "tackling": 76
+      },
+      "nfl_team": "NO",
+      "salary": 3.35
+    },
+    {
+      "id": "HAR-39",
+      "name": "Brandon Stephens",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 27,
+      "overall": 63,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 56,
+        "speed": 63,
+        "tackling": 70
+      },
+      "nfl_team": "NYJ",
+      "salary": 2.8
+    },
+    {
+      "id": "HAR-40",
+      "name": "Jalen Ramsey",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 30,
+      "overall": 63,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 56,
+        "speed": 57,
+        "tackling": 75
+      },
+      "nfl_team": "PIT",
+      "salary": 2.8
+    },
+    {
+      "id": "HAR-41",
+      "name": "Isaiah Rodgers",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 27,
+      "overall": 60,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 56,
+        "speed": 60,
+        "tackling": 63
+      },
+      "nfl_team": "MIN",
+      "salary": 1.7
+    },
+    {
+      "id": "HAR-42",
+      "name": "Amik Robertson",
+      "team_id": "HAR",
+      "position": "CB",
+      "age": 27,
+      "overall": 58,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 53,
+        "speed": 62,
+        "tackling": 58
+      },
+      "nfl_team": "DET",
+      "salary": 1.25
+    },
+    {
+      "id": "HAR-43",
+      "name": "Malaki Starks",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 21,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 69,
+        "tackling": 69,
+        "speed": 84
+      },
+      "nfl_team": "BAL",
+      "salary": 5.71
+    },
+    {
+      "id": "HAR-44",
+      "name": "Antoine Winfield Jr.",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 27,
+      "overall": 72,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 71,
+        "tackling": 73,
+        "speed": 71
+      },
+      "nfl_team": "TB",
+      "salary": 6.92
+    },
+    {
+      "id": "HAR-45",
+      "name": "Isaiah Pola-Mao",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 62,
+        "tackling": 62,
+        "speed": 71
+      },
+      "nfl_team": "LV",
+      "salary": 1.78
+    },
+    {
+      "id": "HAR-46",
+      "name": "Nick Scott",
+      "team_id": "HAR",
+      "position": "S",
+      "age": 30,
+      "overall": 57,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 50,
+        "tackling": 71,
+        "speed": 50
+      },
+      "nfl_team": "CAR",
+      "salary": 1.08
+    },
+    {
+      "id": "HAR-47",
+      "name": "Jake Bates",
+      "team_id": "HAR",
+      "position": "K",
+      "age": 26,
+      "overall": 72,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 74,
+        "kick_accuracy": 69
+      },
+      "nfl_team": "DET",
+      "salary": 1.78
+    },
+    {
+      "id": "HAR-48",
+      "name": "Tommy Townsend",
+      "team_id": "HAR",
+      "position": "P",
+      "age": 28,
+      "overall": 74,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 71,
+        "kick_accuracy": 76
+      },
+      "nfl_team": "HOU",
+      "salary": 2.39
+    },
+    {
+      "id": "MES-01",
+      "name": "Josh Allen",
+      "team_id": "MES",
+      "position": "QB",
+      "age": 29,
+      "overall": 74,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 76,
+        "arm_strength": 67,
+        "decision_making": 64,
+        "mobility": 88
+      },
+      "nfl_team": "BUF",
+      "salary": 19.18
+    },
+    {
+      "id": "MES-02",
+      "name": "Justin Herbert",
+      "team_id": "MES",
+      "position": "QB",
+      "age": 27,
+      "overall": 64,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 66,
+        "arm_strength": 61,
+        "decision_making": 61,
+        "mobility": 69
+      },
+      "nfl_team": "LAC",
+      "salary": 5.08
+    },
+    {
+      "id": "MES-03",
+      "name": "Jonathan Taylor",
+      "team_id": "MES",
+      "position": "RB",
+      "age": 26,
+      "overall": 76,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 83,
+        "receiving": 73,
+        "pass_protection": 73,
+        "speed": 75
+      },
+      "nfl_team": "IND",
+      "salary": 6.33
+    },
+    {
+      "id": "MES-04",
+      "name": "Breece Hall",
+      "team_id": "MES",
+      "position": "RB",
+      "age": 24,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 59,
+        "receiving": 68,
+        "pass_protection": 67,
+        "speed": 67
+      },
+      "nfl_team": "NYJ",
+      "salary": 2.21
+    },
+    {
+      "id": "MES-05",
+      "name": "Ashton Jeanty",
+      "team_id": "MES",
+      "position": "RB",
+      "age": 21,
+      "overall": 64,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 58,
+        "receiving": 65,
+        "pass_protection": 72,
+        "speed": 63
+      },
+      "nfl_team": "LV",
+      "salary": 1.98
+    },
+    {
+      "id": "MES-06",
+      "name": "Alec Pierce",
+      "team_id": "MES",
+      "position": "WR",
+      "age": 25,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "route_running": 71,
+        "hands": 62,
+        "speed": 85
+      },
+      "nfl_team": "IND",
+      "salary": 2.85
+    },
+    {
+      "id": "MES-07",
+      "name": "Zay Flowers",
+      "team_id": "MES",
+      "position": "WR",
+      "age": 24,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 72,
+        "hands": 75,
+        "speed": 73
+      },
+      "nfl_team": "BAL",
+      "salary": 4.7
+    },
+    {
+      "id": "MES-08",
+      "name": "Tetairoa McMillan",
+      "team_id": "MES",
+      "position": "WR",
+      "age": 22,
+      "overall": 68,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 67,
+        "hands": 60,
+        "speed": 76
+      },
+      "nfl_team": "CAR",
+      "salary": 4.7
+    },
+    {
+      "id": "MES-09",
+      "name": "Emeka Egbuka",
+      "team_id": "MES",
+      "position": "WR",
+      "age": 22,
+      "overall": 66,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 65,
+        "hands": 56,
+        "speed": 77
+      },
+      "nfl_team": "TB",
+      "salary": 4.66
+    },
+    {
+      "id": "MES-10",
+      "name": "Darius Slayton",
+      "team_id": "MES",
+      "position": "WR",
+      "age": 28,
+      "overall": 58,
+      "contract_years": 1,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "route_running": 57,
+        "hands": 58,
+        "speed": 60
+      },
+      "nfl_team": "NYG",
+      "salary": 1.27
+    },
+    {
+      "id": "MES-11",
+      "name": "Ladd McConkey",
+      "team_id": "MES",
+      "position": "WR",
+      "age": 23,
+      "overall": 58,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 61,
+        "hands": 61,
+        "speed": 51
+      },
+      "nfl_team": "LAC",
+      "salary": 1.27
+    },
+    {
+      "id": "MES-12",
+      "name": "Travis Kelce",
+      "team_id": "MES",
+      "position": "TE",
+      "age": 35,
+      "overall": 71,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 73,
+        "blocking": 63,
+        "speed": 78
+      },
+      "nfl_team": "KC",
+      "salary": 4.87
+    },
+    {
+      "id": "MES-13",
+      "name": "Trey McBride",
+      "team_id": "MES",
+      "position": "TE",
+      "age": 25,
+      "overall": 68,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 74,
+        "blocking": 57,
+        "speed": 74
+      },
+      "nfl_team": "ARI",
+      "salary": 2.85
+    },
+    {
+      "id": "MES-14",
+      "name": "Jake Ferguson",
+      "team_id": "MES",
+      "position": "TE",
+      "age": 26,
+      "overall": 58,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 57,
+        "blocking": 55,
+        "speed": 61
+      },
+      "nfl_team": "DAL",
+      "salary": 1.14
+    },
+    {
+      "id": "MES-15",
+      "name": "Elijah Wilkinson",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 30,
+      "overall": 81,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 81,
+        "run_blocking": 77,
+        "strength": 84
+      },
+      "nfl_team": "ATL",
+      "salary": 15.98
+    },
+    {
+      "id": "MES-16",
+      "name": "Mike McGlinchey",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 30,
+      "overall": 78,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 81,
+        "run_blocking": 77,
+        "strength": 75
+      },
+      "nfl_team": "DEN",
+      "salary": 12.72
+    },
+    {
+      "id": "MES-17",
+      "name": "Terence Steele",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 28,
+      "overall": 74,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 77,
+        "run_blocking": 72,
+        "strength": 74
+      },
+      "nfl_team": "DAL",
+      "salary": 9.0
+    },
+    {
+      "id": "MES-18",
+      "name": "Joel Bitonio",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 33,
+      "overall": 71,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 68,
+        "run_blocking": 69,
+        "strength": 75
+      },
+      "nfl_team": "CLE",
+      "salary": 6.67
+    },
+    {
+      "id": "MES-19",
+      "name": "Coleman Shelton",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 30,
+      "overall": 69,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 78,
+        "run_blocking": 73,
+        "strength": 55
+      },
+      "nfl_team": "LA",
+      "salary": 5.34
+    },
+    {
+      "id": "MES-20",
+      "name": "Roger Rosengarten",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 23,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 63,
+        "run_blocking": 80,
+        "strength": 65
+      },
+      "nfl_team": "BAL",
+      "salary": 2.85
+    },
+    {
+      "id": "MES-21",
+      "name": "Grey Zabel",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 23,
+      "overall": 64,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 69,
+        "run_blocking": 60,
+        "strength": 64
+      },
+      "nfl_team": "SEA",
+      "salary": 2.79
+    },
+    {
+      "id": "MES-22",
+      "name": "Tyler Linderbaum",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 25,
+      "overall": 62,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 57,
+        "run_blocking": 76,
+        "strength": 54
+      },
+      "nfl_team": "BAL",
+      "salary": 2.09
+    },
+    {
+      "id": "MES-23",
+      "name": "Tytus Howard",
+      "team_id": "MES",
+      "position": "OL",
+      "age": 29,
+      "overall": 54,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 54,
+        "run_blocking": 54,
+        "strength": 53
+      },
+      "nfl_team": "HOU",
+      "salary": 1.0
+    },
+    {
+      "id": "MES-24",
+      "name": "Maxx Crosby",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 28,
+      "overall": 82,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 82,
+        "run_defense": 83,
+        "strength": 82
+      },
+      "nfl_team": "LV",
+      "salary": 23.03
+    },
+    {
+      "id": "MES-25",
+      "name": "Jonathan Allen",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 30,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 72,
+        "strength": 75
+      },
+      "nfl_team": "MIN",
+      "salary": 10.79
+    },
+    {
+      "id": "MES-26",
+      "name": "Vita Vea",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 30,
+      "overall": 72,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 65,
+        "strength": 81
+      },
+      "nfl_team": "TB",
+      "salary": 9.73
+    },
+    {
+      "id": "MES-27",
+      "name": "Byron Murphy II",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 22,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 68,
+        "strength": 74
+      },
+      "nfl_team": "SEA",
+      "salary": 4.7
+    },
+    {
+      "id": "MES-28",
+      "name": "Keeanu Benton",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 24,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 66,
+        "strength": 64
+      },
+      "nfl_team": "PIT",
+      "salary": 2.85
+    },
+    {
+      "id": "MES-29",
+      "name": "B.J. Hill",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 30,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 66,
+        "strength": 65
+      },
+      "nfl_team": "CIN",
+      "salary": 4.02
+    },
+    {
+      "id": "MES-30",
+      "name": "Grover Stewart",
+      "team_id": "MES",
+      "position": "DL",
+      "age": 31,
+      "overall": 62,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 60,
+        "run_defense": 62,
+        "strength": 63
+      },
+      "nfl_team": "IND",
+      "salary": 2.48
+    },
+    {
+      "id": "MES-31",
+      "name": "Jack Campbell",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 25,
+      "overall": 82,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 85,
+        "coverage": 73,
+        "tackling": 85,
+        "pass_rush": 83
+      },
+      "nfl_team": "DET",
+      "salary": 4.7
+    },
+    {
+      "id": "MES-32",
+      "name": "Nick Bolton",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 25,
+      "overall": 72,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 81,
+        "coverage": 67,
+        "tackling": 70,
+        "pass_rush": 71
+      },
+      "nfl_team": "KC",
+      "salary": 6.24
+    },
+    {
+      "id": "MES-33",
+      "name": "Demario Davis",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 36,
+      "overall": 71,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 78,
+        "coverage": 70,
+        "tackling": 72,
+        "pass_rush": 65
+      },
+      "nfl_team": "NO",
+      "salary": 5.64
+    },
+    {
+      "id": "MES-34",
+      "name": "Cody Barton",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 28,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 52,
+        "coverage": 82,
+        "tackling": 74,
+        "pass_rush": 59
+      },
+      "nfl_team": "TEN",
+      "salary": 3.61
+    },
+    {
+      "id": "MES-35",
+      "name": "Roquan Smith",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 28,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 66,
+        "coverage": 72,
+        "tackling": 70,
+        "pass_rush": 59
+      },
+      "nfl_team": "BAL",
+      "salary": 3.61
+    },
+    {
+      "id": "MES-36",
+      "name": "SirVocea Dennis",
+      "team_id": "MES",
+      "position": "LB",
+      "age": 25,
+      "overall": 60,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 62,
+        "coverage": 55,
+        "tackling": 53,
+        "pass_rush": 71
+      },
+      "nfl_team": "TB",
+      "salary": 1.45
+    },
+    {
+      "id": "MES-37",
+      "name": "Cooper DeJean",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 22,
+      "overall": 79,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 72,
+        "speed": 76,
+        "tackling": 90
+      },
+      "nfl_team": "PHI",
+      "salary": 2.85
+    },
+    {
+      "id": "MES-38",
+      "name": "Joey Porter Jr.",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 25,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 79,
+        "speed": 68,
+        "tackling": 63
+      },
+      "nfl_team": "PIT",
+      "salary": 4.7
+    },
+    {
+      "id": "MES-39",
+      "name": "Deommodore Lenoir",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 25,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 67,
+        "speed": 67,
+        "tackling": 66
+      },
+      "nfl_team": "SF",
+      "salary": 4.19
+    },
+    {
+      "id": "MES-40",
+      "name": "Eric Stokes",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 26,
+      "overall": 67,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 67,
+        "speed": 64,
+        "tackling": 69
+      },
+      "nfl_team": "LV",
+      "salary": 4.19
+    },
+    {
+      "id": "MES-41",
+      "name": "Emmanuel Forbes",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 24,
+      "overall": 63,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 63,
+        "speed": 68,
+        "tackling": 57
+      },
+      "nfl_team": "LA",
+      "salary": 2.42
+    },
+    {
+      "id": "MES-42",
+      "name": "Rasul Douglas",
+      "team_id": "MES",
+      "position": "CB",
+      "age": 31,
+      "overall": 62,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 73,
+        "speed": 49,
+        "tackling": 64
+      },
+      "nfl_team": "MIA",
+      "salary": 2.09
+    },
+    {
+      "id": "MES-43",
+      "name": "Talanoa Hufanga",
+      "team_id": "MES",
+      "position": "S",
+      "age": 25,
+      "overall": 78,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 77,
+        "speed": 84
+      },
+      "nfl_team": "DEN",
+      "salary": 9.52
+    },
+    {
+      "id": "MES-44",
+      "name": "Camryn Bynum",
+      "team_id": "MES",
+      "position": "S",
+      "age": 27,
+      "overall": 77,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 82,
+        "tackling": 77,
+        "speed": 72
+      },
+      "nfl_team": "IND",
+      "salary": 8.8
+    },
+    {
+      "id": "MES-45",
+      "name": "Jaquan Brisker",
+      "team_id": "MES",
+      "position": "S",
+      "age": 26,
+      "overall": 70,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 68,
+        "tackling": 71,
+        "speed": 71
+      },
+      "nfl_team": "CHI",
+      "salary": 2.85
+    },
+    {
+      "id": "MES-46",
+      "name": "Geno Stone",
+      "team_id": "MES",
+      "position": "S",
+      "age": 26,
+      "overall": 62,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 65,
+        "tackling": 52,
+        "speed": 70
+      },
+      "nfl_team": "CIN",
+      "salary": 1.79
+    },
+    {
+      "id": "MES-47",
+      "name": "Tyler Loop",
+      "team_id": "MES",
+      "position": "K",
+      "age": 24,
+      "overall": 72,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 67,
+        "kick_accuracy": 76
+      },
+      "nfl_team": "BAL",
+      "salary": 1.62
+    },
+    {
+      "id": "MES-48",
+      "name": "AJ Cole",
+      "team_id": "MES",
+      "position": "P",
+      "age": 29,
+      "overall": 72,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 71,
+        "kick_accuracy": 73
+      },
+      "nfl_team": "LV",
+      "salary": 1.87
+    },
+    {
+      "id": "IRN-01",
+      "name": "Matthew Stafford",
+      "team_id": "IRN",
+      "position": "QB",
+      "age": 37,
+      "overall": 73,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 68,
+        "arm_strength": 82,
+        "decision_making": 89,
+        "mobility": 54
+      },
+      "nfl_team": "LA",
+      "salary": 18.97
+    },
+    {
+      "id": "IRN-02",
+      "name": "Sam Darnold",
+      "team_id": "IRN",
+      "position": "QB",
+      "age": 28,
+      "overall": 68,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 79,
+        "arm_strength": 73,
+        "decision_making": 64,
+        "mobility": 57
+      },
+      "nfl_team": "SEA",
+      "salary": 10.38
+    },
+    {
+      "id": "IRN-03",
+      "name": "Bijan Robinson",
+      "team_id": "IRN",
+      "position": "RB",
+      "age": 23,
+      "overall": 76,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 75,
+        "receiving": 83,
+        "pass_protection": 72,
+        "speed": 75
+      },
+      "nfl_team": "ATL",
+      "salary": 5.08
+    },
+    {
+      "id": "IRN-04",
+      "name": "Travis Etienne",
+      "team_id": "IRN",
+      "position": "RB",
+      "age": 26,
+      "overall": 66,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 64,
+        "receiving": 62,
+        "pass_protection": 65,
+        "speed": 73
+      },
+      "nfl_team": "JAX",
+      "salary": 2.61
+    },
+    {
+      "id": "IRN-05",
+      "name": "D'Andre Swift",
+      "team_id": "IRN",
+      "position": "RB",
+      "age": 26,
+      "overall": 64,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "rushing": 70,
+        "receiving": 63,
+        "pass_protection": 64,
+        "speed": 61
+      },
+      "nfl_team": "CHI",
+      "salary": 2.08
+    },
+    {
+      "id": "IRN-06",
+      "name": "George Pickens",
+      "team_id": "IRN",
+      "position": "WR",
+      "age": 24,
+      "overall": 79,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 79,
+        "hands": 80,
+        "speed": 78
+      },
+      "nfl_team": "DAL",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-07",
+      "name": "A.J. Brown",
+      "team_id": "IRN",
+      "position": "WR",
+      "age": 28,
+      "overall": 71,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 67,
+        "hands": 73,
+        "speed": 72
+      },
+      "nfl_team": "PHI",
+      "salary": 9.52
+    },
+    {
+      "id": "IRN-08",
+      "name": "DeVonta Smith",
+      "team_id": "IRN",
+      "position": "WR",
+      "age": 26,
+      "overall": 71,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 66,
+        "hands": 75,
+        "speed": 73
+      },
+      "nfl_team": "PHI",
+      "salary": 9.52
+    },
+    {
+      "id": "IRN-09",
+      "name": "Michael Pittman",
+      "team_id": "IRN",
+      "position": "WR",
+      "age": 27,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 64,
+        "hands": 78,
+        "speed": 48
+      },
+      "nfl_team": "IND",
+      "salary": 3.13
+    },
+    {
+      "id": "IRN-10",
+      "name": "Romeo Doubs",
+      "team_id": "IRN",
+      "position": "WR",
+      "age": 25,
+      "overall": 63,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 60,
+        "hands": 66,
+        "speed": 64
+      },
+      "nfl_team": "GB",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-11",
+      "name": "Darnell Mooney",
+      "team_id": "IRN",
+      "position": "WR",
+      "age": 27,
+      "overall": 54,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 48,
+        "hands": 51,
+        "speed": 62
+      },
+      "nfl_team": "ATL",
+      "salary": 1.0
+    },
+    {
+      "id": "IRN-12",
+      "name": "Theo Johnson",
+      "team_id": "IRN",
+      "position": "TE",
+      "age": 24,
+      "overall": 71,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 66,
+        "blocking": 81,
+        "speed": 65
+      },
+      "nfl_team": "NYG",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-13",
+      "name": "AJ Barner",
+      "team_id": "IRN",
+      "position": "TE",
+      "age": 23,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 59,
+        "blocking": 75,
+        "speed": 72
+      },
+      "nfl_team": "SEA",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-14",
+      "name": "Mason Taylor",
+      "team_id": "IRN",
+      "position": "TE",
+      "age": 21,
+      "overall": 54,
+      "contract_years": 4,
+      "games_missed_last_season": 4,
+      "ratings": {
+        "receiving": 51,
+        "blocking": 60,
+        "speed": 52
+      },
+      "nfl_team": "NYJ",
+      "salary": 1.0
+    },
+    {
+      "id": "IRN-15",
+      "name": "Graham Barton",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 23,
+      "overall": 80,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 78,
+        "run_blocking": 84,
+        "strength": 78
+      },
+      "nfl_team": "TB",
+      "salary": 5.08
+    },
+    {
+      "id": "IRN-16",
+      "name": "Jonah Jackson",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 28,
+      "overall": 78,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 77,
+        "run_blocking": 81,
+        "strength": 75
+      },
+      "nfl_team": "CHI",
+      "salary": 13.91
+    },
+    {
+      "id": "IRN-17",
+      "name": "Ryan Neuzil",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 28,
+      "overall": 74,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 82,
+        "run_blocking": 77,
+        "strength": 62
+      },
+      "nfl_team": "ATL",
+      "salary": 9.81
+    },
+    {
+      "id": "IRN-18",
+      "name": "Chris Lindstrom",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 28,
+      "overall": 71,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 76,
+        "run_blocking": 68,
+        "strength": 69
+      },
+      "nfl_team": "ATL",
+      "salary": 7.25
+    },
+    {
+      "id": "IRN-19",
+      "name": "Mason McCormick",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 25,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 72,
+        "run_blocking": 72,
+        "strength": 63
+      },
+      "nfl_team": "PIT",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-20",
+      "name": "Quinn Meinerz",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 26,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 72,
+        "run_blocking": 64,
+        "strength": 70
+      },
+      "nfl_team": "DEN",
+      "salary": 5.78
+    },
+    {
+      "id": "IRN-21",
+      "name": "Quenton Nelson",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 29,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 58,
+        "run_blocking": 64,
+        "strength": 66
+      },
+      "nfl_team": "IND",
+      "salary": 2.56
+    },
+    {
+      "id": "IRN-22",
+      "name": "Amarius Mims",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 22,
+      "overall": 62,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 57,
+        "run_blocking": 58,
+        "strength": 70
+      },
+      "nfl_team": "CIN",
+      "salary": 2.2
+    },
+    {
+      "id": "IRN-23",
+      "name": "Zion Johnson",
+      "team_id": "IRN",
+      "position": "OL",
+      "age": 25,
+      "overall": 53,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 51,
+        "run_blocking": 57,
+        "strength": 51
+      },
+      "nfl_team": "LAC",
+      "salary": 1.0
+    },
+    {
+      "id": "IRN-24",
+      "name": "Jeffery Simmons",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 28,
+      "overall": 80,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "pass_rush": 81,
+        "run_defense": 81,
+        "strength": 77
+      },
+      "nfl_team": "TEN",
+      "salary": 21.8
+    },
+    {
+      "id": "IRN-25",
+      "name": "George Karlaftis",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 24,
+      "overall": 74,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 78,
+        "run_defense": 72,
+        "strength": 71
+      },
+      "nfl_team": "KC",
+      "salary": 5.08
+    },
+    {
+      "id": "IRN-26",
+      "name": "Travis Jones",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 25,
+      "overall": 72,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 66,
+        "strength": 81
+      },
+      "nfl_team": "BAL",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-27",
+      "name": "Kobie Turner",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 26,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 74,
+        "run_defense": 69,
+        "strength": 68
+      },
+      "nfl_team": "LA",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-28",
+      "name": "Dexter Lawrence",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 27,
+      "overall": 67,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 65,
+        "run_defense": 57,
+        "strength": 80
+      },
+      "nfl_team": "NYG",
+      "salary": 5.79
+    },
+    {
+      "id": "IRN-29",
+      "name": "Gervon Dexter Sr.",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 24,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 62,
+        "strength": 63
+      },
+      "nfl_team": "CHI",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-30",
+      "name": "Adam Butler",
+      "team_id": "IRN",
+      "position": "DL",
+      "age": 31,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 60,
+        "run_defense": 58,
+        "strength": 68
+      },
+      "nfl_team": "LV",
+      "salary": 2.63
+    },
+    {
+      "id": "IRN-31",
+      "name": "Kaden Elliss",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 30,
+      "overall": 80,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 70,
+        "coverage": 82,
+        "tackling": 81,
+        "pass_rush": 86
+      },
+      "nfl_team": "ATL",
+      "salary": 13.48
+    },
+    {
+      "id": "IRN-32",
+      "name": "Nate Landman",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 26,
+      "overall": 72,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 73,
+        "coverage": 68,
+        "tackling": 71,
+        "pass_rush": 78
+      },
+      "nfl_team": "LA",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-33",
+      "name": "Carson Schwesinger",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 22,
+      "overall": 71,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 82,
+        "coverage": 62,
+        "tackling": 72,
+        "pass_rush": 69
+      },
+      "nfl_team": "CLE",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-34",
+      "name": "Daiyan Henley",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 25,
+      "overall": 68,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 55,
+        "coverage": 73,
+        "tackling": 75,
+        "pass_rush": 71
+      },
+      "nfl_team": "LAC",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-35",
+      "name": "Devin Bush",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 27,
+      "overall": 66,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 59,
+        "coverage": 80,
+        "tackling": 70,
+        "pass_rush": 57
+      },
+      "nfl_team": "CLE",
+      "salary": 3.42
+    },
+    {
+      "id": "IRN-36",
+      "name": "Germaine Pratt",
+      "team_id": "IRN",
+      "position": "LB",
+      "age": 29,
+      "overall": 60,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 63,
+        "coverage": 66,
+        "tackling": 63,
+        "pass_rush": 50
+      },
+      "nfl_team": "IND",
+      "salary": 1.5
+    },
+    {
+      "id": "IRN-37",
+      "name": "Kamari Lassiter",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 22,
+      "overall": 75,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 73,
+        "speed": 76,
+        "tackling": 77
+      },
+      "nfl_team": "HOU",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-38",
+      "name": "DJ Turner II",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 24,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 75,
+        "speed": 74,
+        "tackling": 60
+      },
+      "nfl_team": "CIN",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-39",
+      "name": "A.J. Terrell",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 26,
+      "overall": 68,
+      "contract_years": 5,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 66,
+        "speed": 65,
+        "tackling": 72
+      },
+      "nfl_team": "ATL",
+      "salary": 5.13
+    },
+    {
+      "id": "IRN-40",
+      "name": "Byron Murphy",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 27,
+      "overall": 66,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 65,
+        "speed": 63,
+        "tackling": 69
+      },
+      "nfl_team": "MIN",
+      "salary": 3.95
+    },
+    {
+      "id": "IRN-41",
+      "name": "Josh Jobe",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 27,
+      "overall": 63,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 68,
+        "speed": 60,
+        "tackling": 62
+      },
+      "nfl_team": "SEA",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-42",
+      "name": "Jaycee Horn",
+      "team_id": "IRN",
+      "position": "CB",
+      "age": 25,
+      "overall": 61,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 68,
+        "speed": 64,
+        "tackling": 52
+      },
+      "nfl_team": "CAR",
+      "salary": 1.88
+    },
+    {
+      "id": "IRN-43",
+      "name": "Kam Curl",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 26,
+      "overall": 82,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 76,
+        "tackling": 96,
+        "speed": 73
+      },
+      "nfl_team": "LA",
+      "salary": 13.94
+    },
+    {
+      "id": "IRN-44",
+      "name": "Calen Bullock",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 22,
+      "overall": 73,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 83,
+        "tackling": 55,
+        "speed": 82
+      },
+      "nfl_team": "HOU",
+      "salary": 3.04
+    },
+    {
+      "id": "IRN-45",
+      "name": "Budda Baker",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 29,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 69,
+        "tackling": 66,
+        "speed": 61
+      },
+      "nfl_team": "ARI",
+      "salary": 2.78
+    },
+    {
+      "id": "IRN-46",
+      "name": "Kevin Byard",
+      "team_id": "IRN",
+      "position": "S",
+      "age": 32,
+      "overall": 65,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 71,
+        "speed": 51
+      },
+      "nfl_team": "CHI",
+      "salary": 2.78
+    },
+    {
+      "id": "IRN-47",
+      "name": "Andy Borregales",
+      "team_id": "IRN",
+      "position": "K",
+      "age": 22,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 67,
+        "kick_accuracy": 73
+      },
+      "nfl_team": "NE",
+      "salary": 1.68
+    },
+    {
+      "id": "IRN-48",
+      "name": "Corey Bojorquez",
+      "team_id": "IRN",
+      "position": "P",
+      "age": 28,
+      "overall": 68,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 69,
+        "kick_accuracy": 68
+      },
+      "nfl_team": "CLE",
+      "salary": 1.56
+    },
+    {
+      "id": "LAK-01",
+      "name": "Caleb Williams",
+      "team_id": "LAK",
+      "position": "QB",
+      "age": 23,
+      "overall": 72,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 61,
+        "arm_strength": 80,
+        "decision_making": 77,
+        "mobility": 71
+      },
+      "nfl_team": "CHI",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-02",
+      "name": "Jared Goff",
+      "team_id": "LAK",
+      "position": "QB",
+      "age": 30,
+      "overall": 68,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 76,
+        "arm_strength": 61,
+        "decision_making": 77,
+        "mobility": 60
+      },
+      "nfl_team": "DET",
+      "salary": 11.83
+    },
+    {
+      "id": "LAK-03",
+      "name": "Christian McCaffrey",
+      "team_id": "LAK",
+      "position": "RB",
+      "age": 29,
+      "overall": 75,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 71,
+        "receiving": 87,
+        "pass_protection": 76,
+        "speed": 67
+      },
+      "nfl_team": "SF",
+      "salary": 7.15
+    },
+    {
+      "id": "LAK-04",
+      "name": "Chase Brown",
+      "team_id": "LAK",
+      "position": "RB",
+      "age": 25,
+      "overall": 66,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 65,
+        "receiving": 68,
+        "pass_protection": 67,
+        "speed": 66
+      },
+      "nfl_team": "CIN",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-05",
+      "name": "Tony Pollard",
+      "team_id": "LAK",
+      "position": "RB",
+      "age": 28,
+      "overall": 62,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 59,
+        "receiving": 59,
+        "pass_protection": 66,
+        "speed": 64
+      },
+      "nfl_team": "TEN",
+      "salary": 1.75
+    },
+    {
+      "id": "LAK-06",
+      "name": "Jaxon Smith-Njigba",
+      "team_id": "LAK",
+      "position": "WR",
+      "age": 23,
+      "overall": 79,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 81,
+        "hands": 80,
+        "speed": 77
+      },
+      "nfl_team": "SEA",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-07",
+      "name": "Michael Wilson",
+      "team_id": "LAK",
+      "position": "WR",
+      "age": 25,
+      "overall": 71,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 66,
+        "hands": 75,
+        "speed": 73
+      },
+      "nfl_team": "ARI",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-08",
+      "name": "Chris Olave",
+      "team_id": "LAK",
+      "position": "WR",
+      "age": 25,
+      "overall": 70,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 75,
+        "hands": 68,
+        "speed": 68
+      },
+      "nfl_team": "NO",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-09",
+      "name": "Tre Tucker",
+      "team_id": "LAK",
+      "position": "WR",
+      "age": 24,
+      "overall": 64,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 62,
+        "hands": 67,
+        "speed": 62
+      },
+      "nfl_team": "LV",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-10",
+      "name": "Rome Odunze",
+      "team_id": "LAK",
+      "position": "WR",
+      "age": 23,
+      "overall": 63,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 60,
+        "hands": 57,
+        "speed": 73
+      },
+      "nfl_team": "CHI",
+      "salary": 3.46
+    },
+    {
+      "id": "LAK-11",
+      "name": "Elic Ayomanor",
+      "team_id": "LAK",
+      "position": "WR",
+      "age": 22,
+      "overall": 54,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 51,
+        "hands": 52,
+        "speed": 58
+      },
+      "nfl_team": "TEN",
+      "salary": 1.0
+    },
+    {
+      "id": "LAK-12",
+      "name": "Cade Otton",
+      "team_id": "LAK",
+      "position": "TE",
+      "age": 26,
+      "overall": 78,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "receiving": 69,
+        "blocking": 89,
+        "speed": 77
+      },
+      "nfl_team": "TB",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-13",
+      "name": "Dallas Goedert",
+      "team_id": "LAK",
+      "position": "TE",
+      "age": 30,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "receiving": 61,
+        "blocking": 67,
+        "speed": 61
+      },
+      "nfl_team": "PHI",
+      "salary": 2.23
+    },
+    {
+      "id": "LAK-14",
+      "name": "Dalton Schultz",
+      "team_id": "LAK",
+      "position": "TE",
+      "age": 29,
+      "overall": 63,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 69,
+        "blocking": 57,
+        "speed": 64
+      },
+      "nfl_team": "HOU",
+      "salary": 2.23
+    },
+    {
+      "id": "LAK-15",
+      "name": "Dominick Puni",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 25,
+      "overall": 80,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 84,
+        "run_blocking": 80,
+        "strength": 76
+      },
+      "nfl_team": "SF",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-16",
+      "name": "Greg Van Roten",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 35,
+      "overall": 79,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 77,
+        "run_blocking": 84,
+        "strength": 75
+      },
+      "nfl_team": "NYG",
+      "salary": 17.24
+    },
+    {
+      "id": "LAK-17",
+      "name": "Garett Bolles",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 33,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 78,
+        "run_blocking": 72,
+        "strength": 69
+      },
+      "nfl_team": "DEN",
+      "salary": 10.14
+    },
+    {
+      "id": "LAK-18",
+      "name": "Aireontae Ersery",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 23,
+      "overall": 72,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 75,
+        "run_blocking": 63,
+        "strength": 78
+      },
+      "nfl_team": "HOU",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-19",
+      "name": "Jake Andrews",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 25,
+      "overall": 69,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 72,
+        "run_blocking": 61,
+        "strength": 75
+      },
+      "nfl_team": "HOU",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-20",
+      "name": "Tate Ratledge",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 24,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 71,
+        "run_blocking": 67,
+        "strength": 70
+      },
+      "nfl_team": "DET",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-21",
+      "name": "Connor McGovern",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 27,
+      "overall": 63,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 58,
+        "run_blocking": 70,
+        "strength": 61
+      },
+      "nfl_team": "BUF",
+      "salary": 2.8
+    },
+    {
+      "id": "LAK-22",
+      "name": "Garrett Bradbury",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 30,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 61,
+        "run_blocking": 64,
+        "strength": 62
+      },
+      "nfl_team": "NE",
+      "salary": 2.38
+    },
+    {
+      "id": "LAK-23",
+      "name": "David Edwards",
+      "team_id": "LAK",
+      "position": "OL",
+      "age": 28,
+      "overall": 48,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 48,
+        "run_blocking": 54,
+        "strength": 42
+      },
+      "nfl_team": "BUF",
+      "salary": 1.0
+    },
+    {
+      "id": "LAK-24",
+      "name": "Josh Hines-Allen",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 28,
+      "overall": 77,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 83,
+        "run_defense": 76,
+        "strength": 72
+      },
+      "nfl_team": "JAX",
+      "salary": 19.61
+    },
+    {
+      "id": "LAK-25",
+      "name": "Cameron Heyward",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 36,
+      "overall": 74,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 78,
+        "strength": 72
+      },
+      "nfl_team": "PIT",
+      "salary": 14.88
+    },
+    {
+      "id": "LAK-26",
+      "name": "Danielle Hunter",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 30,
+      "overall": 72,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 81,
+        "run_defense": 74,
+        "strength": 61
+      },
+      "nfl_team": "HOU",
+      "salary": 12.11
+    },
+    {
+      "id": "LAK-27",
+      "name": "Laiatu Latu",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 24,
+      "overall": 71,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_rush": 76,
+        "run_defense": 74,
+        "strength": 62
+      },
+      "nfl_team": "IND",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-28",
+      "name": "Jonah Laulu",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 25,
+      "overall": 67,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 66,
+        "run_defense": 66,
+        "strength": 68
+      },
+      "nfl_team": "LV",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-29",
+      "name": "Javon Kinlaw",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 27,
+      "overall": 64,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 59,
+        "run_defense": 65,
+        "strength": 69
+      },
+      "nfl_team": "WAS",
+      "salary": 4.11
+    },
+    {
+      "id": "LAK-30",
+      "name": "Harrison Phillips",
+      "team_id": "LAK",
+      "position": "DL",
+      "age": 29,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 59,
+        "run_defense": 63,
+        "strength": 63
+      },
+      "nfl_team": "NYJ",
+      "salary": 2.88
+    },
+    {
+      "id": "LAK-31",
+      "name": "Devin White",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 27,
+      "overall": 79,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 86,
+        "coverage": 80,
+        "tackling": 71,
+        "pass_rush": 78
+      },
+      "nfl_team": "LV",
+      "salary": 14.29
+    },
+    {
+      "id": "LAK-32",
+      "name": "Eric Wilson",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 30,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 78,
+        "coverage": 72,
+        "tackling": 56,
+        "pass_rush": 87
+      },
+      "nfl_team": "MIN",
+      "salary": 8.48
+    },
+    {
+      "id": "LAK-33",
+      "name": "Zaire Franklin",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 29,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 76,
+        "coverage": 65,
+        "tackling": 56,
+        "pass_rush": 80
+      },
+      "nfl_team": "IND",
+      "salary": 5.52
+    },
+    {
+      "id": "LAK-34",
+      "name": "Alex Singleton",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 31,
+      "overall": 68,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 64,
+        "coverage": 59,
+        "tackling": 71,
+        "pass_rush": 77
+      },
+      "nfl_team": "DEN",
+      "salary": 4.9
+    },
+    {
+      "id": "LAK-35",
+      "name": "Dee Winters",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 24,
+      "overall": 64,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 59,
+        "coverage": 79,
+        "tackling": 57,
+        "pass_rush": 59
+      },
+      "nfl_team": "SF",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-36",
+      "name": "Derrick Barnes",
+      "team_id": "LAK",
+      "position": "LB",
+      "age": 26,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 51,
+        "coverage": 61,
+        "tackling": 71,
+        "pass_rush": 66
+      },
+      "nfl_team": "DET",
+      "salary": 2.13
+    },
+    {
+      "id": "LAK-37",
+      "name": "Nate Wiggins",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 22,
+      "overall": 74,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 72,
+        "speed": 76,
+        "tackling": 74
+      },
+      "nfl_team": "BAL",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-38",
+      "name": "Daxton Hill",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 24,
+      "overall": 70,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 68,
+        "speed": 70,
+        "tackling": 73
+      },
+      "nfl_team": "CIN",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-39",
+      "name": "Keisean Nixon",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 28,
+      "overall": 68,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 63,
+        "speed": 64,
+        "tackling": 77
+      },
+      "nfl_team": "GB",
+      "salary": 5.77
+    },
+    {
+      "id": "LAK-40",
+      "name": "Nahshon Wright",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 26,
+      "overall": 66,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 65,
+        "speed": 67,
+        "tackling": 66
+      },
+      "nfl_team": "CHI",
+      "salary": 4.41
+    },
+    {
+      "id": "LAK-41",
+      "name": "Carlton Davis III",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 28,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 66,
+        "speed": 59,
+        "tackling": 65
+      },
+      "nfl_team": "NE",
+      "salary": 2.8
+    },
+    {
+      "id": "LAK-42",
+      "name": "Marlon Humphrey",
+      "team_id": "LAK",
+      "position": "CB",
+      "age": 29,
+      "overall": 59,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 58,
+        "speed": 57,
+        "tackling": 62
+      },
+      "nfl_team": "BAL",
+      "salary": 1.45
+    },
+    {
+      "id": "LAK-43",
+      "name": "Xavier Watts",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 23,
+      "overall": 80,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 83,
+        "tackling": 71,
+        "speed": 85
+      },
+      "nfl_team": "ATL",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-44",
+      "name": "Kyle Hamilton",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 24,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 80,
+        "tackling": 66,
+        "speed": 73
+      },
+      "nfl_team": "BAL",
+      "salary": 5.71
+    },
+    {
+      "id": "LAK-45",
+      "name": "Jordan Battle",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 24,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 65,
+        "tackling": 55,
+        "speed": 80
+      },
+      "nfl_team": "CIN",
+      "salary": 3.36
+    },
+    {
+      "id": "LAK-46",
+      "name": "Reed Blankenship",
+      "team_id": "LAK",
+      "position": "S",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 68,
+        "tackling": 62,
+        "speed": 65
+      },
+      "nfl_team": "PHI",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-47",
+      "name": "Brandon Aubrey",
+      "team_id": "LAK",
+      "position": "K",
+      "age": 30,
+      "overall": 79,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 82,
+        "kick_accuracy": 76
+      },
+      "nfl_team": "DAL",
+      "salary": 1.79
+    },
+    {
+      "id": "LAK-48",
+      "name": "Johnny Hekker",
+      "team_id": "LAK",
+      "position": "P",
+      "age": 35,
+      "overall": 68,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 65,
+        "kick_accuracy": 70
+      },
+      "nfl_team": "TEN",
+      "salary": 1.65
+    },
+    {
+      "id": "SUM-01",
+      "name": "Dak Prescott",
+      "team_id": "SUM",
+      "position": "QB",
+      "age": 32,
+      "overall": 72,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 73,
+        "arm_strength": 74,
+        "decision_making": 77,
+        "mobility": 62
+      },
+      "nfl_team": "DAL",
+      "salary": 14.11
+    },
+    {
+      "id": "SUM-02",
+      "name": "Bo Nix",
+      "team_id": "SUM",
+      "position": "QB",
+      "age": 25,
+      "overall": 68,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 71,
+        "arm_strength": 61,
+        "decision_making": 74,
+        "mobility": 68
+      },
+      "nfl_team": "DEN",
+      "salary": 4.34
+    },
+    {
+      "id": "SUM-03",
+      "name": "De'Von Achane",
+      "team_id": "SUM",
+      "position": "RB",
+      "age": 23,
+      "overall": 74,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 76,
+        "receiving": 69,
+        "pass_protection": 71,
+        "speed": 78
+      },
+      "nfl_team": "MIA",
+      "salary": 2.67
+    },
+    {
+      "id": "SUM-04",
+      "name": "Saquon Barkley",
+      "team_id": "SUM",
+      "position": "RB",
+      "age": 28,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 63,
+        "receiving": 65,
+        "pass_protection": 72,
+        "speed": 67
+      },
+      "nfl_team": "PHI",
+      "salary": 2.57
+    },
+    {
+      "id": "SUM-05",
+      "name": "Rico Dowdle",
+      "team_id": "SUM",
+      "position": "RB",
+      "age": 27,
+      "overall": 62,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 63,
+        "receiving": 60,
+        "pass_protection": 63,
+        "speed": 61
+      },
+      "nfl_team": "CAR",
+      "salary": 1.53
+    },
+    {
+      "id": "SUM-06",
+      "name": "Ja'Marr Chase",
+      "team_id": "SUM",
+      "position": "WR",
+      "age": 25,
+      "overall": 78,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 82,
+        "hands": 84,
+        "speed": 67
+      },
+      "nfl_team": "CIN",
+      "salary": 15.4
+    },
+    {
+      "id": "SUM-07",
+      "name": "Courtland Sutton",
+      "team_id": "SUM",
+      "position": "WR",
+      "age": 29,
+      "overall": 71,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 72,
+        "hands": 63,
+        "speed": 78
+      },
+      "nfl_team": "DEN",
+      "salary": 7.97
+    },
+    {
+      "id": "SUM-08",
+      "name": "Nico Collins",
+      "team_id": "SUM",
+      "position": "WR",
+      "age": 26,
+      "overall": 70,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 70,
+        "hands": 65,
+        "speed": 76
+      },
+      "nfl_team": "HOU",
+      "salary": 7.13
+    },
+    {
+      "id": "SUM-09",
+      "name": "CeeDee Lamb",
+      "team_id": "SUM",
+      "position": "WR",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "route_running": 67,
+        "hands": 60,
+        "speed": 67
+      },
+      "nfl_team": "DAL",
+      "salary": 3.72
+    },
+    {
+      "id": "SUM-10",
+      "name": "DK Metcalf",
+      "team_id": "SUM",
+      "position": "WR",
+      "age": 27,
+      "overall": 62,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 63,
+        "hands": 60,
+        "speed": 64
+      },
+      "nfl_team": "PIT",
+      "salary": 2.33
+    },
+    {
+      "id": "SUM-11",
+      "name": "Cooper Kupp",
+      "team_id": "SUM",
+      "position": "WR",
+      "age": 32,
+      "overall": 56,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 55,
+        "hands": 66,
+        "speed": 47
+      },
+      "nfl_team": "SEA",
+      "salary": 1.03
+    },
+    {
+      "id": "SUM-12",
+      "name": "Hunter Henry",
+      "team_id": "SUM",
+      "position": "TE",
+      "age": 30,
+      "overall": 74,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 73,
+        "blocking": 71,
+        "speed": 77
+      },
+      "nfl_team": "NE",
+      "salary": 5.91
+    },
+    {
+      "id": "SUM-13",
+      "name": "Harold Fannin Jr.",
+      "team_id": "SUM",
+      "position": "TE",
+      "age": 21,
+      "overall": 64,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 69,
+        "blocking": 55,
+        "speed": 69
+      },
+      "nfl_team": "CLE",
+      "salary": 2.1
+    },
+    {
+      "id": "SUM-14",
+      "name": "Colston Loveland",
+      "team_id": "SUM",
+      "position": "TE",
+      "age": 21,
+      "overall": 62,
+      "contract_years": 4,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "receiving": 72,
+        "blocking": 51,
+        "speed": 63
+      },
+      "nfl_team": "CHI",
+      "salary": 1.67
+    },
+    {
+      "id": "SUM-15",
+      "name": "Drew Dalman",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 26,
+      "overall": 83,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 87,
+        "run_blocking": 89,
+        "strength": 74
+      },
+      "nfl_team": "CHI",
+      "salary": 16.65
+    },
+    {
+      "id": "SUM-16",
+      "name": "Colton McKivitz",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 29,
+      "overall": 77,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 84,
+        "run_blocking": 78,
+        "strength": 69
+      },
+      "nfl_team": "SF",
+      "salary": 10.66
+    },
+    {
+      "id": "SUM-17",
+      "name": "Darnell Wright",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 24,
+      "overall": 77,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 76,
+        "run_blocking": 80,
+        "strength": 74
+      },
+      "nfl_team": "CHI",
+      "salary": 4.34
+    },
+    {
+      "id": "SUM-18",
+      "name": "Troy Fautanu",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 24,
+      "overall": 71,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 72,
+        "run_blocking": 72,
+        "strength": 69
+      },
+      "nfl_team": "PIT",
+      "salary": 4.34
+    },
+    {
+      "id": "SUM-19",
+      "name": "Hjalte Froholdt",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 29,
+      "overall": 70,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 69,
+        "run_blocking": 69,
+        "strength": 71
+      },
+      "nfl_team": "ARI",
+      "salary": 5.49
+    },
+    {
+      "id": "SUM-20",
+      "name": "Anthony Bradford",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 24,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 65,
+        "run_blocking": 59,
+        "strength": 76
+      },
+      "nfl_team": "SEA",
+      "salary": 1.56
+    },
+    {
+      "id": "SUM-21",
+      "name": "Joe Tippmann",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 24,
+      "overall": 67,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 64,
+        "run_blocking": 66,
+        "strength": 70
+      },
+      "nfl_team": "NYJ",
+      "salary": 2.67
+    },
+    {
+      "id": "SUM-22",
+      "name": "Olumuyiwa Fashanu",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 22,
+      "overall": 61,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 58,
+        "run_blocking": 61,
+        "strength": 65
+      },
+      "nfl_team": "NYJ",
+      "salary": 1.72
+    },
+    {
+      "id": "SUM-23",
+      "name": "John Simpson",
+      "team_id": "SUM",
+      "position": "OL",
+      "age": 28,
+      "overall": 58,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 52,
+        "run_blocking": 58,
+        "strength": 64
+      },
+      "nfl_team": "NYJ",
+      "salary": 1.18
+    },
+    {
+      "id": "SUM-24",
+      "name": "Derrick Brown",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 27,
+      "overall": 76,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 73,
+        "run_defense": 73,
+        "strength": 81
+      },
+      "nfl_team": "CAR",
+      "salary": 13.01
+    },
+    {
+      "id": "SUM-25",
+      "name": "Leonard Williams",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 31,
+      "overall": 75,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 77,
+        "run_defense": 75,
+        "strength": 74
+      },
+      "nfl_team": "SEA",
+      "salary": 11.89
+    },
+    {
+      "id": "SUM-26",
+      "name": "Will Anderson Jr.",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 23,
+      "overall": 72,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 78,
+        "run_defense": 80,
+        "strength": 58
+      },
+      "nfl_team": "HOU",
+      "salary": 4.34
+    },
+    {
+      "id": "SUM-27",
+      "name": "Zach Sieler",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 29,
+      "overall": 71,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 70,
+        "run_defense": 73,
+        "strength": 71
+      },
+      "nfl_team": "MIA",
+      "salary": 7.97
+    },
+    {
+      "id": "SUM-28",
+      "name": "Moro Ojomo",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 24,
+      "overall": 68,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 73,
+        "run_defense": 64,
+        "strength": 68
+      },
+      "nfl_team": "PHI",
+      "salary": 1.56
+    },
+    {
+      "id": "SUM-29",
+      "name": "Kwity Paye",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 26,
+      "overall": 64,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 71,
+        "run_defense": 60,
+        "strength": 61
+      },
+      "nfl_team": "IND",
+      "salary": 3.21
+    },
+    {
+      "id": "SUM-30",
+      "name": "Christian Barmore",
+      "team_id": "SUM",
+      "position": "DL",
+      "age": 26,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 64,
+        "run_defense": 56,
+        "strength": 68
+      },
+      "nfl_team": "NE",
+      "salary": 2.74
+    },
+    {
+      "id": "SUM-31",
+      "name": "Jamien Sherwood",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 25,
+      "overall": 77,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 83,
+        "coverage": 71,
+        "tackling": 85,
+        "pass_rush": 69
+      },
+      "nfl_team": "NYJ",
+      "salary": 8.91
+    },
+    {
+      "id": "SUM-32",
+      "name": "Quay Walker",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 25,
+      "overall": 74,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 77,
+        "coverage": 66,
+        "tackling": 75,
+        "pass_rush": 77
+      },
+      "nfl_team": "GB",
+      "salary": 4.34
+    },
+    {
+      "id": "SUM-33",
+      "name": "Edgerrin Cooper",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 23,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 63,
+        "coverage": 79,
+        "tackling": 70,
+        "pass_rush": 63
+      },
+      "nfl_team": "GB",
+      "salary": 2.67
+    },
+    {
+      "id": "SUM-34",
+      "name": "Patrick Queen",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 26,
+      "overall": 68,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 77,
+        "coverage": 67,
+        "tackling": 63,
+        "pass_rush": 66
+      },
+      "nfl_team": "PIT",
+      "salary": 3.76
+    },
+    {
+      "id": "SUM-35",
+      "name": "Ernest Jones",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 25,
+      "overall": 64,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "run_defense": 62,
+        "coverage": 80,
+        "tackling": 58,
+        "pass_rush": 55
+      },
+      "nfl_team": "SEA",
+      "salary": 2.32
+    },
+    {
+      "id": "SUM-36",
+      "name": "Frankie Luvu",
+      "team_id": "SUM",
+      "position": "LB",
+      "age": 28,
+      "overall": 62,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 57,
+        "coverage": 63,
+        "tackling": 48,
+        "pass_rush": 78
+      },
+      "nfl_team": "WAS",
+      "salary": 1.8
+    },
+    {
+      "id": "SUM-37",
+      "name": "Riley Moss",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 25,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 68,
+        "speed": 75,
+        "tackling": 77
+      },
+      "nfl_team": "DEN",
+      "salary": 2.67
+    },
+    {
+      "id": "SUM-38",
+      "name": "Tyson Campbell",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 25,
+      "overall": 71,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 70,
+        "speed": 70,
+        "tackling": 72
+      },
+      "nfl_team": "CLE",
+      "salary": 6.11
+    },
+    {
+      "id": "SUM-39",
+      "name": "Pat Surtain II",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 25,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 75,
+        "speed": 67,
+        "tackling": 65
+      },
+      "nfl_team": "DEN",
+      "salary": 4.91
+    },
+    {
+      "id": "SUM-40",
+      "name": "Jaylen Watson",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 26,
+      "overall": 66,
+      "contract_years": 1,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 62,
+        "speed": 62,
+        "tackling": 74
+      },
+      "nfl_team": "KC",
+      "salary": 1.56
+    },
+    {
+      "id": "SUM-41",
+      "name": "Mike Sainristil",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 24,
+      "overall": 64,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 57,
+        "speed": 71,
+        "tackling": 65
+      },
+      "nfl_team": "WAS",
+      "salary": 2.62
+    },
+    {
+      "id": "SUM-42",
+      "name": "Jack Jones",
+      "team_id": "SUM",
+      "position": "CB",
+      "age": 27,
+      "overall": 58,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 56,
+        "speed": 59,
+        "tackling": 60
+      },
+      "nfl_team": "MIA",
+      "salary": 1.18
+    },
+    {
+      "id": "SUM-43",
+      "name": "Xavier McKinney",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 26,
+      "overall": 80,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 88,
+        "tackling": 75,
+        "speed": 78
+      },
+      "nfl_team": "GB",
+      "salary": 10.08
+    },
+    {
+      "id": "SUM-44",
+      "name": "Ronnie Hickman Jr.",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 23,
+      "overall": 73,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 63,
+        "speed": 81
+      },
+      "nfl_team": "CLE",
+      "salary": 1.56
+    },
+    {
+      "id": "SUM-45",
+      "name": "Grant Delpit",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 26,
+      "overall": 69,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 66,
+        "speed": 66
+      },
+      "nfl_team": "CLE",
+      "salary": 3.85
+    },
+    {
+      "id": "SUM-46",
+      "name": "Jeremy Chinn",
+      "team_id": "SUM",
+      "position": "S",
+      "age": 27,
+      "overall": 64,
+      "contract_years": 3,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "coverage": 62,
+        "tackling": 70,
+        "speed": 61
+      },
+      "nfl_team": "LV",
+      "salary": 2.18
+    },
+    {
+      "id": "SUM-47",
+      "name": "Jason Myers",
+      "team_id": "SUM",
+      "position": "K",
+      "age": 34,
+      "overall": 78,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 74,
+        "kick_accuracy": 83
+      },
+      "nfl_team": "SEA",
+      "salary": 3.4
+    },
+    {
+      "id": "SUM-48",
+      "name": "Jeremy Crawshaw",
+      "team_id": "SUM",
+      "position": "P",
+      "age": 24,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 75,
+        "kick_accuracy": 73
+      },
+      "nfl_team": "DEN",
+      "salary": 1.56
+    },
+    {
+      "id": "DEL-01",
+      "name": "Baker Mayfield",
+      "team_id": "DEL",
+      "position": "QB",
+      "age": 30,
+      "overall": 70,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 62,
+        "arm_strength": 75,
+        "decision_making": 66,
+        "mobility": 79
+      },
+      "nfl_team": "TB",
+      "salary": 13.42
+    },
+    {
+      "id": "DEL-02",
+      "name": "Trevor Lawrence",
+      "team_id": "DEL",
+      "position": "QB",
+      "age": 25,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "accuracy": 62,
+        "arm_strength": 80,
+        "decision_making": 67,
+        "mobility": 71
+      },
+      "nfl_team": "JAX",
+      "salary": 13.42
+    },
+    {
+      "id": "DEL-03",
+      "name": "Jahmyr Gibbs",
+      "team_id": "DEL",
+      "position": "RB",
+      "age": 23,
+      "overall": 71,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 65,
+        "receiving": 73,
+        "pass_protection": 67,
+        "speed": 78
+      },
+      "nfl_team": "DET",
+      "salary": 4.39
+    },
+    {
+      "id": "DEL-04",
+      "name": "Javonte Williams",
+      "team_id": "DEL",
+      "position": "RB",
+      "age": 25,
+      "overall": 68,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "rushing": 75,
+        "receiving": 59,
+        "pass_protection": 68,
+        "speed": 68
+      },
+      "nfl_team": "DAL",
+      "salary": 3.24
+    },
+    {
+      "id": "DEL-05",
+      "name": "Rachaad White",
+      "team_id": "DEL",
+      "position": "RB",
+      "age": 26,
+      "overall": 58,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "rushing": 59,
+        "receiving": 59,
+        "pass_protection": 54,
+        "speed": 60
+      },
+      "nfl_team": "TB",
+      "salary": 1.12
+    },
+    {
+      "id": "DEL-06",
+      "name": "Puka Nacua",
+      "team_id": "DEL",
+      "position": "WR",
+      "age": 24,
+      "overall": 77,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "route_running": 79,
+        "hands": 81,
+        "speed": 71
+      },
+      "nfl_team": "LA",
+      "salary": 1.68
+    },
+    {
+      "id": "DEL-07",
+      "name": "Amon-Ra St. Brown",
+      "team_id": "DEL",
+      "position": "WR",
+      "age": 25,
+      "overall": 72,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 79,
+        "hands": 71,
+        "speed": 67
+      },
+      "nfl_team": "DET",
+      "salary": 10.57
+    },
+    {
+      "id": "DEL-08",
+      "name": "Justin Jefferson",
+      "team_id": "DEL",
+      "position": "WR",
+      "age": 26,
+      "overall": 69,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 72,
+        "hands": 67,
+        "speed": 67
+      },
+      "nfl_team": "MIN",
+      "salary": 7.49
+    },
+    {
+      "id": "DEL-09",
+      "name": "Tee Higgins",
+      "team_id": "DEL",
+      "position": "WR",
+      "age": 26,
+      "overall": 66,
+      "contract_years": 2,
+      "games_missed_last_season": 2,
+      "ratings": {
+        "route_running": 63,
+        "hands": 63,
+        "speed": 71
+      },
+      "nfl_team": "CIN",
+      "salary": 5.01
+    },
+    {
+      "id": "DEL-10",
+      "name": "Jerry Jeudy",
+      "team_id": "DEL",
+      "position": "WR",
+      "age": 26,
+      "overall": 59,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 60,
+        "hands": 52,
+        "speed": 65
+      },
+      "nfl_team": "CLE",
+      "salary": 1.53
+    },
+    {
+      "id": "DEL-11",
+      "name": "Andrei Iosivas",
+      "team_id": "DEL",
+      "position": "WR",
+      "age": 25,
+      "overall": 56,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "route_running": 55,
+        "hands": 59,
+        "speed": 53
+      },
+      "nfl_team": "CIN",
+      "salary": 1.03
+    },
+    {
+      "id": "DEL-12",
+      "name": "Kyle Pitts",
+      "team_id": "DEL",
+      "position": "TE",
+      "age": 24,
+      "overall": 73,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 74,
+        "blocking": 75,
+        "speed": 70
+      },
+      "nfl_team": "ATL",
+      "salary": 6.37
+    },
+    {
+      "id": "DEL-13",
+      "name": "Cole Kmet",
+      "team_id": "DEL",
+      "position": "TE",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "receiving": 57,
+        "blocking": 73,
+        "speed": 66
+      },
+      "nfl_team": "CHI",
+      "salary": 2.66
+    },
+    {
+      "id": "DEL-14",
+      "name": "Chig Okonkwo",
+      "team_id": "DEL",
+      "position": "TE",
+      "age": 25,
+      "overall": 61,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "receiving": 57,
+        "blocking": 49,
+        "speed": 77
+      },
+      "nfl_team": "TEN",
+      "salary": 1.6
+    },
+    {
+      "id": "DEL-15",
+      "name": "O'Cyrus Torrence",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 25,
+      "overall": 83,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 76,
+        "run_blocking": 84,
+        "strength": 88
+      },
+      "nfl_team": "BUF",
+      "salary": 3.03
+    },
+    {
+      "id": "DEL-16",
+      "name": "Jermaine Eluemunor",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 30,
+      "overall": 78,
+      "contract_years": 2,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 69,
+        "run_blocking": 81,
+        "strength": 84
+      },
+      "nfl_team": "NYG",
+      "salary": 13.85
+    },
+    {
+      "id": "DEL-17",
+      "name": "Tyler Smith",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 24,
+      "overall": 76,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 76,
+        "run_blocking": 70,
+        "strength": 82
+      },
+      "nfl_team": "DAL",
+      "salary": 5.06
+    },
+    {
+      "id": "DEL-18",
+      "name": "Armand Membou",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 21,
+      "overall": 71,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 65,
+        "run_blocking": 66,
+        "strength": 81
+      },
+      "nfl_team": "NYJ",
+      "salary": 5.06
+    },
+    {
+      "id": "DEL-19",
+      "name": "Creed Humphrey",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 26,
+      "overall": 70,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 68,
+        "run_blocking": 72,
+        "strength": 70
+      },
+      "nfl_team": "KC",
+      "salary": 6.47
+    },
+    {
+      "id": "DEL-20",
+      "name": "Josh Myers",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 27,
+      "overall": 67,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 67,
+        "run_blocking": 66,
+        "strength": 69
+      },
+      "nfl_team": "NYJ",
+      "salary": 4.5
+    },
+    {
+      "id": "DEL-21",
+      "name": "Alaric Jackson",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 27,
+      "overall": 66,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 69,
+        "run_blocking": 64,
+        "strength": 64
+      },
+      "nfl_team": "LA",
+      "salary": 3.94
+    },
+    {
+      "id": "DEL-22",
+      "name": "Ezra Cleveland",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 27,
+      "overall": 61,
+      "contract_years": 5,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "pass_blocking": 60,
+        "run_blocking": 60,
+        "strength": 62
+      },
+      "nfl_team": "JAX",
+      "salary": 1.87
+    },
+    {
+      "id": "DEL-23",
+      "name": "Morgan Moses",
+      "team_id": "DEL",
+      "position": "OL",
+      "age": 34,
+      "overall": 55,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_blocking": 52,
+        "run_blocking": 57,
+        "strength": 55
+      },
+      "nfl_team": "NE",
+      "salary": 1.0
+    },
+    {
+      "id": "DEL-24",
+      "name": "Aidan Hutchinson",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 25,
+      "overall": 83,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 86,
+        "run_defense": 81,
+        "strength": 83
+      },
+      "nfl_team": "DET",
+      "salary": 5.06
+    },
+    {
+      "id": "DEL-25",
+      "name": "Chris Jones",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 31,
+      "overall": 73,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 78,
+        "run_defense": 66,
+        "strength": 74
+      },
+      "nfl_team": "KC",
+      "salary": 11.73
+    },
+    {
+      "id": "DEL-26",
+      "name": "Zach Allen",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 28,
+      "overall": 72,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 83,
+        "run_defense": 62,
+        "strength": 70
+      },
+      "nfl_team": "DEN",
+      "salary": 10.57
+    },
+    {
+      "id": "DEL-27",
+      "name": "Kenny Clark",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 29,
+      "overall": 69,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 69,
+        "run_defense": 65,
+        "strength": 72
+      },
+      "nfl_team": "DAL",
+      "salary": 7.49
+    },
+    {
+      "id": "DEL-28",
+      "name": "Jordan Davis",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 25,
+      "overall": 67,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 60,
+        "run_defense": 71,
+        "strength": 71
+      },
+      "nfl_team": "PHI",
+      "salary": 5.06
+    },
+    {
+      "id": "DEL-29",
+      "name": "Osa Odighizuwa",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 27,
+      "overall": 65,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 74,
+        "run_defense": 58,
+        "strength": 62
+      },
+      "nfl_team": "DAL",
+      "salary": 4.31
+    },
+    {
+      "id": "DEL-30",
+      "name": "Jacob Martin",
+      "team_id": "DEL",
+      "position": "DL",
+      "age": 29,
+      "overall": 61,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "pass_rush": 74,
+        "run_defense": 56,
+        "strength": 54
+      },
+      "nfl_team": "WAS",
+      "salary": 2.19
+    },
+    {
+      "id": "DEL-31",
+      "name": "Zack Baun",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 28,
+      "overall": 77,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 73,
+        "coverage": 89,
+        "tackling": 69,
+        "pass_rush": 76
+      },
+      "nfl_team": "PHI",
+      "salary": 10.62
+    },
+    {
+      "id": "DEL-32",
+      "name": "Alex Anzalone",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 30,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 56,
+        "coverage": 82,
+        "tackling": 78,
+        "pass_rush": 78
+      },
+      "nfl_team": "DET",
+      "salary": 8.17
+    },
+    {
+      "id": "DEL-33",
+      "name": "Cedric Gray",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 22,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 79,
+        "coverage": 62,
+        "tackling": 75,
+        "pass_rush": 60
+      },
+      "nfl_team": "TEN",
+      "salary": 1.68
+    },
+    {
+      "id": "DEL-34",
+      "name": "Tyrel Dodson",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 27,
+      "overall": 69,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 74,
+        "coverage": 59,
+        "tackling": 63,
+        "pass_rush": 79
+      },
+      "nfl_team": "MIA",
+      "salary": 4.9
+    },
+    {
+      "id": "DEL-35",
+      "name": "Azeez Al-Shaair",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 28,
+      "overall": 63,
+      "contract_years": 3,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "run_defense": 52,
+        "coverage": 79,
+        "tackling": 66,
+        "pass_rush": 55
+      },
+      "nfl_team": "HOU",
+      "salary": 2.27
+    },
+    {
+      "id": "DEL-36",
+      "name": "Drue Tranquill",
+      "team_id": "DEL",
+      "position": "LB",
+      "age": 30,
+      "overall": 63,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "run_defense": 58,
+        "coverage": 57,
+        "tackling": 81,
+        "pass_rush": 56
+      },
+      "nfl_team": "KC",
+      "salary": 2.27
+    },
+    {
+      "id": "DEL-37",
+      "name": "Quinyon Mitchell",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 24,
+      "overall": 73,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 79,
+        "speed": 74,
+        "tackling": 67
+      },
+      "nfl_team": "PHI",
+      "salary": 5.06
+    },
+    {
+      "id": "DEL-38",
+      "name": "Mike Jackson",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 28,
+      "overall": 72,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 76,
+        "speed": 65,
+        "tackling": 74
+      },
+      "nfl_team": "CAR",
+      "salary": 8.02
+    },
+    {
+      "id": "DEL-39",
+      "name": "Derek Stingley Jr.",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 24,
+      "overall": 69,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 76,
+        "speed": 70,
+        "tackling": 62
+      },
+      "nfl_team": "HOU",
+      "salary": 5.06
+    },
+    {
+      "id": "DEL-40",
+      "name": "Renardo Green",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 24,
+      "overall": 65,
+      "contract_years": 3,
+      "games_missed_last_season": 3,
+      "ratings": {
+        "coverage": 64,
+        "speed": 66,
+        "tackling": 66
+      },
+      "nfl_team": "SF",
+      "salary": 3.03
+    },
+    {
+      "id": "DEL-41",
+      "name": "Riq Woolen",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 26,
+      "overall": 65,
+      "contract_years": 1,
+      "games_missed_last_season": 1,
+      "ratings": {
+        "coverage": 71,
+        "speed": 63,
+        "tackling": 60
+      },
+      "nfl_team": "SEA",
+      "salary": 1.68
+    },
+    {
+      "id": "DEL-42",
+      "name": "Cobie Durant",
+      "team_id": "DEL",
+      "position": "CB",
+      "age": 27,
+      "overall": 58,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 63,
+        "speed": 52,
+        "tackling": 58
+      },
+      "nfl_team": "LA",
+      "salary": 1.22
+    },
+    {
+      "id": "DEL-43",
+      "name": "Nick Cross",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 23,
+      "overall": 79,
+      "contract_years": 1,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 74,
+        "tackling": 79,
+        "speed": 84
+      },
+      "nfl_team": "IND",
+      "salary": 3.03
+    },
+    {
+      "id": "DEL-44",
+      "name": "Jessie Bates",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 28,
+      "overall": 76,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 85,
+        "tackling": 73,
+        "speed": 71
+      },
+      "nfl_team": "ATL",
+      "salary": 8.79
+    },
+    {
+      "id": "DEL-45",
+      "name": "Chamarri Conner",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 25,
+      "overall": 69,
+      "contract_years": 2,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 72,
+        "tackling": 66,
+        "speed": 70
+      },
+      "nfl_team": "KC",
+      "salary": 1.68
+    },
+    {
+      "id": "DEL-46",
+      "name": "Alohi Gilman",
+      "team_id": "DEL",
+      "position": "S",
+      "age": 27,
+      "overall": 63,
+      "contract_years": 5,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "coverage": 62,
+        "tackling": 55,
+        "speed": 71
+      },
+      "nfl_team": "BAL",
+      "salary": 2.13
+    },
+    {
+      "id": "DEL-47",
+      "name": "Cam Little",
+      "team_id": "DEL",
+      "position": "K",
+      "age": 22,
+      "overall": 78,
+      "contract_years": 3,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 77,
+        "kick_accuracy": 79
+      },
+      "nfl_team": "JAX",
+      "salary": 1.68
+    },
+    {
+      "id": "DEL-48",
+      "name": "Braden Mann",
+      "team_id": "DEL",
+      "position": "P",
+      "age": 27,
+      "overall": 74,
+      "contract_years": 4,
+      "games_missed_last_season": 0,
+      "ratings": {
+        "kick_power": 76,
+        "kick_accuracy": 73
+      },
+      "nfl_team": "PHI",
+      "salary": 2.2
+    }
+  ]
+}
