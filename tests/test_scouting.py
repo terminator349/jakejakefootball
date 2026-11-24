@@ -290,7 +290,7 @@ def test_older_saves_get_the_reports_table(tmp_path):
     league_db.connect(path).close()
     with sqlite3.connect(path) as db:
         assert db.execute("SELECT COUNT(*) FROM scouting_reports").fetchone()[0] == 0
-        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION == 9
+        assert db.execute("PRAGMA user_version").fetchone()[0] == league_db.SCHEMA_VERSION
     db.close()
 
 

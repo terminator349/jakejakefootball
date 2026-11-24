@@ -23,6 +23,10 @@ trades.
 - **C**: no single player of ours gets it done (`offer` is null), or he's hurt
   (`games_out` above 0). Worth knowing about, not worth chasing now.
 
+If his `history` shows the owner vetoed a trade for him, or turned down an
+offer that included him, say so in the note, and grade him lower unless the
+deal now is different. The owner's past decisions stand.
+
 You may grade a player lower than the numbers allow, for a reason you name.
 You may never grade him higher: an A or B needs an offer and a healthy player,
 and the game holds every grade to that.

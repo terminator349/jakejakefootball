@@ -10,7 +10,7 @@ import pytest
 from agno.team import TeamMode
 from agno.tools.mcp import MCPTools
 
-from agents import analytics, cap_contracts, draft_desk, gm
+from agents import analytics, cap_contracts, draft_desk, gm, memory
 from draft.players import build_player_pool
 from draft.roster_rules import SALARY_CAP
 
@@ -137,9 +137,13 @@ def test_a_lost_report_shows_what_the_gm_wrote():
     assert gm.summarize(BROKEN)["text"] == "Safety is our weakest spot. Sign one."
 
 
-def test_ask_parses_the_gms_answer_again(monkeypatch):
+def test_ask_parses_the_gms_answer_again(scratch_db, monkeypatch):
+    seen = []
+
     @asynccontextmanager
-    async def front_office(db_file=None, debug=False):
+    async def front_office(db_file=None, debug=False, remembered=None):
+        seen.append(remembered)
+
         async def arun(question):
             return SimpleNamespace(**vars(BROKEN))
         yield SimpleNamespace(arun=arun)
@@ -153,6 +157,12 @@ def test_ask_parses_the_gms_answer_again(monkeypatch):
     run = asyncio.run(gm.ask("Where are we weakest?"))
     assert run["report"]["answer"] == "Safety is our weakest spot. Sign one." and run["text"] is None
     assert run["cost"] == pytest.approx(0.0003)  # the second parse is counted
+    # The GM remembers the season (4.2), and now this answer too.
+    assert seen == ["What you remember from this season (it is week 1 now): nothing yet; this is the start of "
+                    "the season."]
+    [answer] = memory.timeline()
+    assert answer["kind"] == "answer" and answer["text"].startswith('You asked: "Where are we weakest?" I answered: '
+                                                                    "Safety is our weakest spot.")
 
 
 # ---- The Draft desk ---------------------------------------------------------------

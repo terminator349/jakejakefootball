@@ -35,7 +35,7 @@ from agno.agent import Agent
 from agno.team import Team, TeamMode
 from pydantic import BaseModel, Field
 
-from agents import draft_desk, negotiation, skills
+from agents import draft_desk, memory, negotiation, skills
 from agents import trade_desk as desk
 from agents.analytics import specialist_model
 from agents.league_db import connect, current_injuries, load_league
@@ -139,6 +139,7 @@ def targets(position: str, max_salary: float | None = None, protected=(), max_ad
     hurt = {i["player_id"]: i for i in current_injuries(db_file=db_file)}
     stats = _season_stats(db_file, [p["id"] for p in pool])
     protected = set(protected)
+    remembered = memory.timeline(db_file)  # 4.2: what's happened with each target this season
 
     players = []
     for p in pool:
@@ -152,7 +153,8 @@ def targets(position: str, max_salary: float | None = None, protected=(), max_ad
             "units": joined["unit_changes"][:3],
             "games_out": hurt[p["id"]]["games_remaining"] if p["id"] in hurt else 0,
             "season": {s: stats.get(p["id"], {}).get(s, 0) for s in KEY_STATS.get(position, [])},
-            "offer": best_offer(league, p, protected, max_added_payroll)})
+            "offer": best_offer(league, p, protected, max_added_payroll),
+            "history": memory.about_player(p["id"], remembered)[-3:]})
     players.sort(key=lambda t: (t["offer"] is None, -(t["offer"]["our_score"] if t["offer"] else t["unit_gain"])))
     return {"position": position, "max_salary": max_salary or None,
             "our_starters": [{"id": p["id"], "name": p["name"], "overall": p["overall"]} for p in our_starters],
@@ -199,13 +201,15 @@ def rules_note(t: dict) -> str:
         note += f"No one-for-one trade of ours works for {t['team']}: it would take more."
     if t["games_out"]:
         note += f" Hurt: out {t['games_out']} more game{'s' if t['games_out'] != 1 else ''}."
+    if t.get("history"):
+        note += f" Before: {t['history'][-1]}"
     return note
 
 
 def _entry(t: dict, grade: str, note: str, graded_by: str) -> dict:
     keep = ("position", "team_id", "team", "name", "overall", "salary", "years_left", "unit_gain", "games_out",
-            "season", "offer")
-    return {"player_id": t["id"], **{k: t[k] for k in keep}, "grade": grade, "note": note, "graded_by": graded_by}
+            "season", "offer", "history")
+    return {"player_id": t["id"], **{k: t.get(k) for k in keep}, "grade": grade, "note": note, "graded_by": graded_by}
 
 
 def _summary(found: dict[str, dict]) -> str:
@@ -553,6 +557,7 @@ def report_text(report: dict | None) -> str:
                 f"{offer['their_score']:+.2f} (margin {offer['margin']:+.2f}), we {offer['our_score']:+.2f}"
                 if offer else "offer null")
         hurt = f"; out {t['games_out']} more games" if t["games_out"] else ""
+        hurt += "".join(f" [{h}]" for h in t.get("history", []))
         lines.append(f"- {t['player_id']} {t['name']} ({t['position']}, {t['team']}), {t['overall']} overall, "
                      f"${t['salary']:.2f}M, {t['years_left']} years left, adds {t['unit_gain']:+.1f} to our units"
                      f"{hurt}. Grade {t['grade']}: {t['note']} Suggested {deal}.")

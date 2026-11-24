@@ -40,7 +40,7 @@ from agno.tools.mcp import MCPTools
 from mcp import StdioServerParameters
 from pydantic import BaseModel, Field
 
-from agents import rules, scouting, skills
+from agents import memory, rules, scouting, skills
 from agents import trade_desk as desk
 from agents.league_db import connect, load_league
 
@@ -252,6 +252,10 @@ def check_move(order_id: int, team_id: str, we_send: list[str], we_get: list[str
         if row["id"] != skip_proposal and (sorted(json.loads(row["sends"])), sorted(json.loads(row["receives"]))) \
                 == (sorted(we_send), sorted(we_get)):
             problems.append(f"Move #{row['id']} already proposes this trade.")
+    # The owner's past decisions hold (4.2): a trade the owner vetoed isn't proposed again.
+    if before := memory.vetoed(team_id, we_send, we_get, db_file):
+        problems.append(f"You vetoed this exact trade in week {before['week']}"
+                        + (f" (\"{before['note']}\")" if before["note"] else "") + "; it won't be proposed again.")
     return problems, evaluation
 
 
@@ -453,6 +457,9 @@ SEARCH_INSTRUCTIONS = [
     "The salary cap is $255M and hard, and rosters must stay between 46 and 53 players. evaluate_trade tells "
     "you both teams' payroll, cap space and roster size after the trade: trust it rather than doing sums.",
     "Never send a player the owner protects. Never invent players: use only ids that your tools returned.",
+    "You remember the season so far (in the message): the owner's earlier decisions and notes stand. Don't "
+    "propose a trade the owner vetoed, and treat what the owner said about a player or a deal as a standing "
+    "preference.",
     "The other team decides by its appraisal in evaluate_trade (teams.<their id>.appraisal): below its margin "
     "it will counter or say no. Use your negotiation skill to build an offer whose appraisal for them says "
     "accept while ours stays worth it: swap strength for need, rather than offering backups for a starter.",
@@ -495,7 +502,8 @@ def build_searcher(league_office, trade_tools, order_id: int, db_file: Path | No
                  instructions=SEARCH_INSTRUCTIONS, tool_call_limit=SEARCH_TOOL_LIMIT, debug_mode=debug)
 
 
-def search_prompt(order: dict, standing: list[dict], league: dict, week: int, report: dict | None = None) -> str:
+def search_prompt(order: dict, standing: list[dict], league: dict, week: int, report: dict | None = None,
+                  db_file: Path | None = None) -> str:
     cap = league["rules"]["salary_cap"]
     payroll = round(sum(p["salary"] for p in league["players"] if p["team_id"] == OUR_TEAM), 2)
     others = [f"#{o['id']}: \"{o['text']}\"" + (f" (protects {', '.join(o['terms']['protected'])})"
@@ -508,7 +516,9 @@ def search_prompt(order: dict, standing: list[dict], league: dict, week: int, re
             f"The owner's order #{order['id']}: \"{order['text']}\"\n"
             f"How you read it (enforced when you propose): {json.dumps(order['terms'])}\n\n"
             + (f"Standing orders that still apply:\n" + "\n".join(others) if others else "No other standing orders.")
-            + (f"\n\n{scouting.report_text(report)}" if report is not None else ""))
+            + (f"\n\n{scouting.report_text(report)}" if report is not None else "")
+            + "\n\n" + memory.text(memory.recall(db_file, positions=order["terms"]["positions"],
+                                                 players=order["terms"]["protected_player_ids"]), week))
 
 
 async def give_order(text: str, db_file: Path | None = None, reader: Agent | None = None,
@@ -568,7 +578,7 @@ async def _search(order: dict, standing: list[dict], league: dict, week: int, db
                   report: dict | None = None):
     async with league_office_tools(db_file) as league_office, trade_desk_tools(db_file) as trade_tools:
         run = await build_searcher(league_office, trade_tools, order["id"], db_file).arun(
-            search_prompt(order, standing, league, week, report))
+            search_prompt(order, standing, league, week, report, db_file))
     content = final_message(run)
     filed = len(moves(db_file, order["id"]))
     reply = content or (f"I've put {filed} move{'s' if filed != 1 else ''} in front of you." if filed

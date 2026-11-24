@@ -50,6 +50,9 @@ ul.news { margin: 0 0 10px; padding-left: 18px; }
 p.reply { white-space: pre-line; }
 ul.scouted { list-style: none; padding: 0; margin: 6px 0 0; }
 ul.orders ul.scouted li { border: 0; padding: 0; margin: 8px 0; display: block; }
+ul.memory { list-style: none; padding: 0; margin: 6px 0 0; }
+ul.memory li { margin: 6px 0; }
+input.owner-note { flex: 1; min-width: 180px; }
 .bracket { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 .bround h3 { margin: 4px 0 8px; }
 .bgame { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
@@ -262,7 +265,7 @@ const ASK_EXAMPLES = [
 const ask = { question: ASK_EXAMPLES[0], run: null, asked: null, started: null };
 function askCard() {
   const keyless = !H.api_key_set;
-  return `<div class="card" style="grid-column: 1 / -1"><h2>Ask the front office <span class="sub">your GM, Analytics, Cap &amp; Contracts and Draft</span></h2>
+  return `<div class="card" style="grid-column: 1 / -1"><h2>Ask the front office <span class="sub">your GM, Analytics, Cap &amp; Contracts and Scouting; your GM remembers the season</span></h2>
     <textarea id="ask-q" rows="2" ${ask.started ? "disabled" : ""}>${esc(ask.question)}</textarea>
     <div class="ask-examples">${ASK_EXAMPLES.map(q => `<button class="btn sm" data-ask-example ${ask.started ? "disabled" : ""}>${esc(q)}</button>`).join("")}</div>
     <div class="row"><button class="btn primary" data-act="ask" ${keyless || ask.started ? "disabled" : ""}>Ask the GM</button>
@@ -297,6 +300,7 @@ async function askGM() {
 document.addEventListener("input", e => {
   if (e.target.id === "ask-q") ask.question = e.target.value;
   if (e.target.id === "order-q") order.text = e.target.value;
+  if (e.target.classList.contains("owner-note")) ownerNotes[e.target.id] = e.target.value;  // kept across re-renders
 });
 
 // ---- Orders and approvals (G4): the owner gives orders, the GM proposes moves ----------
@@ -369,7 +373,8 @@ function moveHtml(m) {
     return `<div class="move"><div class="move-head"><b>Trade with ${m.team_id}</b> <span class="note">move #${m.id}, for “${esc(m.order)}”</span></div>
       ${ev ? `<table class="move-sides">${sideRows("We send", ev.gives)}${sideRows("We get", ev.gets)}</table>` : ""}
       <p><b>Why:</b> ${esc(m.reason)}</p>${after}${stale}
-      <div class="row"><button class="btn primary" data-approve="${m.id}">Approve and send</button><button class="btn" data-veto="${m.id}">Veto</button></div></div>`;
+      <div class="row"><button class="btn primary" data-approve="${m.id}">Approve and send</button><button class="btn" data-veto="${m.id}">Veto</button>
+        ${noteInput("move", m.id)}</div></div>`;
   }
   const names = ps => ps.map(p => p.name).join(", ") || "nobody";
   let status;
@@ -387,6 +392,23 @@ function movesCard() {
     ${waiting.length ? waiting.map(moveHtml).join("") : `<p class="empty">Nothing waiting. Give your GM an order to start a search.</p>`}
     ${done.length ? `<details class="notes-toggle"><summary>Decided (${done.length})</summary>${done.map(moveHtml).join("")}</details>` : ""}
   </div>`;
+}
+// 4.2: what the front office remembers, newest week first.
+// The owner's notes on decisions, kept as they're typed: the week screen re-renders when the briefing arrives.
+const ownerNotes = {};
+const noteFor = (kind, id) => (ownerNotes[`note-${kind}-${id}`] ?? $(`#note-${kind}-${id}`)?.value ?? "").trim();
+const noteInput = (kind, id) => `<input class="owner-note" id="note-${kind}-${id}" placeholder="Why? (optional: your GM remembers)" value="${esc(ownerNotes[`note-${kind}-${id}`] || "")}">`;
+const MEMORY_KINDS = { order: "order", proposed: "proposed", approved: "approved", vetoed: "vetoed", void: "void",
+  trade: "trade", our_offer: "our offer", offer_to_us: "offer to us", scouting: "scouting", briefing: "briefing", answer: "question" };
+const MEMORY_BADGE = { approved: "good", trade: "good", vetoed: "bad", void: "bad" };
+function memoryCard() {
+  const m = H.memory || [];
+  const weeks = [...new Set(m.map(e => e.week))].sort((a, b) => b - a);
+  const week = w => `<details class="notes-toggle" ${w === weeks[0] ? "open" : ""}><summary>Week ${w} <span class="note">${m.filter(e => e.week === w).length} things</span></summary>
+    <ul class="memory">${m.filter(e => e.week === w).map(e => `<li><span class="badge ${MEMORY_BADGE[e.kind] || "plain"}">${MEMORY_KINDS[e.kind]}</span> ${esc(e.text)}</li>`).join("")}</ul></details>`;
+  return `<div class="card"><h2>Front office memory <span class="sub">kept in the save</span></h2>
+    <p class="note">What your GM and its staff remember this season: your orders and decisions (with your notes), the trades, Scouting's reports, the briefings and the GM's answers. Your GM reads it before answering you or looking for trades, and won't propose a trade you vetoed.</p>
+    ${m.length ? weeks.map(week).join("") : `<p class="empty">Nothing yet: give an order or ask the front office.</p>`}</div>`;
 }
 // The GM's replies come with a little markdown: bold labels and "- " lists, one per line.
 const richText = s => esc(s || "").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
@@ -458,7 +480,8 @@ function offerHtml(o) {
     ${o.problems.length ? `<p class="warn-text">No longer passes: ${esc(o.problems.join(" "))}</p>` : ""}
     ${o.advice ? `<p><b>Your GM:</b> ${esc(o.advice)}</p>` : ""}
     <div class="row"><button class="btn primary" data-accept-offer="${o.id}" ${o.legal_now ? "" : "disabled"}>Accept</button>
-      <button class="btn" data-reject-offer="${o.id}">Reject</button></div></div>`;
+      <button class="btn" data-reject-offer="${o.id}">Reject</button>
+      ${noteInput("offer", o.id)}</div></div>`;
 }
 function offersCard() {
   const offers = H.offers || [];
@@ -510,6 +533,7 @@ async function weekView() {
     ${movesCard()}
     ${H.offers?.length || H.deadline?.phase === "closed" ? "" : offersCard()}
     ${askCard()}
+    ${memoryCard()}
   </div>`;
   writeBriefing();
 }
@@ -833,7 +857,7 @@ document.addEventListener("click", async e => {
     else if (t.dataset.cancelOrder) { await call("/api/hub/order/cancel", { order_id: +t.dataset.cancelOrder }); toast("Order cancelled."); await refresh(); }
     else if (t.dataset.approve) {
       t.disabled = true;
-      const r = await call("/api/hub/move/approve", { move_id: +t.dataset.approve });
+      const r = await call("/api/hub/move/approve", { move_id: +t.dataset.approve, note: noteFor("move", t.dataset.approve) });
       if (!r.sent) { toast(`Not sent: ${r.move.owner_note}`, "bad"); return refresh(); }
       toast(`Offer sent to ${r.move.team_id}.`);
       await rivalAnswer(r.move.desk_proposal_id, r.move.team_id);
@@ -841,12 +865,16 @@ document.addEventListener("click", async e => {
     else if (t.dataset.answerOffer) await rivalAnswer(+t.dataset.answerOffer, t.dataset.team);
     else if (t.dataset.acceptOffer) {
       t.disabled = true;
-      const r = await call("/api/hub/offer/accept", { proposal_id: +t.dataset.acceptOffer });
+      const r = await call("/api/hub/offer/accept", { proposal_id: +t.dataset.acceptOffer, note: noteFor("offer", t.dataset.acceptOffer) });
       r.accepted ? toast("Done: the trade is made.") : toast(`Not made: ${r.proposal.response}`, "bad");
       await refresh();
     }
-    else if (t.dataset.rejectOffer) { await call("/api/hub/offer/reject", { proposal_id: +t.dataset.rejectOffer }); toast("Turned down."); await refresh(); }
-    else if (t.dataset.veto) { await call("/api/hub/move/veto", { move_id: +t.dataset.veto }); toast("Vetoed."); await refresh(); }
+    else if (t.dataset.rejectOffer) { await call("/api/hub/offer/reject", { proposal_id: +t.dataset.rejectOffer, note: noteFor("offer", t.dataset.rejectOffer) }); toast("Turned down."); await refresh(); }
+    else if (t.dataset.veto) {
+      const note = noteFor("move", t.dataset.veto);
+      await call("/api/hub/move/veto", { move_id: +t.dataset.veto, note });
+      toast(note ? "Vetoed. Your GM will remember why." : "Vetoed."); await refresh();
+    }
     else if (t.dataset.act === "brief-retry") { brief.failed = null; await weekView(); await writeBriefing(true); }
     else if (t.dataset.act === "sim") await playWeek(false);
     else if (t.dataset.act === "watch") await playWeek(true);

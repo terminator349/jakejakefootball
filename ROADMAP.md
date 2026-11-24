@@ -79,7 +79,7 @@ GM briefing
 | W8   | Dec 14 - 20    | 2.2, G5 (done early)                   |
 | W9   | Dec 21 - 27    | 2.3 (done early)                       |
 | W10  | Dec 28 - Jan 3 | 3.2 (done early), G6 (done early)      |
-| W11  | Jan 4 - 10     | 3.2 (done early), 4.2                  |
+| W11  | Jan 4 - 10     | 3.2 (done early), 4.2 (done early)     |
 | W12  | Jan 11 - 17    | 4.1 (done early), 4.3, 4.5             |
 | W13  | Jan 18 - 24    | 4.4 (stretch), 5.1                     |
 | W14  | Jan 25 - 31    | 5.1, 5.2                               |
@@ -374,10 +374,17 @@ scouts grade them A, B or C with the new scouting skill. Orders and the deadline
 go through Scouting first, and the GM files moves from its report. The Draft desk
 (1.4) reports through Scouting; G7's draft agent will join it there.
 
-### 4.2 Memory (W11)
+### 4.2 Memory (W11) - Done early (Nov 24)
 Agents remember past decisions, trades and reports. In the game, the GM
 remembers the owner's standing orders and past decisions across weeks and saved
 games.
+
+Done Nov 24, ahead of W11. Plain Python reads the save back into one timeline
+(orders, the GM's moves and the owner's decisions with notes, trades, offers,
+scouting reports, briefings, and the GM's answers, now kept). The GM's
+questions, its order search, the scouts and the briefing each get what bears
+on their job, and a trade the owner vetoed is refused if filed again. Memory
+lives in the save, so it lasts across weeks and through save and load.
 
 ### 4.3 Org-chart screen (W12)
 A screen in the game showing the agent hierarchy and what each agent did this

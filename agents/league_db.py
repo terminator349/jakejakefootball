@@ -41,7 +41,8 @@ DB_FILE = DEFAULT_DB_FILE  # the database the tools use; a loaded game points th
 #    was version 5; MIGRATIONS below brings those databases up to date too.)
 # 8: task G6 leaves the playoffs out of the standings.
 # 9: task 4.1 adds the scouting team's reports.
-SCHEMA_VERSION = 9
+# 10: task 4.2 keeps the GM's answers to the owner's questions, for its memory.
+SCHEMA_VERSION = 10
 
 # The season seed for data/league.db. A new game picks its own (agents/saves.py).
 DEFAULT_SEASON_SEED = 2026
@@ -265,6 +266,21 @@ CREATE TABLE IF NOT EXISTS scouting_reports (
 );
 """
 
+MEMORY_SCHEMA = """
+-- The GM's answers to the owner's questions (task 4.2). Everything else the front
+-- office remembers is already in the save (orders, moves, trade proposals, scouting
+-- reports, briefings); agents/memory.py reads it all back into one timeline.
+CREATE TABLE IF NOT EXISTS gm_answers (
+    id             INTEGER PRIMARY KEY,
+    week           INTEGER NOT NULL CHECK (week >= 1),
+    question       TEXT NOT NULL,                        -- the owner's words
+    answer         TEXT NOT NULL,                        -- the GM's answer
+    recommendation TEXT,
+    consulted      TEXT NOT NULL DEFAULT '[]',           -- JSON: the specialists it asked
+    cost           REAL                                  -- what the model calls cost, in $
+);
+"""
+
 INJURY_SCHEMA = """
 -- Injuries and the depth chart (task 3.2).
 CREATE TABLE IF NOT EXISTS injuries (
@@ -293,7 +309,8 @@ CREATE TABLE IF NOT EXISTS depth_chart (
 # it the Trade Desk, but on the 3.2 branch it meant injuries, so the step from 5 adds
 # the Trade Desk's table too, and the step from 6 adds injuries whichever way it came.
 MIGRATIONS = {1: GAME_LOG_SCHEMA, 2: LIVE_SCHEMA, 3: BRIEFING_SCHEMA, 4: TRADE_DESK_SCHEMA,
-              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA, 7: PLAYOFF_SCHEMA, 8: SCOUTING_SCHEMA}
+              5: TRADE_DESK_SCHEMA + ORDERS_SCHEMA, 6: INJURY_SCHEMA, 7: PLAYOFF_SCHEMA, 8: SCOUTING_SCHEMA,
+              9: MEMORY_SCHEMA}
 
 # The MCP server runs tool calls in parallel threads; only one may build a missing database.
 _build_lock = threading.Lock()
@@ -320,7 +337,7 @@ def build(db_file: Path | None = None, seed_file: Path | None = None, season_see
     tmp_file.unlink(missing_ok=True)
     with sqlite3.connect(tmp_file) as db:
         db.executescript(SCHEMA + STANDINGS_VIEW + GAME_LOG_SCHEMA + LIVE_SCHEMA + BRIEFING_SCHEMA + TRADE_DESK_SCHEMA + ORDERS_SCHEMA
-                         + INJURY_SCHEMA + SCOUTING_SCHEMA)
+                         + INJURY_SCHEMA + SCOUTING_SCHEMA + MEMORY_SCHEMA)
         db.executemany("INSERT INTO settings VALUES (?, ?)",
                        [("sport", json.dumps(seed["sport"])), ("our_team", json.dumps(seed["our_team"]))])
         rules = {k: v for k, v in seed["rules"].items() if k != "starters_per_position"}

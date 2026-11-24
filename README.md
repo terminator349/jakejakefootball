@@ -64,7 +64,7 @@ answer by the rules alone. The other agents join the game as they are built.
    behind it and what each specialist said (1.4, below). **Give an order**
    ("Upgrade safety. Stay under $5M a year."): your scouts find and grade the
    targets (4.1, below), and your GM proposes trades that follow it; **approve** or **veto** each one under **Proposed moves** (G4,
-   below). Nothing goes to another team until you approve it, and then their
+   below), with a note if you like: your GM remembers why (4.2, below). Nothing goes to another team until you approve it, and then their
    GM answers: yes, no or a counteroffer. Counteroffers and the offers rival
    GMs make between weeks wait under **Offers to us**, with your GM's read on
    each, and **Around the league** lists the other teams' trades (2.2 and G5,
@@ -81,7 +81,9 @@ answer by the rules alone. The other agents join the game as they are built.
    ratings, contracts and starters; our games, playoffs included, with results,
    box scores and replays; payroll, cap space, the biggest contracts and who is in a final year.
 6. **Save & quit** goes back to the title screen. The save already holds
-   everything; load it to carry on from the same week.
+   everything, the front office's memory included; load it to carry on from
+   the same week. The **Front office memory** card lists what your GM
+   remembers.
 
 7. **The playoffs**: after week 17 the top four play the semifinals, then the
    final. Win or go home, and a playoff game can't end in a tie. The game ends
@@ -840,6 +842,59 @@ pytest tests/test_scouting.py    # targets and offers, grades, grounding, the te
 
 Done when: the GM's trade search works from Scouting's report, the Draft desk
 reports through Scouting, and the org chart has a second level.
+
+## 4.2: memory, the GM remembers the season
+
+The GM and its staff now remember the season: the owner's orders, every move
+the GM proposed and what the owner decided (in the owner's own words), the
+trades made and the offers answered, Scouting's reports, the weekly briefings,
+and the GM's answers to the owner's questions. The code is in
+`agents/memory.py`.
+
+- **Plain Python keeps it, in the save.** Almost all of it was already there
+  (orders, the GM's moves, trade proposals, scouting reports, briefings), so
+  `memory.timeline()` reads it back into one list, week by week. The GM's
+  answers were the one thing not kept, so they get a table, `gm_answers`
+  (schema version 10). Because the memory is the save, it lasts from week to
+  week and comes back when a saved game is loaded; a new game starts with none.
+  No model writes it, so nothing in it is made up.
+- **The owner's reasons.** Approve, veto, accept and reject each take an
+  optional note ("Never trade Wade Bolden: he's our best lineman."), kept with
+  the decision. A note typed on the week screen survives the screen redrawing.
+- **Who remembers what.** `recall()` picks what bears on the job (always the
+  owner's decisions and the trades made, then what's about the job's positions
+  and players, then the most recent), and `text()` writes it for a prompt, with
+  the owner's questions last in the order asked:
+
+```
+the GM answering a question   the season so far (Agno's additional_context)
+the GM's order search          the season, and everything about the order's positions and protected players
+the pro scouts                 each target's history: offers made for him, moves the owner vetoed
+the weekly briefing            what was decided since last week (front_office_since_last_week)
+```
+
+- **The owner's decisions hold.** A trade the owner vetoed is refused if the
+  GM files it again (`orders.check_move`), with the owner's note. The scouting
+  skill tells the scouts to grade a vetoed target lower unless the deal is
+  different, and the memo skill has the briefing say what came of the owner's
+  decisions.
+- **In the game**, the week screen's **Front office memory** card lists it
+  all, newest week first.
+
+Tried live on the seed league, after a vetoed move (with a note) and an
+approved trade: asked "What trades have we made so far, and what did I say
+when I vetoed the Summit deal?", the GM answered from memory alone without
+asking a specialist (19 seconds, $0.0008): the Pruitt trade, and the owner's
+words on Bolden. Asked next to repeat what it said a minute ago, it did. A
+first try mixed up who approved what, so the memory now says that "You" is the
+owner and "I" the GM, and lists the questions in the order they were asked.
+
+```powershell
+pytest tests/test_memory.py    # the timeline, recall, vetoes holding, the search, scouts and briefing, saves; no API key
+```
+
+Done when: the GM remembers the owner's orders and decisions across weeks and
+through save and load, and acts on them.
 
 ## 3.2: Coaching and Medical agents (built ahead of schedule)
 

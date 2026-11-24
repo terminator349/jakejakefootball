@@ -27,7 +27,7 @@ from agno.agent import Agent
 from agno.team import Team, TeamMode
 from pydantic import BaseModel, Field
 
-from agents import analytics, cap_contracts, draft_desk, scouting, skills
+from agents import analytics, cap_contracts, draft_desk, memory, scouting, skills
 from agents.analytics import specialist_model
 from agents.tools import list_teams
 
@@ -73,7 +73,7 @@ def ground_report(report: GMReport) -> GMReport:
 
 
 def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RESULTS_FILE,
-                  debug: bool = False, db_file: Path | None = None) -> Team:
+                  debug: bool = False, db_file: Path | None = None, remembered: str | None = None) -> Team:
     """The GM and its three specialists, Scouting a team of its own. Pass connected League
     Office tools for the two League Office specialists (see `front_office()`, which opens them)."""
     return Team(
@@ -108,6 +108,10 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
             "Use only the numbers your specialists report; never invent players, ratings or salaries. Trust "
             "Cap & Contracts on money and Analytics on talent.",
             "The salary cap is $255M per team and hard: a move that goes over it is illegal, not taxed.",
+            "You remember this season (in your context): the owner's orders and decisions, the trades, "
+            "Scouting's reports and your earlier answers. Use it when the owner asks about something earlier or "
+            "when it bears on the question, quoting what was decided and when. It is the only history you know: "
+            "never invent any. Questions about players, ratings and money still go to the specialists.",
             "Then answer the owner directly in plain words, say what you recommend, and list the specialists' "
             "key numbers as evidence. Say 'we' and 'our' only for the Herons; name every other team, and keep "
             "each team's players and numbers with that team.",
@@ -116,6 +120,7 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
             "How to answer the owner:\n" + skills.section("front-office-memo", "Answering the owner"),
         ],
         tool_call_limit=DELEGATION_LIMIT,
+        additional_context=remembered,  # the season so far (4.2)
         # Later specialists see what earlier ones said, so a cap check can use the
         # salary Analytics found without the GM copying every number across.
         share_member_interactions=True,
@@ -130,12 +135,12 @@ def build_gm_team(analytics_office, cap_office, draft_file: Path = draft_desk.RE
 
 @asynccontextmanager
 async def front_office(db_file: Path | None = None, draft_file: Path = draft_desk.RESULTS_FILE,
-                       debug: bool = False):
+                       debug: bool = False, remembered: str | None = None):
     """Start the League Office servers the specialists need and yield the GM's team.
     Pass a save file to serve that game instead of the default league."""
     async with analytics.league_office_tools(db_file) as analytics_office, \
             cap_contracts.league_office_tools(db_file) as cap_office:
-        yield build_gm_team(analytics_office, cap_office, draft_file, debug, db_file)
+        yield build_gm_team(analytics_office, cap_office, draft_file, debug, db_file, remembered)
 
 
 # ---- Reading a run ----------------------------------------------------------------
@@ -234,8 +239,25 @@ async def ask(question: str, db_file: Path | None = None, debug: bool = False) -
         raise ValueError("Type a question for the GM.")
     started = time.perf_counter()
     usage = []
-    async with front_office(db_file, debug=debug) as gm:
+    remembered = memory.text(memory.recall(db_file), _week(db_file))
+    async with front_office(db_file, debug=debug, remembered=remembered) as gm:
         response = await gm.arun(question)
     if not isinstance(response.content, GMReport) and (text := gm_text(response)):
         response.content = await reparse(text, usage) or response.content
-    return summarize(response, time.perf_counter() - started, usage)
+    out = summarize(response, time.perf_counter() - started, usage)
+    keep(question, out, db_file)
+    return out
+
+
+def _week(db_file: Path | None) -> int:
+    from agents import season
+    return season.current_week(db_file)
+
+
+def keep(question: str, out: dict, db_file: Path | None = None) -> None:
+    """Remember the GM's answer (4.2), so later questions, orders and briefings know it."""
+    report = out["report"]
+    answer = report["answer"] if report else (out["text"] or "").strip()
+    if answer:
+        memory.remember_answer(question, answer, report["recommendation"] if report else None, out["consulted"],
+                               out["cost"], db_file)

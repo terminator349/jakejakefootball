@@ -29,8 +29,8 @@ from starlette.responses import FileResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from agents import (briefing, deadline, game_loop, league_db, live, orders, playoffs, rivals, rules, saves, season,
-                    tools)
+from agents import (briefing, deadline, game_loop, league_db, live, memory, orders, playoffs, rivals, rules, saves,
+                    season, tools)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 UI_DIR = Path(__file__).parent
@@ -273,6 +273,7 @@ async def hub(request, body):
             "briefing": None if week["regular_season_over"] else briefing.stored(week["week"]),  # G3
             "desk": orders.desk_view(),  # G4: standing orders and the GM's proposed moves
             "offers": rivals.offers_to_us(),  # G5: rival GMs' offers to us, with our GM's read
+            "memory": memory.timeline(),  # 4.2: what the front office remembers this season
             "news": [] if week["season_over"] else rivals.news(week["week"]),  # G5: trades between rivals
             "deadline": None if week["regular_season_over"] else deadline.status(),  # 2.3: the trade deadline
             "playoffs": playoffs.bracket(),  # G6: the bracket, from week 18
@@ -307,7 +308,8 @@ async def hub_briefing(request, body):
 
 
 async def hub_ask(request, body):
-    """Ask the front office: the owner talks to the GM, who asks the specialists (1.4)."""
+    """Ask the front office: the owner talks to the GM, who asks the specialists (1.4). The GM
+    remembers the season, and its answer is kept (4.2)."""
     _needs_a_save()
     return await run_gm(request, body)
 
